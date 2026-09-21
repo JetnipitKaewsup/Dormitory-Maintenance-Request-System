@@ -1,11 +1,14 @@
 package com.example.dormitory.model;
 
+import com.example.dormitory.model.Technician;
+import com.example.dormitory.model.RepairRequest;
+import com.example.dormitory.model.Admin;
 import jakarta.persistence.*;
 import java.time.LocalDateTime;
 import java.util.UUID;
 
 @Entity
-@Table(name = "repair_assignment")
+@Table(name = "RepairAssignment")
 public class RepairAssignment {
 
     @Id
@@ -13,15 +16,15 @@ public class RepairAssignment {
     private UUID assignmentId;
 
     @ManyToOne(optional = false)
-    @JoinColumn(name = "repair_request_id", nullable = false)
+    @JoinColumn(name = "repairRequestId", nullable = false)
     private RepairRequest repairRequest;
 
     @ManyToOne(optional = false)
-    @JoinColumn(name = "technician_id", nullable = false)
+    @JoinColumn(name = "technicianId", nullable = false)
     private Technician technician;
 
     @ManyToOne(optional = false)
-    @JoinColumn(name = "admin_id", nullable = false)
+    @JoinColumn(name = "adminId", nullable = false)
     private Admin admin;
 
     @Column(nullable = false)
@@ -34,6 +37,22 @@ public class RepairAssignment {
     private LocalDateTime assignDate;
 
     public RepairAssignment() {
+    }
+
+    public RepairAssignment(UUID assignmentId,
+                            RepairRequest repairRequest,
+                            Technician technician,
+                            Admin admin,
+                            String jobStatus,
+                            String note,
+                            LocalDateTime assignDate) {
+        this.assignmentId = assignmentId;
+        this.repairRequest = repairRequest;
+        this.technician = technician;
+        this.admin = admin;
+        this.jobStatus = jobStatus;
+        this.note = note;
+        this.assignDate = assignDate;
     }
 
     // Getter / Setter
