@@ -1,6 +1,5 @@
 package com.example.dormitory.model;
 
-import com.example.dormitory.model.User;
 import jakarta.persistence.*;
 import java.util.UUID;
 
@@ -14,15 +13,10 @@ public class Technician {
     private String specialization;
 
     @OneToOne(optional = false)
-    @JoinColumn(name = "userId", nullable = false, unique = true)
+    @JoinColumn(name = "user_id", nullable = false, unique = true)
     private User user;
 
     public Technician() {
-    }
-
-    public Technician(UUID technicianId, User user) {
-        this.technicianId = technicianId;
-        this.user = user;
     }
 
     // Getter / Setter
