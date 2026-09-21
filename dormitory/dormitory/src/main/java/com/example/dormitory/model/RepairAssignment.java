@@ -1,5 +1,8 @@
 package com.example.dormitory.model;
 
+import com.example.dormitory.model.Technician;
+import com.example.dormitory.model.RepairRequest;
+import com.example.dormitory.model.Admin;
 import jakarta.persistence.*;
 import java.time.LocalDateTime;
 import java.util.UUID;
@@ -34,6 +37,22 @@ public class RepairAssignment {
     private LocalDateTime assignDate;
 
     public RepairAssignment() {
+    }
+
+    public RepairAssignment(UUID assignmentId,
+                            RepairRequest repairRequest,
+                            Technician technician,
+                            Admin admin,
+                            String jobStatus,
+                            String note,
+                            LocalDateTime assignDate) {
+        this.assignmentId = assignmentId;
+        this.repairRequest = repairRequest;
+        this.technician = technician;
+        this.admin = admin;
+        this.jobStatus = jobStatus;
+        this.note = note;
+        this.assignDate = assignDate;
     }
 
     // Getter / Setter
