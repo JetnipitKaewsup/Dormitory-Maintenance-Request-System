@@ -13,10 +13,14 @@ public class Technician {
     private String specialization;
 
     @OneToOne(optional = false)
-    @JoinColumn(name = "user_id", nullable = false, unique = true)
+    @JoinColumn(name = "userId", nullable = false, unique = true)
     private User user;
 
     public Technician() {
+    }
+    public Technician(UUID technicianId, User user) {
+        this.technicianId = technicianId;
+        this.user = user;
     }
 
     // Getter / Setter
