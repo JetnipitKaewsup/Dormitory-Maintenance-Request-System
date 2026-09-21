@@ -8,7 +8,7 @@ public class Reporter {
     // PK
     @Id 
     @GeneratedValue (strategy = GenerationType.UUID)
-    private UUID reperterId;
+    private UUID reporterId;
     // FK
     @OneToOne 
     @JoinColumn (name = "userId")
