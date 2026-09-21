@@ -11,6 +11,14 @@ public class Resident {
     @GeneratedValue(strategy = GenerationType.UUID)
     private UUID residentId;
 
+    // FK
+    /*
+     * @ManyToOne
+     * 
+     * @JoinColumn(name = "dormitoryId")
+     * private Dormitory dormitory;
+     */
+
     @ManyToOne
     @JoinColumn(name = "roomNo")
     private Room room;
@@ -19,52 +27,4 @@ public class Resident {
     private String lastName;
     private String phoneNo;
     
-    // Constructor
-    public Resident(Room room, String firstName, String lastName, String phoneNo) {
-        this.room = room;
-        this.firstName = firstName;
-        this.lastName = lastName;
-        this.phoneNo = phoneNo;
-    }
-
-    public UUID getResidentId() {
-        return residentId;
-    }
-
-    public void setResidentId(UUID residentId) {
-        this.residentId = residentId;
-    }
-
-    public Room getRoom() {
-        return room;
-    }
-
-    public void setRoom(Room room) {
-        this.room = room;
-    }
-
-    public String getFirstName() {
-        return firstName;
-    }
-
-    public void setFirstName(String firstName) {
-        this.firstName = firstName;
-    }
-
-    public String getLastName() {
-        return lastName;
-    }
-
-    public void setLastName(String lastName) {
-        this.lastName = lastName;
-    }
-
-    public String getPhoneNo() {
-        return phoneNo;
-    }
-
-    public void setPhoneNo(String phoneNo) {
-        this.phoneNo = phoneNo;
-    }
-
 }
