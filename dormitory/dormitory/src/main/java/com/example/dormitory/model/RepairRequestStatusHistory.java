@@ -1,11 +1,13 @@
 package com.example.dormitory.model;
 
+import com.example.dormitory.model.RepairRequest;
+import com.example.dormitory.model.User;
 import jakarta.persistence.*;
 import java.time.LocalDateTime;
 import java.util.UUID;
 
 @Entity
-@Table(name = "repair_request_status_history")
+@Table(name = "RepairRequestStatusHistory")
 public class RepairRequestStatusHistory {
 
     @Id
@@ -13,11 +15,11 @@ public class RepairRequestStatusHistory {
     private UUID requestHistoryId;
 
     @ManyToOne(optional = false)
-    @JoinColumn(name = "repair_request_id", nullable = false)
+    @JoinColumn(name = "repairRequestId", nullable = false)
     private RepairRequest repairRequest;
 
     @ManyToOne(optional = false)
-    @JoinColumn(name = "change_by", nullable = false)
+    @JoinColumn(name = "changeBy", nullable = false)
     private User changeBy;
 
     @Column(nullable = false)
@@ -31,6 +33,19 @@ public class RepairRequestStatusHistory {
     public RepairRequestStatusHistory() {
     }
 
+    public RepairRequestStatusHistory(UUID requestHistoryId,
+                                    RepairRequest repairRequest,
+                                    User changeBy,
+                                    String newStatus,
+                                    String previousStatus,
+                                    LocalDateTime changeDate) {
+        this.requestHistoryId = requestHistoryId;
+        this.repairRequest = repairRequest;
+        this.changeBy = changeBy;
+        this.newStatus = newStatus;
+        this.previousStatus = previousStatus;
+        this.changeDate = changeDate;
+    }
     // Getter / Setter
 
     public UUID getRequestHistoryId() {
