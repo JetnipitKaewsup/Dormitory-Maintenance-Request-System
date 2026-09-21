@@ -33,22 +33,26 @@
 	<dependencies>
 		<!-- JPA / Hibernate -->
 		<dependency>
+				<!-- JPA / Hibernate -->
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-data-jpa</artifactId>
 		</dependency>
 		<!-- Spring MVC / Controller -->
 		<dependency>
+		<!-- Spring MVC / Controller -->
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-webmvc</artifactId>
 		</dependency>
 		<!-- JPA Test -->
 		<dependency>
+		<!-- JPA Test -->
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-data-jpa-test</artifactId>
 			<scope>test</scope>
 		</dependency>
 		<!-- Web MVC Test -->
 		<dependency>
+		<!-- Web MVC Test -->
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-webmvc-test</artifactId>
 			<scope>test</scope>
