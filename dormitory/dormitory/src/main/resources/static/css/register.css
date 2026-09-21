@@ -18,8 +18,6 @@
   --shadow-sm: 0 4px 12px rgba(15, 23, 42, 0.06);
 
   --shadow-lg: 0 25px 60px rgba(15, 23, 42, 0.18);
-
-  --radius: 16px;
 }
 
 /* =========================================
@@ -30,6 +28,7 @@
   box-sizing: border-box;
 
   margin: 0;
+
   padding: 0;
 }
 
@@ -106,6 +105,7 @@ a {
 
 .brand svg {
   width: 24px;
+
   height: 24px;
 
   color: var(--primary);
@@ -205,13 +205,17 @@ a {
 }
 
 /* =========================================
-   LOGIN MODAL
+   REGISTER MODAL
    ========================================= */
 
-.login-modal {
+.register-modal {
   width: 100%;
 
-  max-width: 440px;
+  max-width: 500px;
+
+  max-height: 90vh;
+
+  overflow-y: auto;
 
   position: relative;
 
@@ -318,6 +322,10 @@ a {
   color: white;
 }
 
+.register-icon {
+  background: linear-gradient(135deg, #6366f1, #8b5cf6);
+}
+
 .modal-icon svg {
   width: 28px;
 
@@ -337,15 +345,27 @@ a {
 }
 
 /* =========================================
-   FORM
+   REGISTER FORM
    ========================================= */
 
-.login-form {
+.register-form {
   display: flex;
 
   flex-direction: column;
 
   gap: 17px;
+}
+
+/* =========================================
+   NAME ROW
+   ========================================= */
+
+.name-row {
+  display: grid;
+
+  grid-template-columns: 1fr 1fr;
+
+  gap: 14px;
 }
 
 .form-group {
@@ -463,48 +483,48 @@ a {
 }
 
 /* =========================================
-   FORM OPTIONS
+   TERMS
    ========================================= */
 
-.form-options {
+.terms-checkbox {
   display: flex;
 
-  align-items: center;
+  align-items: flex-start;
 
-  justify-content: space-between;
+  gap: 10px;
 
   font-size: 13px;
-}
 
-.remember {
-  display: flex;
-
-  align-items: center;
-
-  gap: 7px;
+  line-height: 1.5;
 
   color: var(--text-secondary);
 
   cursor: pointer;
+
+  margin-top: 4px;
 }
 
-.remember input {
-  width: 15px;
+.terms-checkbox input {
+  width: 16px;
 
-  height: 15px;
+  height: 16px;
+
+  margin-top: 2px;
 
   accent-color: var(--primary);
 
   cursor: pointer;
+
+  flex-shrink: 0;
 }
 
-.form-options a {
+.terms-checkbox a {
   color: var(--primary);
 
   font-weight: 600;
 }
 
-.form-options a:hover {
+.terms-checkbox a:hover {
   text-decoration: underline;
 }
 
@@ -579,6 +599,28 @@ a {
 }
 
 /* =========================================
+   REGISTER SCROLLBAR
+   ========================================= */
+
+.register-modal::-webkit-scrollbar {
+  width: 6px;
+}
+
+.register-modal::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.register-modal::-webkit-scrollbar-thumb {
+  background: #cbd5e1;
+
+  border-radius: 10px;
+}
+
+.register-modal::-webkit-scrollbar-thumb:hover {
+  background: #94a3b8;
+}
+
+/* =========================================
    MOBILE
    ========================================= */
 
@@ -601,11 +643,24 @@ a {
     padding: 12px;
   }
 
-  .login-modal {
+  .register-modal {
     width: calc(100% - 12px);
+
+    max-height: 92vh;
 
     padding: 27px 22px;
 
     border-radius: 20px;
+  }
+
+  /* First Name / Last Name */
+  .name-row {
+    grid-template-columns: 1fr;
+
+    gap: 17px;
+  }
+
+  .terms-checkbox {
+    font-size: 12px;
   }
 }
