@@ -24,11 +24,11 @@ public class Reporter {
     }
 
     public UUID getReperterId() {
-        return reperterId;
+        return reporterId;
     }
 
     public void setReperterId(UUID reperterId) {
-        this.reperterId = reperterId;
+        this.reporterId = reperterId;
     }
 
     public User getUser() {
