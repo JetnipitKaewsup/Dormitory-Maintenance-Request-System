@@ -21,7 +21,7 @@ public class Reporter {
     private Resident resident;
 
     public Reporter(){
-        
+
     }
 
     public Reporter(User user, Resident resident) {
@@ -29,11 +29,11 @@ public class Reporter {
         this.resident = resident;
     }
 
-    public UUID getReperterId() {
+    public UUID getReporterId() {
         return reporterId;
     }
 
-    public void setReperterId(UUID reperterId) {
+    public void setReporterId(UUID reperterId) {
         this.reporterId = reperterId;
     }
 
