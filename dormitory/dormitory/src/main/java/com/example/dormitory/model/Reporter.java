@@ -4,6 +4,8 @@ import java.util.UUID;
 
 import jakarta.persistence.*;
 
+@Entity
+@Table(name = "reporter")
 public class Reporter {
     // PK
     @Id 
@@ -17,6 +19,10 @@ public class Reporter {
     @OneToOne 
     @JoinColumn (name = "residentId")
     private Resident resident;
+
+    public Reporter(){
+        
+    }
 
     public Reporter(User user, Resident resident) {
         this.user = user;
