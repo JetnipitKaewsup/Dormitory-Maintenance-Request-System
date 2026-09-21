@@ -1,0 +1,302 @@
+<!doctype html>
+<html lang="th" xmlns:th="http://www.thymeleaf.org">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <title>สมัครสมาชิก - DormCare</title>
+
+    <link rel="stylesheet" th:href="@{/css/register.css}" />
+
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+  </head>
+
+  <body>
+    <!-- ================= NAVBAR ================= -->
+
+    <nav class="navbar">
+      <div class="nav-container">
+        <a th:href="@{/}" class="brand">
+          <i data-lucide="wrench"></i>
+          <span>DormCare</span>
+        </a>
+
+        <div class="nav-actions">
+          <a th:href="@{/login}" class="login-trigger"> เข้าสู่ระบบ </a>
+        </div>
+      </div>
+    </nav>
+
+    <!-- ================= REGISTER PAGE ================= -->
+
+    <main class="auth-page">
+      <div class="auth-backdrop">
+        <div class="register-modal">
+          <!-- CLOSE -->
+
+          <a th:href="@{/}" class="modal-close" aria-label="ปิด">
+            <i data-lucide="x"></i>
+          </a>
+
+          <!-- HEADER -->
+
+          <div class="modal-header">
+            <div class="modal-icon register-icon">
+              <i data-lucide="user-plus"></i>
+            </div>
+
+            <h2>สร้างบัญชีใหม่</h2>
+
+            <p>สมัครสมาชิกเพื่อใช้งาน DormCare</p>
+          </div>
+
+          <!-- REGISTER FORM -->
+
+          <form
+            th:action="@{/register}"
+            th:object="${registerRequest}"
+            method="post"
+            class="register-form"
+          >
+            <!-- ================= NAME ================= -->
+
+            <div class="name-row">
+              <!-- FIRST NAME -->
+
+              <div class="form-group">
+                <label for="firstName"> First Name </label>
+
+                <div class="input-wrapper">
+                  <i data-lucide="user-round"></i>
+
+                  <input
+                    id="firstName"
+                    th:field="*{firstName}"
+                    type="text"
+                    placeholder="ชื่อ"
+                    autocomplete="given-name"
+                    required
+                  />
+                </div>
+              </div>
+
+              <!-- LAST NAME -->
+
+              <div class="form-group">
+                <label for="lastName"> Last Name </label>
+
+                <div class="input-wrapper">
+                  <i data-lucide="user-round"></i>
+
+                  <input
+                    id="lastName"
+                    th:field="*{lastName}"
+                    type="text"
+                    placeholder="นามสกุล"
+                    autocomplete="family-name"
+                    required
+                  />
+                </div>
+              </div>
+            </div>
+
+            <!-- ================= USERNAME ================= -->
+
+            <div class="form-group">
+              <label for="username"> Username </label>
+
+              <div class="input-wrapper">
+                <i data-lucide="user"></i>
+
+                <input
+                  id="username"
+                  th:field="*{username}"
+                  type="text"
+                  placeholder="ตั้ง Username"
+                  autocomplete="username"
+                  required
+                />
+              </div>
+            </div>
+
+            <!-- ================= EMAIL ================= -->
+
+            <div class="form-group">
+              <label for="email"> Email </label>
+
+              <div class="input-wrapper">
+                <i data-lucide="mail"></i>
+
+                <input
+                  id="email"
+                  th:field="*{email}"
+                  type="email"
+                  placeholder="example@email.com"
+                  autocomplete="email"
+                  required
+                />
+              </div>
+            </div>
+
+            <!-- ================= ROOM NUMBER ================= -->
+
+            <div class="form-group">
+              <label for="roomNumber"> Room Number </label>
+
+              <div class="input-wrapper">
+                <i data-lucide="door-open"></i>
+
+                <input
+                  id="roomNumber"
+                  th:field="*{roomNumber}"
+                  type="text"
+                  placeholder="เช่น A101"
+                  required
+                />
+              </div>
+            </div>
+
+            <!-- ================= PASSWORD ================= -->
+
+            <div class="form-group">
+              <label for="password"> Password </label>
+
+              <div class="input-wrapper">
+                <i data-lucide="lock"></i>
+
+                <input
+                  id="password"
+                  th:field="*{password}"
+                  type="password"
+                  placeholder="สร้างรหัสผ่าน"
+                  autocomplete="new-password"
+                  required
+                />
+
+                <button
+                  type="button"
+                  class="password-toggle"
+                  onclick="togglePassword()"
+                  aria-label="แสดงรหัสผ่าน"
+                >
+                  <i data-lucide="eye" id="passwordIcon"></i>
+                </button>
+              </div>
+            </div>
+
+            <!-- ================= CONFIRM PASSWORD ================= -->
+
+            <div class="form-group">
+              <label for="confirmPassword"> Confirm Password </label>
+
+              <div class="input-wrapper">
+                <i data-lucide="lock-keyhole"></i>
+
+                <input
+                  id="confirmPassword"
+                  th:field="*{confirmPassword}"
+                  type="password"
+                  placeholder="ยืนยันรหัสผ่าน"
+                  autocomplete="new-password"
+                  required
+                />
+
+                <button
+                  type="button"
+                  class="password-toggle"
+                  onclick="toggleConfirmPassword()"
+                  aria-label="แสดงรหัสผ่าน"
+                >
+                  <i data-lucide="eye" id="confirmPasswordIcon"></i>
+                </button>
+              </div>
+            </div>
+
+            <!-- ================= TERMS ================= -->
+
+            <label class="terms-checkbox">
+              <input type="checkbox" name="terms" required />
+
+              <span>
+                ฉันยอมรับ
+
+                <a href="#"> เงื่อนไขการใช้งาน </a>
+
+                และ
+
+                <a href="#"> นโยบายความเป็นส่วนตัว </a>
+              </span>
+            </label>
+
+            <!-- ================= REGISTER BUTTON ================= -->
+
+            <button type="submit" class="submit-button">
+              <span> สร้างบัญชี </span>
+
+              <i data-lucide="user-plus"></i>
+            </button>
+          </form>
+
+          <!-- ================= FOOTER ================= -->
+
+          <div class="modal-footer">
+            <span> มีบัญชีอยู่แล้ว? </span>
+
+            <a th:href="@{/login}"> เข้าสู่ระบบ </a>
+          </div>
+        </div>
+      </div>
+    </main>
+
+    <!-- ================= JAVASCRIPT ================= -->
+
+    <script>
+      lucide.createIcons();
+
+      // =========================
+      // PASSWORD
+      // =========================
+
+      function togglePassword() {
+        const password = document.getElementById("password");
+
+        const icon = document.getElementById("passwordIcon");
+
+        if (password.type === "password") {
+          password.type = "text";
+
+          icon.setAttribute("data-lucide", "eye-off");
+        } else {
+          password.type = "password";
+
+          icon.setAttribute("data-lucide", "eye");
+        }
+
+        lucide.createIcons();
+      }
+
+      // =========================
+      // CONFIRM PASSWORD
+      // =========================
+
+      function toggleConfirmPassword() {
+        const password = document.getElementById("confirmPassword");
+
+        const icon = document.getElementById("confirmPasswordIcon");
+
+        if (password.type === "password") {
+          password.type = "text";
+
+          icon.setAttribute("data-lucide", "eye-off");
+        } else {
+          password.type = "password";
+
+          icon.setAttribute("data-lucide", "eye");
+        }
+
+        lucide.createIcons();
+      }
+    </script>
+  </body>
+</html>
