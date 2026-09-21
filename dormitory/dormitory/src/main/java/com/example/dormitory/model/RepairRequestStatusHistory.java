@@ -5,7 +5,7 @@ import java.time.LocalDateTime;
 import java.util.UUID;
 
 @Entity
-@Table(name = "RepairRequestStatusHistory")
+@Table(name = "repair_request_status_history")
 public class RepairRequestStatusHistory {
 
     @Id
@@ -13,11 +13,11 @@ public class RepairRequestStatusHistory {
     private UUID requestHistoryId;
 
     @ManyToOne(optional = false)
-    @JoinColumn(name = "repairRequestId ", nullable = false)
+    @JoinColumn(name = "repair_request_id", nullable = false)
     private RepairRequest repairRequest;
 
     @ManyToOne(optional = false)
-    @JoinColumn(name = "changeBy", nullable = false)
+    @JoinColumn(name = "change_by", nullable = false)
     private User changeBy;
 
     @Column(nullable = false)
@@ -28,22 +28,8 @@ public class RepairRequestStatusHistory {
     @Column(nullable = false)
     private LocalDateTime changeDate;
 
-public RepairRequestStatusHistory() {
-}
-
-public RepairRequestStatusHistory(UUID requestHistoryId,
-                                  RepairRequest repairRequest,
-                                  User changeBy,
-                                  String newStatus,
-                                  String previousStatus,
-                                  LocalDateTime changeDate) {
-                                  this.requestHistoryId = requestHistoryId;
-                                   this.repairRequest = repairRequest;
-                                   this.changeBy = changeBy;
-                                   this.newStatus = newStatus;
-                                   this.previousStatus = previousStatus;
-                                   this.changeDate = changeDate;
-}
+    public RepairRequestStatusHistory() {
+    }
 
     // Getter / Setter
 

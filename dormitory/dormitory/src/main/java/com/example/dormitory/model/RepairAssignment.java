@@ -5,7 +5,7 @@ import java.time.LocalDateTime;
 import java.util.UUID;
 
 @Entity
-@Table(name = "RepairAssignment")
+@Table(name = "repair_assignment")
 public class RepairAssignment {
 
     @Id
@@ -13,15 +13,15 @@ public class RepairAssignment {
     private UUID assignmentId;
 
     @ManyToOne(optional = false)
-    @JoinColumn(name = "repairRequestId", nullable = false)
+    @JoinColumn(name = "repair_request_id", nullable = false)
     private RepairRequest repairRequest;
 
     @ManyToOne(optional = false)
-    @JoinColumn(name = "technicianId", nullable = false)
+    @JoinColumn(name = "technician_id", nullable = false)
     private Technician technician;
 
     @ManyToOne(optional = false)
-    @JoinColumn(name = "adminId", nullable = false)
+    @JoinColumn(name = "admin_id", nullable = false)
     private Admin admin;
 
     @Column(nullable = false)
@@ -36,21 +36,6 @@ public class RepairAssignment {
     public RepairAssignment() {
     }
 
-    public RepairAssignment(UUID assignmentId,
-                            RepairRequest repairRequest,
-                            Technician technician,
-                            Admin admin,
-                            String jobStatus,
-                            String note,
-                            LocalDateTime assignDate) {
-        this.assignmentId = assignmentId;
-        this.repairRequest = repairRequest;
-        this.technician = technician;
-        this.admin = admin;
-        this.jobStatus = jobStatus;
-        this.note = note;
-        this.assignDate = assignDate;
-    }
     // Getter / Setter
 
     public UUID getAssignmentId() {
