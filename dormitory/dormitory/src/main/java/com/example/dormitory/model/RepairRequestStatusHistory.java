@@ -30,6 +30,15 @@ public class RepairRequestStatusHistory {
 
     public RepairRequestStatusHistory() {
     }
+    public RepairRequestStatusHistory(RepairRequest repairRequest, User changeBy,
+                                       String newStatus, String previousStatus,
+                                       LocalDateTime changeDate) {
+        this.repairRequest = repairRequest;
+        this.changeBy = changeBy;
+        this.newStatus = newStatus;
+        this.previousStatus = previousStatus;
+        this.changeDate = changeDate;
+    }  
 
     // Getter / Setter
 

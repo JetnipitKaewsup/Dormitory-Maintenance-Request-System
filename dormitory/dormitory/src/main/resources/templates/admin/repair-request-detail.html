@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="th" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>รายละเอียดคำร้องแจ้งซ่อม</title>
+    <style>
+        body { font-family: 'Sarabun', sans-serif; margin: 40px; background: #f5f7fa; }
+        .card { background: white; border-radius: 8px; padding: 24px; max-width: 640px; margin: auto; box-shadow: 0 1px 4px rgba(0,0,0,.1); }
+        .badge { display:inline-block; padding:4px 12px; border-radius:12px; color:white; font-size:14px; }
+        .SUBMITTED { background:#f59e0b; }
+        .APPROVED { background:#3b82f6; }
+        .REJECTED { background:#ef4444; }
+        .IN_PROGRESS { background:#8b5cf6; }
+        .COMPLETED { background:#10b981; }
+        .CANCELLED { background:#6b7280; }
+        table.info td { padding:6px 8px; vertical-align:top; }
+        table.info td:first-child { color:#64748b; width:160px; }
+        .actions { margin-top: 24px; display:flex; gap:12px; }
+        button.approve { background:#16a34a; color:white; border:none; padding:10px 20px; border-radius:6px; cursor:pointer; }
+        button.reject { background:#dc2626; color:white; border:none; padding:10px 20px; border-radius:6px; cursor:pointer; }
+        textarea { width:100%; padding:8px; border-radius:6px; border:1px solid #cbd5e1; margin-top:8px; }
+    </style>
+</head>
+<body>
+<div class="card">
+    <h2>รายละเอียดคำร้องแจ้งซ่อม</h2>
+
+    <p>
+        สถานะ:
+        <span class="badge" th:classappend="${request.status}" th:text="${request.status}"></span>
+    </p>
+
+    <table class="info">
+        <tr>
+            <td>ผู้แจ้ง</td>
+            <td th:text="${request.reporter.resident.firstName} + ' ' + ${request.reporter.resident.lastName}"></td>
+        </tr>
+        <tr>
+            <td>เบอร์โทร</td>
+            <td th:text="${request.reporter.resident.phoneNo}"></td>
+        </tr>
+        <tr>
+            <td>ห้อง</td>
+            <td th:text="${request.room.roomNo}"></td>
+        </tr>
+        <tr>
+            <td>ประเภทงานซ่อม</td>
+            <td th:text="${request.repairType}"></td>
+        </tr>
+        <tr>
+            <td>รายละเอียดอาการ</td>
+            <td th:text="${request.description}"></td>
+        </tr>
+        <tr>
+            <td>หมายเหตุ</td>
+            <td th:text="${request.remark} ?: '-'"></td>
+        </tr>
+        <tr>
+            <td>ช่วงเวลาที่สะดวก</td>
+            <td th:text="${#temporals.format(request.startDateTime, 'HH:mm')} + ' - ' + ${#temporals.format(request.endDateTime, 'HH:mm')}"></td>
+        </tr>
+    </table>
+
+    <!-- ปุ่ม อนุมัติ/ปฏิเสธ แสดงเฉพาะตอนสถานะยังเป็น SUBMITTED เท่านั้น -->
+    <div class="actions" th:if="${request.status == 'SUBMITTED'}">
+        <form th:action="@{/admin/requests/{id}/approve(id=${request.repairRequestId})}" method="post">
+            <button type="submit" class="approve">✅ อนุมัติ</button>
+        </form>
+
+        <form th:action="@{/admin/requests/{id}/reject(id=${request.repairRequestId})}" method="post">
+            <textarea name="reason" placeholder="เหตุผลที่ปฏิเสธ (ถ้ามี)"></textarea>
+            <button type="submit" class="reject">❌ ปฏิเสธ</button>
+        </form>
+    </div>
+</div>
+</body>
+</html>
