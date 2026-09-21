@@ -1,0 +1,167 @@
+<!doctype html>
+<html lang="th" xmlns:th="http://www.thymeleaf.org">
+  <head>
+    <meta charset="UTF-8" />
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <title>เข้าสู่ระบบ - DormCare</title>
+
+    <link rel="stylesheet" th:href="@{/css/login.css}" />
+
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+  </head>
+
+  <body>
+    <!-- ================= NAVBAR ================= -->
+
+    <nav class="navbar">
+      <div class="nav-container">
+        <a href="/" class="brand">
+          <i data-lucide="wrench"></i>
+
+          <span>DormCare</span>
+        </a>
+
+        <div class="nav-actions">
+          <a href="/register" class="login-trigger"> สมัครสมาชิก </a>
+        </div>
+      </div>
+    </nav>
+
+    <!-- ================= LOGIN PAGE ================= -->
+
+    <main class="auth-page">
+      <div class="auth-backdrop">
+        <div class="login-modal">
+          <!-- CLOSE -->
+
+          <a href="/" class="modal-close" aria-label="ปิด">
+            <i data-lucide="x"></i>
+          </a>
+
+          <!-- HEADER -->
+
+          <div class="modal-header">
+            <div class="modal-icon">
+              <i data-lucide="shield-check"></i>
+            </div>
+
+            <h2>ยินดีต้อนรับกลับ</h2>
+
+            <p>เข้าสู่ระบบ DormCare</p>
+          </div>
+
+          <!-- LOGIN FORM -->
+
+          <form
+            th:action="@{/login}"
+            th:object="${loginRequest}"
+            method="post"
+            class="login-form"
+          >
+            <!-- USERNAME -->
+
+            <div class="form-group">
+              <label for="username"> Username </label>
+
+              <div class="input-wrapper">
+                <i data-lucide="user"></i>
+
+                <input
+                  id="username"
+                  type="text"
+                  th:field="*{username}"
+                  placeholder="กรอก Username"
+                  autocomplete="username"
+                  required
+                />
+              </div>
+            </div>
+
+            <!-- PASSWORD -->
+
+            <div class="form-group">
+              <label for="password"> Password </label>
+
+              <div class="input-wrapper">
+                <i data-lucide="lock"></i>
+
+                <input
+                  id="password"
+                  type="password"
+                  th:field="*{password}"
+                  placeholder="กรอก Password"
+                  autocomplete="current-password"
+                  required
+                />
+
+                <button
+                  type="button"
+                  class="password-toggle"
+                  onclick="togglePassword()"
+                  aria-label="แสดงรหัสผ่าน"
+                >
+                  <i data-lucide="eye" id="passwordIcon"></i>
+                </button>
+              </div>
+            </div>
+
+            <!-- OPTIONS -->
+
+            <div class="form-options">
+              <label class="remember">
+                <input type="checkbox" name="remember" />
+
+                <span> จดจำฉัน </span>
+              </label>
+
+              <a href="#"> ลืมรหัสผ่าน? </a>
+            </div>
+
+            <!-- LOGIN BUTTON -->
+
+            <button type="submit" class="submit-button">
+              <span> เข้าสู่ระบบ </span>
+
+              <i data-lucide="arrow-right"></i>
+            </button>
+          </form>
+
+          <!-- FOOTER -->
+
+          <div class="modal-footer">
+            <span> ยังไม่มีบัญชี? </span>
+
+            <a href="/register"> สมัครสมาชิก </a>
+          </div>
+        </div>
+      </div>
+    </main>
+
+    <!-- ================= JAVASCRIPT ================= -->
+
+    <script>
+      lucide.createIcons();
+
+      function togglePassword() {
+        const password = document.getElementById("password");
+
+        const icon = document.getElementById("passwordIcon");
+
+        if (password.type === "password") {
+          password.type = "text";
+
+          icon.setAttribute("data-lucide", "eye-off");
+        } else {
+          password.type = "password";
+
+          icon.setAttribute("data-lucide", "eye");
+        }
+
+        lucide.createIcons();
+      }
+    </script>
+  </body>
+</html>

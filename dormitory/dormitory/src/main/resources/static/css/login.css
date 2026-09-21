@@ -1,0 +1,611 @@
+/* =========================================
+   ROOT
+   ========================================= */
+
+:root {
+  --primary: #6366f1;
+  --primary-dark: #4f46e5;
+  --secondary: #8b5cf6;
+
+  --text: #0f172a;
+  --text-secondary: #64748b;
+
+  --background: #f8fafc;
+  --white: #ffffff;
+
+  --border: #e2e8f0;
+
+  --shadow-sm: 0 4px 12px rgba(15, 23, 42, 0.06);
+
+  --shadow-lg: 0 25px 60px rgba(15, 23, 42, 0.18);
+
+  --radius: 16px;
+}
+
+/* =========================================
+   RESET
+   ========================================= */
+
+* {
+  box-sizing: border-box;
+
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: Inter, "Noto Sans Thai", "Segoe UI", Arial, sans-serif;
+
+  background: var(--background);
+
+  color: var(--text);
+
+  min-height: 100vh;
+}
+
+button,
+input {
+  font-family: inherit;
+}
+
+button {
+  cursor: pointer;
+}
+
+a {
+  text-decoration: none;
+}
+
+/* =========================================
+   NAVBAR
+   ========================================= */
+
+.navbar {
+  width: 100%;
+
+  background: rgba(255, 255, 255, 0.88);
+
+  backdrop-filter: blur(16px);
+
+  -webkit-backdrop-filter: blur(16px);
+
+  border-bottom: 1px solid rgba(226, 232, 240, 0.8);
+
+  position: relative;
+
+  z-index: 10;
+}
+
+.nav-container {
+  max-width: 1200px;
+
+  margin: 0 auto;
+
+  padding: 18px 32px;
+
+  display: flex;
+
+  align-items: center;
+
+  justify-content: space-between;
+}
+
+.brand {
+  display: flex;
+
+  align-items: center;
+
+  gap: 10px;
+
+  color: var(--text);
+
+  font-size: 21px;
+
+  font-weight: 750;
+}
+
+.brand svg {
+  width: 24px;
+  height: 24px;
+
+  color: var(--primary);
+}
+
+.nav-actions {
+  display: flex;
+
+  align-items: center;
+
+  gap: 14px;
+}
+
+/* =========================================
+   NAV BUTTON
+   ========================================= */
+
+.login-trigger {
+  display: inline-flex;
+
+  align-items: center;
+
+  justify-content: center;
+
+  border: none;
+
+  background: var(--primary);
+
+  color: white;
+
+  padding: 11px 20px;
+
+  border-radius: 11px;
+
+  font-size: 14px;
+
+  font-weight: 650;
+
+  transition:
+    transform 0.2s ease,
+    background 0.2s ease,
+    box-shadow 0.2s ease;
+}
+
+.login-trigger:hover {
+  background: var(--primary-dark);
+
+  transform: translateY(-1px);
+
+  box-shadow: 0 8px 20px rgba(99, 102, 241, 0.25);
+}
+
+/* =========================================
+   AUTH PAGE
+   ========================================= */
+
+.auth-page {
+  min-height: calc(100vh - 82px);
+
+  position: relative;
+
+  display: flex;
+
+  align-items: center;
+
+  justify-content: center;
+
+  padding: 20px;
+}
+
+/* =========================================
+   POPUP BACKDROP
+   ========================================= */
+
+.auth-backdrop {
+  position: fixed;
+
+  inset: 0;
+
+  z-index: 100;
+
+  display: flex;
+
+  align-items: center;
+
+  justify-content: center;
+
+  padding: 20px;
+
+  background: rgba(15, 23, 42, 0.55);
+
+  backdrop-filter: blur(8px);
+
+  -webkit-backdrop-filter: blur(8px);
+
+  overflow-y: auto;
+}
+
+/* =========================================
+   LOGIN MODAL
+   ========================================= */
+
+.login-modal {
+  width: 100%;
+
+  max-width: 440px;
+
+  position: relative;
+
+  padding: 34px;
+
+  background: white;
+
+  border-radius: 24px;
+
+  box-shadow: 0 30px 80px rgba(15, 23, 42, 0.28);
+
+  animation: popupIn 0.25s ease;
+}
+
+/* =========================================
+   POPUP ANIMATION
+   ========================================= */
+
+@keyframes popupIn {
+  from {
+    opacity: 0;
+
+    transform: translateY(20px) scale(0.97);
+  }
+
+  to {
+    opacity: 1;
+
+    transform: translateY(0) scale(1);
+  }
+}
+
+/* =========================================
+   CLOSE BUTTON
+   ========================================= */
+
+.modal-close {
+  position: absolute;
+
+  top: 18px;
+
+  right: 18px;
+
+  width: 36px;
+
+  height: 36px;
+
+  display: flex;
+
+  align-items: center;
+
+  justify-content: center;
+
+  border: none;
+
+  background: #f1f5f9;
+
+  color: #64748b;
+
+  border-radius: 10px;
+
+  transition: 0.2s ease;
+}
+
+.modal-close:hover {
+  background: #e2e8f0;
+
+  color: var(--text);
+}
+
+.modal-close svg {
+  width: 18px;
+
+  height: 18px;
+}
+
+/* =========================================
+   MODAL HEADER
+   ========================================= */
+
+.modal-header {
+  text-align: center;
+
+  margin-bottom: 25px;
+}
+
+.modal-icon {
+  width: 58px;
+
+  height: 58px;
+
+  margin: 0 auto 16px;
+
+  display: flex;
+
+  align-items: center;
+
+  justify-content: center;
+
+  border-radius: 16px;
+
+  background: linear-gradient(135deg, #6366f1, #8b5cf6);
+
+  color: white;
+}
+
+.modal-icon svg {
+  width: 28px;
+
+  height: 28px;
+}
+
+.modal-header h2 {
+  font-size: 25px;
+
+  margin-bottom: 7px;
+}
+
+.modal-header p {
+  color: var(--text-secondary);
+
+  font-size: 14px;
+}
+
+/* =========================================
+   FORM
+   ========================================= */
+
+.login-form {
+  display: flex;
+
+  flex-direction: column;
+
+  gap: 17px;
+}
+
+.form-group {
+  display: flex;
+
+  flex-direction: column;
+
+  gap: 7px;
+}
+
+.form-group label {
+  color: var(--text);
+
+  font-size: 13px;
+
+  font-weight: 650;
+}
+
+/* =========================================
+   INPUT
+   ========================================= */
+
+.input-wrapper {
+  position: relative;
+
+  display: flex;
+
+  align-items: center;
+}
+
+.input-wrapper > svg {
+  position: absolute;
+
+  left: 14px;
+
+  width: 18px;
+
+  height: 18px;
+
+  color: #94a3b8;
+
+  pointer-events: none;
+}
+
+.input-wrapper input {
+  width: 100%;
+
+  height: 46px;
+
+  padding: 0 44px 0 43px;
+
+  border: 1px solid var(--border);
+
+  border-radius: 11px;
+
+  outline: none;
+
+  background: white;
+
+  color: var(--text);
+
+  font-size: 14px;
+
+  transition: 0.2s ease;
+}
+
+.input-wrapper input::placeholder {
+  color: #94a3b8;
+}
+
+.input-wrapper input:focus {
+  border-color: var(--primary);
+
+  box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
+}
+
+/* =========================================
+   PASSWORD TOGGLE
+   ========================================= */
+
+.password-toggle {
+  position: absolute;
+
+  right: 10px;
+
+  width: 32px;
+
+  height: 32px;
+
+  display: flex;
+
+  align-items: center;
+
+  justify-content: center;
+
+  border: none;
+
+  background: transparent;
+
+  color: #94a3b8;
+
+  border-radius: 8px;
+}
+
+.password-toggle:hover {
+  background: #f1f5f9;
+
+  color: var(--primary);
+}
+
+.password-toggle svg {
+  width: 17px;
+
+  height: 17px;
+}
+
+/* =========================================
+   FORM OPTIONS
+   ========================================= */
+
+.form-options {
+  display: flex;
+
+  align-items: center;
+
+  justify-content: space-between;
+
+  font-size: 13px;
+}
+
+.remember {
+  display: flex;
+
+  align-items: center;
+
+  gap: 7px;
+
+  color: var(--text-secondary);
+
+  cursor: pointer;
+}
+
+.remember input {
+  width: 15px;
+
+  height: 15px;
+
+  accent-color: var(--primary);
+
+  cursor: pointer;
+}
+
+.form-options a {
+  color: var(--primary);
+
+  font-weight: 600;
+}
+
+.form-options a:hover {
+  text-decoration: underline;
+}
+
+/* =========================================
+   SUBMIT BUTTON
+   ========================================= */
+
+.submit-button {
+  width: 100%;
+
+  min-height: 47px;
+
+  display: flex;
+
+  align-items: center;
+
+  justify-content: center;
+
+  gap: 9px;
+
+  border: none;
+
+  border-radius: 11px;
+
+  background: linear-gradient(135deg, #6366f1, #8b5cf6);
+
+  color: white;
+
+  font-size: 14px;
+
+  font-weight: 700;
+
+  transition: 0.2s ease;
+}
+
+.submit-button:hover {
+  transform: translateY(-1px);
+
+  box-shadow: 0 10px 25px rgba(99, 102, 241, 0.25);
+}
+
+.submit-button svg {
+  width: 17px;
+
+  height: 17px;
+}
+
+/* =========================================
+   FOOTER
+   ========================================= */
+
+.modal-footer {
+  margin-top: 22px;
+
+  text-align: center;
+
+  color: var(--text-secondary);
+
+  font-size: 13px;
+}
+
+.modal-footer a {
+  color: var(--primary);
+
+  font-weight: 700;
+
+  margin-left: 4px;
+}
+
+.modal-footer a:hover {
+  text-decoration: underline;
+}
+
+/* =========================================
+   MOBILE
+   ========================================= */
+
+@media (max-width: 480px) {
+  .nav-container {
+    padding: 16px 20px;
+  }
+
+  .brand {
+    font-size: 18px;
+  }
+
+  .login-trigger {
+    padding: 10px 15px;
+
+    font-size: 13px;
+  }
+
+  .auth-backdrop {
+    padding: 12px;
+  }
+
+  .login-modal {
+    width: calc(100% - 12px);
+
+    padding: 27px 22px;
+
+    border-radius: 20px;
+  }
+}
