@@ -1,5 +1,10 @@
 package com.example.dormitory.controller;
 
+import com.example.dormitory.dto.LoginRequest;
+import com.example.dormitory.dto.RegisterRequest;
+import com.example.dormitory.dto.SupabaseAuthResponse;
+import com.example.dormitory.service.AuthService;
+import jakarta.servlet.http.HttpSession;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -9,6 +14,15 @@ import org.springframework.web.bind.annotation.PostMapping;
 @Controller
 public class AuthController {
 
+    private final AuthService authService;
+
+    public AuthController(AuthService authService) {
+        this.authService = authService;
+    }
+
+    // =========================
+    // LOGIN PAGE
+    // =========================
 
     @GetMapping("/login")
     public String showLoginPage(Model model) {
@@ -21,7 +35,6 @@ public class AuthController {
         return "login";
     }
 
-
     // =========================
     // LOGIN PROCESS
     // =========================
@@ -29,17 +42,36 @@ public class AuthController {
     @PostMapping("/login")
     public String processLogin(
             @ModelAttribute LoginRequest loginRequest,
+            HttpSession session,
             Model model) {
 
-        // Logic to authenticate would go here
-        System.out.println(
-                "Username: " + loginRequest.getUsername()
-        );
+        try {
 
-        // For demo, just return to the same page
-        return "login";
+            SupabaseAuthResponse response =
+                    authService.login(loginRequest);
+
+            session.setAttribute(
+                    "accessToken",
+                    response.getAccess_token()
+            );
+
+            session.setAttribute(
+                    "refreshToken",
+                    response.getRefresh_token()
+            );
+
+            return "redirect:/";
+
+        } catch (Exception e) {
+
+            model.addAttribute(
+                    "error",
+                    "Invalid email or password"
+            );
+
+            return "login";
+        }
     }
-
 
     // =========================
     // REGISTER PAGE
@@ -56,7 +88,6 @@ public class AuthController {
         return "register";
     }
 
-
     // =========================
     // REGISTER PROCESS
     // =========================
@@ -66,156 +97,20 @@ public class AuthController {
             @ModelAttribute RegisterRequest registerRequest,
             Model model) {
 
-        // Print submitted information
-        System.out.println(
-                "First Name: " + registerRequest.getFirstName()
-        );
+        try {
 
-        System.out.println(
-                "Last Name: " + registerRequest.getLastName()
-        );
+            authService.register(registerRequest);
 
-        System.out.println(
-                "Username: " + registerRequest.getUsername()
-        );
+            return "redirect:/login";
 
-        System.out.println(
-                "Email: " + registerRequest.getEmail()
-        );
+        } catch (Exception e) {
 
-        System.out.println(
-                "Room Address: " + registerRequest.getRoomAddress()
-        );
+            model.addAttribute(
+                    "error",
+                    e.getMessage()
+            );
 
-        System.out.println(
-                "Room Number: " + registerRequest.getRoomNumber()
-        );
-
-
-        // For demo, redirect to login
-        return "redirect:/login";
-    }
-
-
-    // =========================
-    // LOGIN REQUEST
-    // =========================
-
-    public static class LoginRequest {
-
-        private String username;
-        private String password;
-
-
-        public String getUsername() {
-            return username;
-        }
-
-
-        public void setUsername(String username) {
-            this.username = username;
-        }
-
-
-        public String getPassword() {
-            return password;
-        }
-
-
-        public void setPassword(String password) {
-            this.password = password;
-        }
-    }
-
-    public static class RegisterRequest {
-
-        private String firstName;
-        private String lastName;
-        private String username;
-        private String email;
-        private String roomAddress;
-        private String roomNumber;
-        private String password;
-        private String confirmPassword;
-
-
-        public String getFirstName() {
-            return firstName;
-        }
-
-
-        public void setFirstName(String firstName) {
-            this.firstName = firstName;
-        }
-
-
-        public String getLastName() {
-            return lastName;
-        }
-
-
-        public void setLastName(String lastName) {
-            this.lastName = lastName;
-        }
-
-
-        public String getUsername() {
-            return username;
-        }
-
-
-        public void setUsername(String username) {
-            this.username = username;
-        }
-
-
-        public String getEmail() {
-            return email;
-        }
-
-
-        public void setEmail(String email) {
-            this.email = email;
-        }
-
-
-        public String getRoomAddress() {
-            return roomAddress;
-        }
-
-
-        public void setRoomAddress(String roomAddress) {
-            this.roomAddress = roomAddress;
-        }
-
-
-        public String getRoomNumber() {
-            return roomNumber;
-        }
-
-
-        public void setRoomNumber(String roomNumber) {
-            this.roomNumber = roomNumber;
-        }
-
-
-        public String getPassword() {
-            return password;
-        }
-
-
-        public void setPassword(String password) {
-            this.password = password;
-        }
-
-
-        public String getConfirmPassword() {
-            return confirmPassword;
-        }
-
-
-        public void setConfirmPassword(String confirmPassword) {
-            this.confirmPassword = confirmPassword;
+            return "register";
         }
     }
 }
