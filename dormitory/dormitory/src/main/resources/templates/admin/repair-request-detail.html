@@ -198,26 +198,26 @@
     <div class="card">
         <div class="stepper">
             <div class="step"
-                 th:classappend="${repairRequest.status == 'SUBMITTED' or repairRequest.status == 'APPROVED'
-                                   or repairRequest.status == 'IN_PROGRESS' or repairRequest.status == 'COMPLETED'} ? 'done' : ''">
+                 th:classappend="${request.status == 'SUBMITTED' or request.status == 'APPROVED'
+                                   or request.status == 'IN_PROGRESS' or request.status == 'COMPLETED'} ? 'done' : ''">
                 <div class="dot"></div>
                 <div class="label">SUBMITTED</div>
-                <div class="sub" th:text="${#temporals.format(repairRequest.startDateTime, 'd MMM yyyy')}">-</div>
+                <div class="sub" th:text="${#temporals.format(request.startDateTime, 'd MMM yyyy')}">-</div>
             </div>
             <div class="step"
-                 th:classappend="${repairRequest.status == 'SUBMITTED'} ? 'current' :
-                                  (${repairRequest.status == 'APPROVED' or repairRequest.status == 'IN_PROGRESS' or repairRequest.status == 'COMPLETED'} ? 'done' : '')">
+                 th:classappend="${request.status == 'SUBMITTED'} ? 'current' :
+                                  (${request.status == 'APPROVED' or request.status == 'IN_PROGRESS' or request.status == 'COMPLETED'} ? 'done' : '')">
                 <div class="dot"></div>
                 <div class="label">APPROVED</div>
             </div>
             <div class="step"
-                 th:classappend="${repairRequest.status == 'IN_PROGRESS'} ? 'current' :
-                                  (${repairRequest.status == 'COMPLETED'} ? 'done' : '')">
+                 th:classappend="${request.status == 'IN_PROGRESS'} ? 'current' :
+                                  (${request.status == 'COMPLETED'} ? 'done' : '')">
                 <div class="dot"></div>
                 <div class="label">IN-PROGRESS</div>
             </div>
             <div class="step"
-                 th:classappend="${repairRequest.status == 'COMPLETED'} ? 'done current' : ''">
+                 th:classappend="${request.status == 'COMPLETED'} ? 'done current' : ''">
                 <div class="dot"></div>
                 <div class="label">COMPLETED</div>
             </div>
@@ -228,15 +228,15 @@
     <div class="card">
         <div class="detail-head">
             <div>
-                <div class="req-code" th:text="${repairRequest.repairRequestId}">UUID</div>
+                <div class="req-code" th:text="${request.repairRequestId}">UUID</div>
                 <div class="req-title">คำร้องแจ้งซ่อม</div>
             </div>
             <span class="badge"
-                  th:classappend="${repairRequest.status == 'SUBMITTED'} ? 'pending' :
-                                   (${repairRequest.status == 'APPROVED'} ? 'approved' :
-                                   (${repairRequest.status == 'REJECTED'} ? 'rejected' :
-                                   (${repairRequest.status == 'IN_PROGRESS'} ? 'inprogress' : 'completed')))"
-                  th:text="${repairRequest.status == 'SUBMITTED'} ? 'รออนุมัติ / ปฏิเสธ' : ${repairRequest.status}">
+                  th:classappend="${request.status == 'SUBMITTED'} ? 'pending' :
+                                   (${request.status == 'APPROVED'} ? 'approved' :
+                                   (${request.status == 'REJECTED'} ? 'rejected' :
+                                   (${request.status == 'IN_PROGRESS'} ? 'inprogress' : 'completed')))"
+                  th:text="${request.status == 'SUBMITTED'} ? 'รออนุมัติ / ปฏิเสธ' : ${request.status}">
                 สถานะ
             </span>
         </div>
@@ -249,28 +249,28 @@
                     <div class="info-item">
                         <div class="label">ชื่อ - นามสกุล</div>
                         <div class="value"
-                             th:text="${repairRequest.reporter.user.firstName} + ' ' + ${repairRequest.reporter.user.lastName}">-</div>
+                             th:text="${request.reporter.user.firstName} + ' ' + ${request.reporter.user.lastName}">-</div>
                     </div>
                     <div class="info-item">
                         <div class="label">เบอร์โทรศัพท์</div>
-                        <div class="value" th:text="${repairRequest.reporter.user.phoneNo}">-</div>
+                        <div class="value" th:text="${request.reporter.user.phoneNo}">-</div>
                     </div>
                 </div>
                 <div class="info-row">
                     <div class="info-item">
                         <div class="label">ตึก</div>
-                        <div class="value" th:text="${repairRequest.room.building.buildingName}">-</div>
+                        <div class="value" th:text="${request.room.building.buildingName}">-</div>
                     </div>
                     <div class="info-item">
                         <div class="label">ห้อง</div>
-                        <div class="value" th:text="${repairRequest.room.roomNo}">-</div>
+                        <div class="value" th:text="${request.room.roomNo}">-</div>
                     </div>
                     <div class="info-item">
                         <div class="label">วัน เวลาที่แจ้ง</div>
                         <div class="value">
-                            <span th:text="${#temporals.format(repairRequest.startDateTime, 'd MMMM HH:mm')}">-</span>
+                            <span th:text="${#temporals.format(request.startDateTime, 'd MMMM HH:mm')}">-</span>
                             น. -
-                            <span th:text="${#temporals.format(repairRequest.endDateTime, 'HH:mm')}">-</span> น.
+                            <span th:text="${#temporals.format(request.endDateTime, 'HH:mm')}">-</span> น.
                         </div>
                     </div>
                 </div>
@@ -280,36 +280,36 @@
             <div class="info-block">
                 <h3>รายละเอียดงานซ่อม</h3>
                 <div class="label" style="margin-bottom:6px;">ประเภทงานซ่อม</div>
-                <span class="repair-type-chip" th:text="${repairRequest.repairType}">-</span>
+                <span class="repair-type-chip" th:text="${request.repairType}">-</span>
             </div>
         </div>
 
         <div class="desc-block" style="margin-top:20px;">
             <div class="label">รายละเอียดปัญหา</div>
-            <div class="value" th:text="${repairRequest.description}">-</div>
+            <div class="value" th:text="${request.description}">-</div>
         </div>
 
-        <div class="desc-block" style="margin-top:12px;" th:if="${repairRequest.remark != null and !repairRequest.remark.isEmpty()}">
+        <div class="desc-block" style="margin-top:12px;" th:if="${request.remark != null and !request.remark.isEmpty()}">
             <div class="label">หมายเหตุจากผู้แจ้ง</div>
-            <div class="value" th:text="${repairRequest.remark}">-</div>
+            <div class="value" th:text="${request.remark}">-</div>
         </div>
 
         <!-- ============ Actions: only when still pending ============ -->
-        <div th:if="${repairRequest.status == 'SUBMITTED'}">
-            <form th:action="@{/admin/requests/{id}/reject(id=${repairRequest.repairRequestId})}" method="post">
+        <div th:if="${request.status == 'SUBMITTED'}">
+            <form th:action="@{/admin/requests/{id}/reject(id=${request.repairRequestId})}" method="post">
                 <textarea class="remark-box" name="remark" placeholder="เหตุผลที่ปฏิเสธ (ถ้ามี)"></textarea>
             </form>
 
             <div class="actions">
                 <div class="left">
-                    <form th:action="@{/admin/requests/{id}/approve(id=${repairRequest.repairRequestId})}" method="post">
+                    <form th:action="@{/admin/requests/{id}/approve(id=${request.repairRequestId})}" method="post">
                         <button type="submit" class="btn-approve">อนุมัติคำร้อง</button>
                     </form>
-                    <form th:action="@{/admin/requests/{id}/reject(id=${repairRequest.repairRequestId})}" method="post">
+                    <form th:action="@{/admin/requests/{id}/reject(id=${request.repairRequestId})}" method="post">
                         <button type="submit" class="btn-reject">ปฏิเสธคำร้อง</button>
                     </form>
                 </div>
-                <a th:href="@{/admin/requests/{id}/assign(id=${repairRequest.repairRequestId})}" class="btn btn-outline">
+                <a th:href="@{/admin/requests/{id}/assign(id=${request.repairRequestId})}" class="btn btn-outline">
                     มอบหมายงานให้ช่าง &rarr;
                 </a>
             </div>
