@@ -1,14 +1,11 @@
 package com.example.dormitory.model;
 
-import com.example.dormitory.Reporter;
-import com.example.dormitory.Admin;
-import com.example.dormitory.Room;
 import jakarta.persistence.*;
 import java.time.LocalDateTime;
 import java.util.UUID;
 
 @Entity
-@Table(name = "RepairRequest")
+@Table(name = "repair_request")
 public class RepairRequest {
 
     @Id
@@ -16,15 +13,15 @@ public class RepairRequest {
     private UUID repairRequestId;
 
     @ManyToOne(optional = false)
-    @JoinColumn(name = "reporterId", nullable = false)
+    @JoinColumn(name = "reporter_id", nullable = false)
     private Reporter reporter;
 
     @ManyToOne
-    @JoinColumn(name = "adminId")
+    @JoinColumn(name = "admin_id")
     private Admin admin;
 
     @ManyToOne(optional = false)
-    @JoinColumn(name = "roomNo", nullable = false)
+    @JoinColumn(name = "room_no", nullable = false)
     private Room room;
 
     @Column(nullable = false)
@@ -44,22 +41,6 @@ public class RepairRequest {
     private LocalDateTime endDateTime;
 
     public RepairRequest() {
-    }
-
-    public RepairRequest(UUID repairRequestId, Reporter reporter, Admin admin,
-                        Room room, String repairType, String status,
-                        String description, String remark,
-                        LocalDateTime startDateTime, LocalDateTime endDateTime) {
-        this.repairRequestId = repairRequestId;
-        this.reporter = reporter;
-        this.admin = admin;
-        this.room = room;
-        this.repairType = repairType;
-        this.status = status;
-        this.description = description;
-        this.remark = remark;
-        this.startDateTime = startDateTime;
-        this.endDateTime = endDateTime;
     }
 
     // Getter / Setter
