@@ -27,6 +27,8 @@ public class Resident {
         this.lastName = lastName;
         this.phoneNo = phoneNo;
     }
+        public Resident() {
+    }
 
     public UUID getResidentId() {
         return residentId;
