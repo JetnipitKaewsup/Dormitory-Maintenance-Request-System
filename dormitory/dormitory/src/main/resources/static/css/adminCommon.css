@@ -1,0 +1,162 @@
+/* ===================================================================
+   adminCommon.css — ใช้ร่วมกันทุกหน้าฝั่ง admin
+   วางไฟล์นี้ที่: src/main/resources/static/css/adminCommon.css
+   แล้ว link ในทุกหน้าด้วย: <link rel="stylesheet" th:href="@{/css/adminCommon.css}">
+   =================================================================== */
+
+* { box-sizing: border-box; margin: 0; padding: 0; font-family: "Sarabun", "Segoe UI", sans-serif; }
+body { background: #f3f5f7; color: #222; }
+
+/* ---------- Brand colors ---------- */
+:root {
+    --color-primary: #2F9442;      /* เขียว: อนุมัติ / สำเร็จ */
+    --color-primary-hover: #267a37;
+    --color-danger: #CA2F2F;       /* แดง: ปฏิเสธ / อันตราย */
+    --color-danger-hover: #a82626;
+    --color-border: #d5d9de;
+    --color-muted: #8a8f98;
+}
+
+/* ---------- Header ---------- */
+header.topbar {
+    background: var(--color-primary);
+    color: #fff;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 14px 28px;
+}
+header.topbar .brand { font-size: 20px; font-weight: 600; }
+header.topbar .right { display: flex; align-items: center; gap: 16px; }
+
+/* ชื่อ+ตำแหน่ง ในกรอบ pill พร้อม avatar */
+header.topbar .user-chip {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    background: rgba(255,255,255,0.15);
+    border: 1px solid rgba(255,255,255,0.35);
+    border-radius: 24px;
+    padding: 6px 16px 6px 8px;
+}
+header.topbar .avatar {
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    background: #ddd;
+    flex-shrink: 0;
+}
+header.topbar .user-info {
+    text-align: left;
+    line-height: 1.25;
+}
+header.topbar .user-info .user-name { font-size: 14px; font-weight: 700; color: #fff; }
+header.topbar .user-info .user-role { font-size: 12px; color: rgba(255,255,255,0.85); }
+
+header.topbar .icon-btn {
+    background: none;
+    border: none;
+    color: #fff;
+    font-size: 18px;
+    cursor: pointer;
+    width: 36px; height: 36px;
+    border-radius: 50%;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    text-decoration: none;
+    transition: background 0.15s ease;
+}
+header.topbar .icon-btn:hover { background: rgba(255,255,255,0.18); }
+
+/* ---------- Nav tabs ---------- */
+nav.tabs {
+    background: #fff;
+    display: flex;
+    gap: 32px;
+    padding: 0 28px;
+    border-bottom: 1px solid #e2e5e9;
+}
+nav.tabs a {
+    display: inline-block;
+    padding: 14px 4px;
+    text-decoration: none;
+    color: var(--color-muted);
+    font-weight: 500;
+    border-bottom: 3px solid transparent;
+    transition: color 0.15s ease, border-color 0.15s ease;
+}
+nav.tabs a:hover { color: var(--color-primary); }
+nav.tabs a.active {
+    color: var(--color-primary);
+    border-bottom-color: var(--color-primary);
+    font-weight: 600;
+}
+
+/* ---------- Layout helpers ---------- */
+main { padding: 24px 28px 60px; max-width: 1100px; margin: 0 auto; }
+h1.page-title { font-size: 22px; font-weight: 700; margin-bottom: 18px; }
+
+.card {
+    background: #fff;
+    border-radius: 10px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.06);
+    padding: 24px;
+    margin-bottom: 20px;
+}
+
+/* ---------- Badges ---------- */
+.badge {
+    display: inline-block;
+    padding: 6px 14px;
+    border-radius: 20px;
+    font-size: 13px;
+    font-weight: 600;
+}
+.badge.pending     { background: #fdf1d8; color: #9a6b12; }
+.badge.approved    { background: #e4f5e8; color: var(--color-primary); }
+.badge.rejected    { background: #fbe6e6; color: var(--color-danger); }
+.badge.inprogress  { background: #e3ecfb; color: #2b57a8; }
+.badge.completed   { background: #e4f5e8; color: var(--color-primary); }
+
+/* ---------- Buttons ---------- */
+button, .btn {
+    border: none;
+    border-radius: 8px;
+    padding: 10px 20px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.15s ease, box-shadow 0.15s ease, transform 0.05s ease;
+}
+button:active, .btn:active { transform: translateY(1px); }
+
+.btn-approve { background: var(--color-primary); color: #fff; }
+.btn-approve:hover { background: var(--color-primary-hover); box-shadow: 0 2px 8px rgba(47,148,66,0.35); }
+
+.btn-reject { background: var(--color-danger); color: #fff; }
+.btn-reject:hover { background: var(--color-danger-hover); box-shadow: 0 2px 8px rgba(202,47,47,0.35); }
+
+.btn-outline {
+    background: #fff;
+    border: 1px solid var(--color-border);
+    color: #222;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+}
+.btn-outline:hover { background: #f5f6f8; border-color: #b8bcc2; }
+
+textarea.remark-box {
+    width: 100%;
+    border: 1px solid var(--color-border);
+    border-radius: 8px;
+    padding: 10px;
+    font-size: 14px;
+    resize: vertical;
+    min-height: 44px;
+    margin-bottom: 12px;
+    transition: border-color 0.15s ease;
+}
+textarea.remark-box:focus { outline: none; border-color: var(--color-primary); }

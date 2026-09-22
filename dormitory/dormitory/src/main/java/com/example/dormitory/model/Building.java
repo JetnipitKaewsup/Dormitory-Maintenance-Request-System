@@ -18,6 +18,9 @@ public class Building {
     private String buildingName;
     private int totalFloor;
 
+    public Building() {
+    }
+
     public int getBuildingNo() {
         return buildingNo;
     }
