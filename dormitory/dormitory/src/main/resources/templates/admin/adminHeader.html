@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<!--
+    admin/adminHeader.html
+    วางไฟล์นี้ที่: src/main/resources/templates/admin/adminHeader.html
+
+    วิธีใช้ในหน้าอื่นๆ:
+    <div th:replace="~{admin/adminHeader :: header('requests')}"></div>
+
+    พารามิเตอร์ activeTab รับค่า: 'requests' | 'assignments' | 'inspections'
+    ใช้กำหนดว่าแท็บไหนใน nav ควรถูกไฮไลต์ (class active)
+-->
+<body>
+<div th:fragment="header(activeTab)">
+    <header class="topbar">
+        <div class="brand">Dormitory Repair System</div>
+        <div class="right">
+            <!-- ลำดับ: ชื่อ+ตำแหน่ง -> แจ้งเตือน -> ออกจากระบบ -->
+            <div class="user-chip">
+                <span class="avatar"></span>
+                <div class="user-info">
+                    <div class="user-name" th:text="${session.userFullName} ?: 'ผู้ใช้งาน'">ชื่อผู้ใช้</div>
+                    <div class="user-role" th:text="${session.role} ?: '-'">ตำแหน่ง</div>
+                </div>
+            </div>
+            <button class="icon-btn" type="button" title="การแจ้งเตือน">&#128276;</button>
+            <a class="icon-btn" th:href="@{/logout}" title="ออกจากระบบ">&#9211;</a>
+        </div>
+    </header>
+
+    <nav class="tabs">
+        <a th:href="@{/admin/requests}" th:classappend="${activeTab == 'requests'} ? 'active' : ''">คำร้อง</a>
+        <a th:href="@{/admin/assignments}" th:classappend="${activeTab == 'assignments'} ? 'active' : ''">มอบหมายงาน</a>
+        <a th:href="@{/admin/inspections}" th:classappend="${activeTab == 'inspections'} ? 'active' : ''">ตรวจงาน</a>
+    </nav>
+</div>
+</body>
+</html>
