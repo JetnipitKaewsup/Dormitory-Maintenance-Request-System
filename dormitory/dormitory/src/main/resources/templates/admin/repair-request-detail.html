@@ -3,193 +3,12 @@
 <head>
     <meta charset="UTF-8">
     <title>รายละเอียดคำร้องแจ้งซ่อม</title>
-    <style>
-        * { box-sizing: border-box; margin: 0; padding: 0; font-family: "Sarabun", "Segoe UI", sans-serif; }
-        body { background: #f3f5f7; color: #222; }
-
-        /* ---------- Header ---------- */
-        header.topbar {
-            background: #2f7a52;
-            color: #fff;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            padding: 14px 28px;
-        }
-        header.topbar .brand { font-size: 20px; font-weight: 600; }
-        header.topbar .right { display: flex; align-items: center; gap: 18px; }
-        header.topbar .user-chip {
-            background: rgba(255,255,255,0.15);
-            border-radius: 20px;
-            padding: 6px 14px 6px 8px;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            font-size: 13px;
-            line-height: 1.3;
-        }
-        header.topbar .avatar {
-            width: 28px; height: 28px; border-radius: 50%;
-            background: #ddd;
-            display: inline-block;
-        }
-        header.topbar .icon-btn {
-            background: none; border: none; color: #fff; font-size: 18px; cursor: pointer;
-        }
-
-        /* ---------- Nav tabs ---------- */
-        nav.tabs {
-            background: #fff;
-            display: flex;
-            gap: 32px;
-            padding: 0 28px;
-            border-bottom: 1px solid #e2e5e9;
-        }
-        nav.tabs a {
-            display: inline-block;
-            padding: 14px 4px;
-            text-decoration: none;
-            color: #8a8f98;
-            font-weight: 500;
-            border-bottom: 3px solid transparent;
-        }
-        nav.tabs a.active {
-            color: #2f7a52;
-            border-bottom-color: #2f7a52;
-            font-weight: 600;
-        }
-
-        /* ---------- Page content ---------- */
-        main { padding: 24px 28px 60px; max-width: 1100px; margin: 0 auto; }
-        h1.page-title { font-size: 22px; font-weight: 700; margin-bottom: 18px; }
-
-        .card {
-            background: #fff;
-            border-radius: 10px;
-            box-shadow: 0 1px 3px rgba(0,0,0,0.06);
-            padding: 24px;
-            margin-bottom: 20px;
-        }
-
-        /* ---------- Status stepper ---------- */
-        .stepper { display: flex; align-items: flex-start; justify-content: space-between; margin-bottom: 4px; }
-        .step { flex: 1; text-align: center; position: relative; }
-        .step:not(:last-child)::after {
-            content: "";
-            position: absolute;
-            top: 11px; left: 55%; right: -45%;
-            height: 2px;
-            background: #e2e5e9;
-            z-index: 0;
-        }
-        .step.done:not(:last-child)::after { background: #2f7a52; }
-        .step .dot {
-            width: 22px; height: 22px; border-radius: 50%;
-            border: 2px solid #d5d9de;
-            background: #fff;
-            margin: 0 auto 8px;
-            position: relative; z-index: 1;
-        }
-        .step.done .dot { background: #2f7a52; border-color: #2f7a52; }
-        .step.current .dot { border-color: #2f7a52; box-shadow: 0 0 0 3px rgba(47,122,82,0.15); }
-        .step .label { font-size: 13px; font-weight: 700; letter-spacing: .3px; color: #b6bac1; }
-        .step.done .label, .step.current .label { color: #222; }
-        .step .sub { font-size: 12px; color: #9aa0a6; margin-top: 2px; }
-
-        /* ---------- Detail header row ---------- */
-        .detail-head { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 18px; }
-        .req-code { font-size: 13px; color: #8a8f98; margin-bottom: 4px; }
-        .req-title { font-size: 18px; font-weight: 700; }
-        .badge {
-            display: inline-block;
-            padding: 6px 14px;
-            border-radius: 20px;
-            font-size: 13px;
-            font-weight: 600;
-        }
-        .badge.pending { background: #fdf1d8; color: #9a6b12; }
-        .badge.approved { background: #e2f3e8; color: #2f7a52; }
-        .badge.rejected { background: #fbe5e5; color: #b23434; }
-        .badge.inprogress { background: #e3ecfb; color: #2b57a8; }
-        .badge.completed { background: #e2f3e8; color: #2f7a52; }
-
-        /* ---------- Info grid ---------- */
-        .info-grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 24px 40px;
-        }
-        .info-block h3 { font-size: 15px; font-weight: 700; margin-bottom: 12px; }
-        .info-row { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px 20px; margin-bottom: 14px; }
-        .info-item .label { font-size: 12px; color: #8a8f98; margin-bottom: 3px; }
-        .info-item .value { font-size: 14px; font-weight: 600; }
-        .desc-block { margin-top: 4px; }
-        .desc-block .label { font-size: 12px; color: #8a8f98; margin-bottom: 4px; }
-        .desc-block .value { font-size: 14px; }
-        .repair-type-chip {
-            display: inline-block;
-            border: 1px solid #d5d9de;
-            border-radius: 6px;
-            padding: 4px 10px;
-            font-size: 13px;
-        }
-
-        /* ---------- Actions ---------- */
-        .actions { display: flex; justify-content: space-between; align-items: center; margin-top: 22px; }
-        .actions .left { display: flex; gap: 12px; }
-        button, .btn {
-            border: none;
-            border-radius: 8px;
-            padding: 10px 20px;
-            font-size: 14px;
-            font-weight: 600;
-            cursor: pointer;
-        }
-        .btn-approve { background: #2f7a52; color: #fff; }
-        .btn-reject { background: #d64545; color: #fff; }
-        .btn-outline {
-            background: #fff;
-            border: 1px solid #d5d9de;
-            color: #222;
-            text-decoration: none;
-            display: inline-flex;
-            align-items: center;
-            gap: 6px;
-        }
-        textarea.remark-box {
-            width: 100%;
-            border: 1px solid #d5d9de;
-            border-radius: 8px;
-            padding: 10px;
-            font-size: 14px;
-            resize: vertical;
-            min-height: 44px;
-            margin-bottom: 12px;
-        }
-    </style>
+    <link rel="stylesheet" th:href="@{/css/adminCommon.css}">
+    <link rel="stylesheet" th:href="@{/css/repair-request-detail.css}">
 </head>
 <body>
 
-<header class="topbar">
-    <div class="brand">Dormitory Repair System</div>
-    <div class="right">
-        <button class="icon-btn" title="การแจ้งเตือน">&#128276;</button>
-        <div class="user-chip">
-            <span class="avatar"></span>
-            <span>
-                <span th:text="${session.adminName} ?: 'แอดมิน'">แอดมิน</span><br>
-                <small>แอดมิน</small>
-            </span>
-        </div>
-        <a class="icon-btn" th:href="@{/logout}" title="ออกจากระบบ" style="text-decoration:none;">&#10148;</a>
-    </div>
-</header>
-
-<nav class="tabs">
-    <a href="#" class="active">คำร้อง</a>
-    <a th:href="@{/admin/assignments}">มอบหมายงาน</a>
-    <a th:href="@{/admin/inspections}">ตรวจงาน</a>
-</nav>
+<div th:replace="~{admin/adminHeader :: header('requests')}"></div>
 
 <main>
     <h1 class="page-title">รายละเอียดคำร้องแจ้งซ่อม</h1>
@@ -197,30 +16,54 @@
     <!-- ============ Status stepper ============ -->
     <div class="card">
         <div class="stepper">
-            <div class="step"
-                 th:classappend="${request.status == 'SUBMITTED' or request.status == 'APPROVED'
-                                   or request.status == 'IN_PROGRESS' or request.status == 'COMPLETED'} ? 'done' : ''">
-                <div class="dot"></div>
+            <!-- 1. SUBMITTED: done เสมอ ยกเว้นยังไม่ส่งจริง (ในทางปฏิบัติจะ done ตลอดเพราะมีคำร้องแล้วถึงเข้ามาหน้านี้) -->
+            <div class="step done">
+                <div class="dot">&#10003;</div>
                 <div class="label">SUBMITTED</div>
                 <div class="sub" th:text="${#temporals.format(request.startDateTime, 'd MMM yyyy')}">-</div>
             </div>
+
+            <!-- 2. PENDING: สถานะระหว่างรอแอดมินตัดสินใจ (คือตอนที่ status ในฐานข้อมูลยังเป็น SUBMITTED) -->
             <div class="step"
                  th:classappend="${request.status == 'SUBMITTED'} ? 'current' :
-                                  (${request.status == 'APPROVED' or request.status == 'IN_PROGRESS' or request.status == 'COMPLETED'} ? 'done' : '')">
+                                  (${request.status == 'REJECTED' or request.status == 'CANCELLED'} ? 'rejected' :
+                                  'done')">
+                <div class="dot"></div>
+                <div class="label">PENDING</div>
+            </div>
+
+            <!-- 3. APPROVED -->
+            <div class="step"
+                 th:classappend="${request.status == 'APPROVED'} ? 'current' :
+                                  (${request.status == 'IN_PROGRESS' or request.status == 'COMPLETED'} ? 'done' : '')">
                 <div class="dot"></div>
                 <div class="label">APPROVED</div>
             </div>
+
+            <!-- 4. IN-PROGRESS -->
             <div class="step"
                  th:classappend="${request.status == 'IN_PROGRESS'} ? 'current' :
                                   (${request.status == 'COMPLETED'} ? 'done' : '')">
                 <div class="dot"></div>
                 <div class="label">IN-PROGRESS</div>
             </div>
-            <div class="step"
-                 th:classappend="${request.status == 'COMPLETED'} ? 'done current' : ''">
+
+            <!-- 5. COMPLETED -->
+            <div class="step" th:classappend="${request.status == 'COMPLETED'} ? 'done current' : ''">
                 <div class="dot"></div>
                 <div class="label">COMPLETED</div>
             </div>
+        </div>
+
+        <!-- ============ บอกสถานะปัจจุบันเป็นข้อความชัดเจน ============ -->
+        <div class="current-status-line" th:switch="${request.status}">
+            <span th:case="'SUBMITTED'">สถานะปัจจุบัน: <b>รออนุมัติจากแอดมิน</b></span>
+            <span th:case="'APPROVED'">สถานะปัจจุบัน: <b>อนุมัติแล้ว รอมอบหมายงานให้ช่าง</b></span>
+            <span th:case="'REJECTED'">สถานะปัจจุบัน: <b style="color:var(--color-danger)">ถูกปฏิเสธคำร้อง</b></span>
+            <span th:case="'IN_PROGRESS'">สถานะปัจจุบัน: <b>ช่างกำลังดำเนินการซ่อม</b></span>
+            <span th:case="'COMPLETED'">สถานะปัจจุบัน: <b>ซ่อมเสร็จสิ้นแล้ว</b></span>
+            <span th:case="'CANCELLED'">สถานะปัจจุบัน: <b style="color:var(--color-danger)">ยกเลิกคำร้อง</b></span>
+            <span th:case="*">สถานะปัจจุบัน: <b th:text="${request.status}">-</b></span>
         </div>
     </div>
 
@@ -234,7 +77,7 @@
             <span class="badge"
                   th:classappend="${request.status == 'SUBMITTED'} ? 'pending' :
                                    (${request.status == 'APPROVED'} ? 'approved' :
-                                   (${request.status == 'REJECTED'} ? 'rejected' :
+                                   (${request.status == 'REJECTED' or request.status == 'CANCELLED'} ? 'rejected' :
                                    (${request.status == 'IN_PROGRESS'} ? 'inprogress' : 'completed')))"
                   th:text="${request.status == 'SUBMITTED'} ? 'รออนุมัติ / ปฏิเสธ' : ${request.status}">
                 สถานะ
@@ -296,16 +139,14 @@
 
         <!-- ============ Actions: only when still pending ============ -->
         <div th:if="${request.status == 'SUBMITTED'}">
-            <form th:action="@{/admin/requests/{id}/reject(id=${request.repairRequestId})}" method="post">
-                <textarea class="remark-box" name="remark" placeholder="เหตุผลที่ปฏิเสธ (ถ้ามี)"></textarea>
-            </form>
+            <textarea class="remark-box" form="reject-form" name="remark" placeholder="เหตุผลที่ปฏิเสธ (ถ้ามี)"></textarea>
 
             <div class="actions">
                 <div class="left">
                     <form th:action="@{/admin/requests/{id}/approve(id=${request.repairRequestId})}" method="post">
                         <button type="submit" class="btn-approve">อนุมัติคำร้อง</button>
                     </form>
-                    <form th:action="@{/admin/requests/{id}/reject(id=${request.repairRequestId})}" method="post">
+                    <form id="reject-form" th:action="@{/admin/requests/{id}/reject(id=${request.repairRequestId})}" method="post">
                         <button type="submit" class="btn-reject">ปฏิเสธคำร้อง</button>
                     </form>
                 </div>
