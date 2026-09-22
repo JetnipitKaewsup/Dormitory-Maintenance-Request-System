@@ -5,7 +5,7 @@ import java.time.LocalDateTime;
 import java.util.UUID;
 
 @Entity
-@Table(name = "repair_request_status_history")
+@Table(name = "RepairRequestStatusHistory")
 public class RepairRequestStatusHistory {
 
     @Id
@@ -13,11 +13,11 @@ public class RepairRequestStatusHistory {
     private UUID requestHistoryId;
 
     @ManyToOne(optional = false)
-    @JoinColumn(name = "repair_request_id", nullable = false)
+    @JoinColumn(name = "repairRequestId", nullable = false)
     private RepairRequest repairRequest;
 
     @ManyToOne(optional = false)
-    @JoinColumn(name = "change_by", nullable = false)
+    @JoinColumn(name = "changeBy", nullable = false)
     private User changeBy;
 
     @Column(nullable = false)
