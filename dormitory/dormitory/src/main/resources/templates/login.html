@@ -2,7 +2,6 @@
 <html lang="th" xmlns:th="http://www.thymeleaf.org">
   <head>
     <meta charset="UTF-8" />
-
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
     <title>เข้าสู่ระบบ - DormCare</title>
@@ -15,12 +14,10 @@
 
   <body>
     <!-- ================= NAVBAR ================= -->
-
     <nav class="navbar">
       <div class="nav-container">
         <a href="/" class="brand">
           <i data-lucide="wrench"></i>
-
           <span>DormCare</span>
         </a>
 
@@ -31,18 +28,15 @@
     </nav>
 
     <!-- ================= LOGIN PAGE ================= -->
-
     <main class="auth-page">
       <div class="auth-backdrop">
         <div class="login-modal">
           <!-- CLOSE -->
-
           <a href="/" class="modal-close" aria-label="ปิด">
             <i data-lucide="x"></i>
           </a>
 
           <!-- HEADER -->
-
           <div class="modal-header">
             <div class="modal-icon">
               <i data-lucide="shield-check"></i>
@@ -53,35 +47,35 @@
             <p>เข้าสู่ระบบ DormCare</p>
           </div>
 
-          <!-- LOGIN FORM -->
+          <!-- ERROR MESSAGE -->
+          <div th:if="${error}" class="error-message" th:text="${error}"></div>
 
+          <!-- LOGIN FORM -->
           <form
             th:action="@{/login}"
             th:object="${loginRequest}"
             method="post"
             class="login-form"
           >
-            <!-- USERNAME -->
-
+            <!-- ================= EMAIL ================= -->
             <div class="form-group">
-              <label for="username"> Username </label>
+              <label for="email"> Email </label>
 
               <div class="input-wrapper">
-                <i data-lucide="user"></i>
+                <i data-lucide="mail"></i>
 
                 <input
-                  id="username"
-                  type="text"
-                  th:field="*{username}"
-                  placeholder="กรอก Username"
-                  autocomplete="username"
+                  id="email"
+                  type="email"
+                  th:field="*{email}"
+                  placeholder="กรอก Email"
+                  autocomplete="email"
                   required
                 />
               </div>
             </div>
 
-            <!-- PASSWORD -->
-
+            <!-- ================= PASSWORD ================= -->
             <div class="form-group">
               <label for="password"> Password </label>
 
@@ -103,13 +97,12 @@
                   onclick="togglePassword()"
                   aria-label="แสดงรหัสผ่าน"
                 >
-                  <i data-lucide="eye" id="passwordIcon"></i>
+                  <i data-lucide="eye" id="passwordIcon"> </i>
                 </button>
               </div>
             </div>
 
-            <!-- OPTIONS -->
-
+            <!-- ================= OPTIONS ================= -->
             <div class="form-options">
               <label class="remember">
                 <input type="checkbox" name="remember" />
@@ -120,8 +113,7 @@
               <a href="#"> ลืมรหัสผ่าน? </a>
             </div>
 
-            <!-- LOGIN BUTTON -->
-
+            <!-- ================= LOGIN BUTTON ================= -->
             <button type="submit" class="submit-button">
               <span> เข้าสู่ระบบ </span>
 
@@ -129,8 +121,7 @@
             </button>
           </form>
 
-          <!-- FOOTER -->
-
+          <!-- ================= FOOTER ================= -->
           <div class="modal-footer">
             <span> ยังไม่มีบัญชี? </span>
 
@@ -141,10 +132,11 @@
     </main>
 
     <!-- ================= JAVASCRIPT ================= -->
-
     <script>
+      // Initialize Lucide Icons
       lucide.createIcons();
 
+      // Toggle password visibility
       function togglePassword() {
         const password = document.getElementById("password");
 
@@ -160,6 +152,7 @@
           icon.setAttribute("data-lucide", "eye");
         }
 
+        // Re-render Lucide icon
         lucide.createIcons();
       }
     </script>

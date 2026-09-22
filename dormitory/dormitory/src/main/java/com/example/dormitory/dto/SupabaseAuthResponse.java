@@ -6,6 +6,8 @@ public class SupabaseAuthResponse {
     private String refresh_token;
     private String token_type;
     private int expires_in;
+    private SupabaseUser user;
+    
 
     public String getAccess_token() {
         return access_token;
@@ -37,5 +39,12 @@ public class SupabaseAuthResponse {
 
     public void setExpires_in(int expires_in) {
         this.expires_in = expires_in;
+    }
+    public SupabaseUser getUser() {
+        return user;
+    }   
+
+    public void setUser(SupabaseUser user) {
+        this.user = user;
     }
 }

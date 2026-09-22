@@ -58,6 +58,7 @@ public class AuthService {
         metadata.put("last_name", request.getLastName());
         metadata.put("username", request.getUsername());
         metadata.put("room_number", request.getRoomNumber());
+        metadata.put("phone_no", request.getPhoneNo());
 
         body.put("data", metadata);
 
