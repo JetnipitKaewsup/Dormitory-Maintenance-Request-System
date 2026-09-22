@@ -4,6 +4,8 @@ import java.util.UUID;
 
 import jakarta.persistence.*;
 
+@Entity
+@Table(name = "reporter")
 public class Reporter {
     // PK
     @Id 
@@ -18,16 +20,20 @@ public class Reporter {
     @JoinColumn (name = "residentId")
     private Resident resident;
 
+    public Reporter(){
+
+    }
+
     public Reporter(User user, Resident resident) {
         this.user = user;
         this.resident = resident;
     }
 
-    public UUID getReperterId() {
+    public UUID getReporterId() {
         return reporterId;
     }
 
-    public void setReperterId(UUID reperterId) {
+    public void setReporterId(UUID reperterId) {
         this.reporterId = reperterId;
     }
 
