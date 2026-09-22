@@ -10,6 +10,7 @@ public class RegisterRequest {
     private String roomNumber;
     private String password;
     private String confirmPassword;
+    private String phoneNo;
 
     public String getFirstName() {
         return firstName;
@@ -74,4 +75,12 @@ public class RegisterRequest {
     public void setConfirmPassword(String confirmPassword) {
         this.confirmPassword = confirmPassword;
     }
+
+    public String getPhoneNo() {
+    return phoneNo;
+}
+
+public void setPhoneNo(String phoneNo) {
+    this.phoneNo = phoneNo;
+}
 }
