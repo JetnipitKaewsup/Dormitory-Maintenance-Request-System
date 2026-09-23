@@ -1,0 +1,119 @@
+<!doctype html>
+<html lang="th" xmlns:th="http://www.thymeleaf.org">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <title>ลืมรหัสผ่าน - DormCare</title>
+
+    <link rel="stylesheet" th:href="@{/css/login.css}" />
+
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+  </head>
+
+  <body>
+    <!-- ================= NAVBAR ================= -->
+
+    <nav class="navbar">
+      <div class="nav-container">
+        <a href="/" class="brand">
+          <i data-lucide="wrench"></i>
+          <span>DormCare</span>
+        </a>
+
+        <div class="nav-actions">
+          <a href="/login" class="login-trigger"> เข้าสู่ระบบ </a>
+        </div>
+      </div>
+    </nav>
+
+    <!-- ================= FORGOT PASSWORD PAGE ================= -->
+
+    <main class="auth-page">
+      <div class="auth-backdrop">
+        <div class="login-modal">
+          <!-- CLOSE -->
+
+          <a
+            href="/login"
+            class="modal-close"
+            aria-label="กลับไปหน้าเข้าสู่ระบบ"
+          >
+            <i data-lucide="x"></i>
+          </a>
+
+          <!-- HEADER -->
+
+          <div class="modal-header">
+            <div class="modal-icon">
+              <i data-lucide="key-round"></i>
+            </div>
+
+            <h2>ลืมรหัสผ่าน?</h2>
+
+            <p>กรอก Email ของคุณเพื่อรับลิงก์สำหรับตั้งรหัสผ่านใหม่</p>
+          </div>
+
+          <!-- ERROR MESSAGE -->
+
+          <div th:if="${error}" class="error-message" th:text="${error}"></div>
+
+          <!-- SUCCESS MESSAGE -->
+
+          <div
+            th:if="${message}"
+            class="success-message"
+            th:text="${message}"
+          ></div>
+
+          <!-- FORGOT PASSWORD FORM -->
+
+          <form th:action="@{/forgot}" method="post" class="login-form">
+            <!-- ================= EMAIL ================= -->
+
+            <div class="form-group">
+              <label for="email"> Email </label>
+
+              <div class="input-wrapper">
+                <i data-lucide="mail"></i>
+
+                <input
+                  id="email"
+                  name="email"
+                  type="email"
+                  placeholder="กรอก Email ที่ใช้สมัครสมาชิก"
+                  autocomplete="email"
+                  required
+                />
+              </div>
+            </div>
+
+            <!-- ================= SUBMIT BUTTON ================= -->
+
+            <button type="submit" class="submit-button">
+              <span> ส่งลิงก์รีเซ็ตรหัสผ่าน </span>
+
+              <i data-lucide="send"></i>
+            </button>
+          </form>
+
+          <!-- ================= FOOTER ================= -->
+
+          <div class="modal-footer">
+            <span> จำรหัสผ่านได้แล้ว? </span>
+
+            <a href="/login"> กลับเข้าสู่ระบบ </a>
+          </div>
+        </div>
+      </div>
+    </main>
+
+    <!-- ================= JAVASCRIPT ================= -->
+
+    <script>
+      // Initialize Lucide Icons
+      lucide.createIcons();
+    </script>
+  </body>
+</html>

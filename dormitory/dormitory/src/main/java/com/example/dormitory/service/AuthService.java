@@ -59,6 +59,7 @@ public class AuthService {
                                 }
 
                                 try {
+
                                     ObjectMapper mapper =
                                             new ObjectMapper();
 
@@ -68,6 +69,7 @@ public class AuthService {
                                     );
 
                                 } catch (Exception e) {
+
                                     throw new RuntimeException(
                                             "Cannot parse Supabase response",
                                             e
@@ -77,6 +79,7 @@ public class AuthService {
                 })
                 .block();
     }
+
 
     public void register(RegisterRequest request) {
 
@@ -110,6 +113,52 @@ public class AuthService {
                 .bodyValue(body)
                 .retrieve()
                 .bodyToMono(String.class)
+                .block();
+    }
+
+
+    public void forgotPassword(String email) {
+
+        Map<String, String> body = new HashMap<>();
+
+        body.put("email", email);
+
+        System.out.println(
+                "Forgot password email = " + email
+        );
+
+        supabaseWebClient
+                .post()
+                .uri("/auth/v1/recover")
+                .contentType(MediaType.APPLICATION_JSON)
+                .bodyValue(body)
+                .exchangeToMono(response -> {
+
+                    return response.bodyToMono(String.class)
+                            .defaultIfEmpty("")
+                            .map(responseBody -> {
+
+                                System.out.println(
+                                        "Supabase recovery status = "
+                                        + response.statusCode()
+                                );
+
+                                System.out.println(
+                                        "Supabase recovery response = "
+                                        + responseBody
+                                );
+
+                                if (response.statusCode().isError()) {
+
+                                    throw new RuntimeException(
+                                            "Supabase Auth Error: "
+                                            + responseBody
+                                    );
+                                }
+
+                                return responseBody;
+                            });
+                })
                 .block();
     }
 }
