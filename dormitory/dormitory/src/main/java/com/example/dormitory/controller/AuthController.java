@@ -5,6 +5,7 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import com.example.dormitory.dto.LoginRequest;
 import com.example.dormitory.dto.RegisterRequest;
@@ -195,4 +196,35 @@ public String logout(HttpSession session) {
 
     return "redirect:/login";
 }
+
+    @GetMapping("/forgot")
+    public String forgotPassword() {
+        return "forgot";
+    }
+    @PostMapping("/forgot")
+    public String processForgotPassword(
+            @RequestParam String email,
+            Model model) {
+
+        try {
+
+            authService.forgotPassword(email);
+
+            model.addAttribute(
+                    "message",
+                    "ส่งลิงก์รีเซ็ตรหัสผ่านไปยัง Email ของคุณแล้ว"
+            );
+
+            return "forgot";
+
+        } catch (Exception e) {
+
+            model.addAttribute(
+                    "error",
+                    e.getMessage()
+            );
+
+            return "forgot";
+        }
+    }
 }
