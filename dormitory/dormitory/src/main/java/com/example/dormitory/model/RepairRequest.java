@@ -8,7 +8,7 @@ import java.time.LocalDateTime;
 import java.util.UUID;
 
 @Entity
-@Table(name = "RepairRequest")
+@Table(name = "repair_request")
 public class RepairRequest {
 
     @Id
@@ -16,15 +16,15 @@ public class RepairRequest {
     private UUID repairRequestId;
 
     @ManyToOne(optional = false)
-    @JoinColumn(name = "reporterId", nullable = false)
+    @JoinColumn(name = "reporter_id", nullable = false)
     private Reporter reporter;
 
     @ManyToOne
-    @JoinColumn(name = "adminId")
+    @JoinColumn(name = "admin_id")
     private Admin admin;
 
     @ManyToOne(optional = false)
-    @JoinColumn(name = "roomNo", nullable = false)
+    @JoinColumn(name = "room_no", nullable = false)
     private Room room;
 
     @Column(nullable = false)
@@ -37,18 +37,21 @@ public class RepairRequest {
     private String description;
 
     @Column(columnDefinition = "TEXT")
-    private String remark;
+    private String reporterNote;
 
     private LocalDateTime startDateTime;
 
     private LocalDateTime endDateTime;
 
+    @Column(name = "created_at", nullable = false)
+    private LocalDateTime createdAt;
+    
     public RepairRequest() {
     }
 
     public RepairRequest(UUID repairRequestId, Reporter reporter, Admin admin,
                         Room room, String repairType, String status,
-                        String description, String remark,
+                        String description, String reporterNote,
                         LocalDateTime startDateTime, LocalDateTime endDateTime) {
         this.repairRequestId = repairRequestId;
         this.reporter = reporter;
@@ -57,7 +60,7 @@ public class RepairRequest {
         this.repairType = repairType;
         this.status = status;
         this.description = description;
-        this.remark = remark;
+        this.reporterNote = reporterNote;
         this.startDateTime = startDateTime;
         this.endDateTime = endDateTime;
     }
@@ -119,12 +122,12 @@ public class RepairRequest {
         this.description = description;
     }
 
-    public String getRemark() {
-        return remark;
+    public String getReporterNote() {
+        return reporterNote;
     }
 
-    public void setRemark(String remark) {
-        this.remark = remark;
+    public void setReporterNote(String reporterNote) {
+        this.reporterNote = reporterNote;
     }
 
     public LocalDateTime getStartDateTime() {
@@ -141,5 +144,13 @@ public class RepairRequest {
 
     public void setEndDateTime(LocalDateTime endDateTime) {
         this.endDateTime = endDateTime;
+    }
+
+    public LocalDateTime getCreatedAt() {
+    return createdAt;
+    }
+
+    public void setCreatedAt(LocalDateTime createdAt) {
+    this.createdAt = createdAt;
     }
 }
