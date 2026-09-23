@@ -61,7 +61,12 @@ public class AuthController {
                     "refreshToken",
                     response.getRefresh_token()
             );
-
+            session.setAttribute(
+                    "userId",
+                    response.getUser().getId()
+            );
+        
+            
             return "redirect:/dashboard";
 
         } catch (Exception e) {
