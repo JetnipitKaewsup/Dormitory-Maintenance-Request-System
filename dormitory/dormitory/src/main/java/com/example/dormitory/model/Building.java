@@ -3,18 +3,12 @@ package com.example.dormitory.model;
 import jakarta.persistence.*;
 
 @Entity 
-@Table (name = "Building")
+@Table (name = "building")
 public class Building {
     // PK
     @Id 
     private int buildingNo;
 
-    // FK
-    /* 
-    @ManyToOne
-    @JoinColumn (name = "dormitoryId")
-    private Dormitory dormitory;
-*/
     private String buildingName;
     private int totalFloor;
 

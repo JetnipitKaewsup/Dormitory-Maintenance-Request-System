@@ -5,7 +5,7 @@ import java.util.UUID;
 import jakarta.persistence.*;
 
 @Entity
-@Table(name = "Resident")
+@Table(name = "resident")
 public class Resident {
     // PK
     @Id
@@ -13,7 +13,7 @@ public class Resident {
     private UUID residentId;
 
     @ManyToOne
-    @JoinColumn(name = "roomNo")
+    @JoinColumn(name = "room_no")
     private Room room;
 
     private String firstName;
