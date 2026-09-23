@@ -6,7 +6,7 @@ import java.util.List;
 import jakarta.persistence.*;
 
 @Entity
-@Table(name = "Room")
+@Table(name = "room")
 public class Room {
     // PK
     @Id
@@ -14,7 +14,7 @@ public class Room {
 
     // FK
     @ManyToOne
-    @JoinColumn(name = "buildingNo")
+    @JoinColumn(name = "building_no")
     private Building building;
 
     @OneToMany(mappedBy = "room")
