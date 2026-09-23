@@ -16,9 +16,14 @@ public class SupabaseConfig {
 
     @Bean
     public WebClient supabaseWebClient() {
+
         return WebClient.builder()
                 .baseUrl(supabaseUrl)
                 .defaultHeader("apikey", supabaseKey)
+                .defaultHeader(
+                        "Authorization",
+                        "Bearer " + supabaseKey
+                )
                 .build();
     }
 }
