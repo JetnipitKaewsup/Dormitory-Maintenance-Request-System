@@ -1,0 +1,284 @@
+<!doctype html>
+<html lang="th" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
+
+    <title>DormCare - คำร้องล่าสุด</title>
+
+    <link rel="stylesheet"
+          th:href="@{/css/reporter.css}">
+
+    <script src="https://unpkg.com/lucide@latest"></script>
+
+</head>
+
+<body>
+
+
+<!-- ================= NAVBAR ================= -->
+<nav class="navbar">
+
+    <a th:href="@{/}"
+       class="brand">
+
+        <i data-lucide="wrench"></i>
+
+        <span>
+            ระบบแจ้งซ่อมในหอพัก
+        </span>
+
+    </a>
+
+
+    <div class="nav-actions">
+
+        <button class="notification-btn">
+
+            <i data-lucide="bell"></i>
+
+            <span class="notification-dot"></span>
+
+        </button>
+
+
+        <div class="user-profile">
+
+            <div>
+
+                <div
+                    th:if="${request != null and request.reporter != null and request.reporter.user != null}"
+                    th:text="${request.reporter.user.firstName + ' ' + request.reporter.user.lastName}">
+                    สมชาย ใจดี
+                </div>
+
+
+                <div
+                    th:if="${request != null and request.room != null}"
+                    style="font-size: 0.75rem; opacity: 0.8;"
+                    th:text="'ห้อง ' + ${request.room.roomNo}">
+                    ห้อง 302
+                </div>
+
+            </div>
+
+
+            <a th:href="@{/login}"
+               class="logout-btn"
+               title="ออกจากระบบ">
+
+                <i data-lucide="log-out"></i>
+
+            </a>
+
+        </div>
+
+    </div>
+
+</nav>
+
+
+<!-- ================= TABS ================= -->
+<div class="tabs-container">
+
+    <a th:href="@{/reporter/add}"
+       class="tab-btn">
+        แจ้งซ่อมใหม่
+    </a>
+
+    <a th:href="@{/reporter/requests}"
+       class="tab-btn">
+        ประวัติคำร้อง
+    </a>
+
+    <a th:href="@{/reporter/latest}"
+       class="tab-btn active">
+        คำร้องล่าสุด
+    </a>
+
+</div>
+
+
+<!-- ================= MAIN ================= -->
+<main class="main-content">
+
+
+    <!-- ไม่มีคำร้อง -->
+    <div
+        class="form-card"
+        th:if="${request == null}">
+
+        <div class="form-header">
+            ยังไม่มีคำร้องแจ้งซ่อม
+        </div>
+
+        <div class="form-subheader">
+            คุณยังไม่ได้ส่งคำร้องแจ้งซ่อม
+        </div>
+
+        <a
+            th:href="@{/reporter/add}"
+            class="btn-submit"
+            style="display:block; text-align:center; text-decoration:none;">
+
+            แจ้งซ่อมใหม่
+
+        </a>
+
+    </div>
+
+
+    <!-- มีคำร้องล่าสุด -->
+    <div
+        class="table-container"
+        th:if="${request != null}">
+
+        <table>
+
+            <thead>
+
+                <tr>
+
+                    <th>วันที่แจ้ง</th>
+
+                    <th>ประเภทงาน</th>
+
+                    <th>สถานะ</th>
+
+                    <th>ช่วงเวลาที่สะดวก</th>
+
+                    <th>จัดการ</th>
+
+                </tr>
+
+            </thead>
+
+
+            <tbody>
+
+                <tr>
+
+
+                    <!-- วันที่ -->
+                    <td>
+
+                        <span
+                            th:text="${#temporals.format(request.startDateTime, 'dd/MM/yyyy')}">
+                            16/09/2026
+                        </span>
+
+                    </td>
+
+
+                    <!-- ประเภท -->
+                    <td
+                        th:text="${request.repairType}">
+                        ELECTRICAL
+                    </td>
+
+
+                    <!-- Status -->
+                    <td>
+
+                        <span
+                            class="status-badge"
+                            th:classappend="|
+
+                                ${request.status == 'SUBMITTED' ? 'status-submitted' : ''}
+
+                                ${request.status == 'APPROVED' ? 'status-approved' : ''}
+
+                                ${request.status == 'IN_PROGRESS' ? 'status-progress' : ''}
+
+                                ${request.status == 'COMPLETED' ? 'status-complete' : ''}
+
+                                ${request.status == 'REJECTED' ? 'status-rejected' : ''}
+
+                                ${request.status == 'CANCELLED' ? 'status-cancelled' : ''}
+
+                            |"
+                            th:text="${request.status}">
+
+                            SUBMITTED
+
+                        </span>
+
+                    </td>
+
+
+                    <!-- เวลา -->
+                    <td>
+
+                        <span
+                            th:text="${#temporals.format(request.startDateTime, 'HH:mm')}">
+                            13:00
+                        </span>
+
+                        -
+
+                        <span
+                            th:text="${#temporals.format(request.endDateTime, 'HH:mm')}">
+                            14:00
+                        </span>
+
+                    </td>
+
+
+                    <!-- Action -->
+                    <td>
+
+                        <div class="action-btns">
+
+                            <a
+                                th:href="@{'/reporter/requests/' + ${request.repairRequestId}}"
+                                class="btn-outline">
+
+                                ดูรายละเอียด
+
+                            </a>
+
+
+                            <form
+                                th:if="${request.status == 'SUBMITTED'}"
+                                th:action="@{'/reporter/requests/' + ${request.repairRequestId} + '/cancel'}"
+                                method="post">
+
+                                <button
+                                    type="submit"
+                                    class="btn-outline-danger"
+                                    onclick="return confirm('คุณต้องการยกเลิกคำร้องนี้หรือไม่?');">
+
+                                    ยกเลิกแจ้งซ่อม
+
+                                </button>
+
+                            </form>
+
+                        </div>
+
+                    </td>
+
+                </tr>
+
+            </tbody>
+
+        </table>
+
+    </div>
+
+</main>
+
+
+<script>
+
+    lucide.createIcons();
+
+</script>
+
+</body>
+
+</html>

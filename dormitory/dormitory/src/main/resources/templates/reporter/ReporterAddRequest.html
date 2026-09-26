@@ -1,0 +1,326 @@
+<!doctype html>
+<html lang="th" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>DormCare - แจ้งซ่อมใหม่</title>
+
+    <link rel="stylesheet" th:href="@{/css/reporter.css}">
+    <script src="https://unpkg.com/lucide@latest"></script>
+</head>
+
+<body>
+
+    <!-- ================= NAVBAR ================= -->
+    <nav class="navbar">
+
+        <a th:href="@{/}" class="brand">
+            <i data-lucide="wrench"></i>
+            <span>ระบบแจ้งซ่อมในหอพัก</span>
+        </a>
+
+        <div class="nav-actions">
+
+            <button class="notification-btn">
+                <i data-lucide="bell"></i>
+                <span class="notification-dot"></span>
+            </button>
+
+            <div class="user-profile">
+
+                <div>
+                    <!-- ถ้า Controller ส่ง reporter มา -->
+                    <div th:if="${reporter != null}"
+                        th:text="${reporter.user.firstName + ' ' + reporter.user.lastName}">
+                        สมชาย ใจดี
+                    </div>
+
+                    <div th:if="${reporter != null and reporter.resident != null and reporter.resident.room != null}"
+                        style="font-size: 0.75rem; opacity: 0.8;" th:text="'ห้อง ' + ${reporter.resident.room.roomNo}">
+                        ห้อง 302
+                    </div>
+                </div>
+
+                <a th:href="@{/login}" class="logout-btn" title="ออกจากระบบ">
+                    <i data-lucide="log-out"></i>
+                </a>
+
+            </div>
+
+        </div>
+    </nav>
+
+
+    <!-- ================= TABS ================= -->
+    <div class="tabs-container">
+
+        <a th:href="@{/reporter/add}" class="tab-btn active">
+            แจ้งซ่อมใหม่
+        </a>
+
+        <a th:href="@{/reporter/requests}" class="tab-btn">
+            ประวัติคำร้อง
+        </a>
+
+        <a th:href="@{/reporter/latest}" class="tab-btn">
+            คำร้องล่าสุด
+        </a>
+
+    </div>
+
+
+    <!-- ================= MAIN CONTENT ================= -->
+    <main class="main-content">
+
+        <a th:href="@{/reporter/requests}" class="back-btn">
+            <i data-lucide="arrow-left"></i>
+        </a>
+
+
+        <div class="form-layout">
+
+            <!-- ================= LEFT : FORM ================= -->
+            <div>
+
+                <div class="form-card">
+
+                    <div class="form-header">
+                        แบบฟอร์มคำร้องแจ้งซ่อม
+                    </div>
+
+                    <div class="form-subheader">
+                        ข้อมูลผู้แจ้งซ่อม
+                    </div>
+
+
+                    <!-- ================= USER INFO ================= -->
+                    <div class="user-info-box">
+
+                        <div class="user-info-text">
+
+                            <div th:if="${reporter != null and reporter.user != null}">
+                                <strong>ชื่อ-สกุล</strong>
+                                <span th:text="${reporter.user.firstName + ' ' + reporter.user.lastName}">
+                                    สมชาย ใจดี
+                                </span>
+
+                                &nbsp;&nbsp;&nbsp;
+
+                                <strong>เบอร์ติดต่อ</strong>
+                                <span th:text="${reporter.user.phoneNo}">
+                                    0812345678
+                                </span>
+                            </div>
+
+
+                            <div
+                                th:if="${reporter != null and reporter.resident != null and reporter.resident.room != null}">
+
+                                <strong>ห้องพัก :</strong>
+                                <span th:text="${reporter.resident.room.roomNo}">
+                                    302
+                                </span>
+
+                                &nbsp;
+
+                                <strong>ตึก :</strong>
+                                <span th:text="${reporter.resident.room.building.buildingNo}">
+                                    3
+                                </span>
+
+                            </div>
+
+                        </div>
+                        <!-- ปุ่มแก้ไขข้อมูลผู้ใช้ -->
+                        <a th:if="${reporter != null}" th:href="@{/reporter/profile/edit}" class="edit-profile-btn">
+
+                            <i data-lucide="user-pen"></i>
+                            แก้ไขข้อมูล
+                        </a>
+
+                    </div>
+
+
+                    <!-- ================= FORM ================= -->
+                    <form th:action="@{/reporter/add}" method="post" th:object="${repairForm}">
+
+
+                        <!-- ================= REPAIR TYPE ================= -->
+                        <div class="form-group">
+
+                            <label class="form-label">
+                                รายละเอียดคำร้องแจ้งซ่อม
+                            </label>
+
+                            <div style="margin-bottom: 8px; font-size: 0.9rem;">
+                                ประเภทงานซ่อม
+                            </div>
+
+
+                            <div class="repair-types">
+
+                                <button type="button" class="type-btn" data-value="WOOD">
+                                    งานไม้
+                                </button>
+
+                                <button type="button" class="type-btn" data-value="PLUMBING">
+                                    งานประปา
+                                </button>
+
+                                <button type="button" class="type-btn" data-value="ELECTRICAL">
+                                    งานไฟฟ้า
+                                </button>
+
+                                <button type="button" class="type-btn" data-value="OTHER">
+                                    อื่นๆ
+                                </button>
+
+                            </div>
+
+
+                            <!-- ค่าที่เลือกจะถูกส่งไป RepairRequestForm -->
+                            <input type="hidden" id="repairType" name="repairType" required>
+
+                        </div>
+
+
+                        <!-- ================= DESCRIPTION ================= -->
+                        <div class="form-group">
+
+                            <label class="form-label">
+                                อาการ / ปัญหาที่พบ
+                            </label>
+
+                            <textarea class="form-control" name="description" placeholder="อธิบายอาการหรือปัญหาที่พบ..."
+                                required></textarea>
+
+                        </div>
+
+
+                        <!-- ================= DATE / TIME ================= -->
+                        <div class="form-group">
+
+                            <label class="form-label">
+                                ช่วงเวลาที่สะดวก
+                            </label>
+
+                            <div class="time-group">
+
+                                <div>
+                                    <span style="margin-right: 8px;">
+                                        วัน
+                                    </span>
+
+                                    <input type="date" name="preferredDate" required>
+                                </div>
+
+
+                                <div>
+
+                                    <span style="margin-right: 8px;">
+                                        เวลา
+                                    </span>
+
+                                    <input type="time" name="startTime" style="width: 100px;" required>
+
+                                    -
+
+                                    <input type="time" name="endTime" style="width: 100px;" required>
+
+                                </div>
+
+                            </div>
+
+                        </div>
+
+
+                        <!-- ================= NOTE ================= -->
+                        <div class="form-group">
+
+                            <label class="form-label">
+                                หมายเหตุ
+                            </label>
+
+                            <textarea class="form-control" name="reporterNote" style="min-height: 80px;"
+                                placeholder="หมายเหตุเพิ่มเติม (ถ้ามี)"></textarea>
+
+                        </div>
+
+
+                        <!-- ================= SUBMIT ================= -->
+                        <button type="submit" class="btn-submit">
+                            บันทึกและส่งคำร้องแจ้งซ่อม
+                        </button>
+
+                    </form>
+
+                </div>
+
+            </div>
+
+
+            <!-- ================= RIGHT : SIDEBAR ================= -->
+            <div>
+
+                <div class="emergency-card">
+
+                    <div class="emergency-title">
+                        กรณีฉุกเฉินเร่งด่วน
+                    </div>
+
+                    <div class="emergency-detail">
+
+                        (เช่น ไฟไหม้, ท่อประปาแตก)
+                        <br>
+
+                        หน่วยบริการหอพัก
+                        <br>
+
+                        โทร: 089-999-1122
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </main>
+
+
+    <script>
+
+        lucide.createIcons();
+
+        // เลือกประเภทงานซ่อม
+        const typeButtons = document.querySelectorAll('.type-btn');
+        const repairTypeInput = document.getElementById('repairType');
+
+        typeButtons.forEach(button => {
+
+            button.addEventListener('click', function () {
+
+                // เอา selected ออกจากทุกปุ่ม
+                typeButtons.forEach(btn =>
+                    btn.classList.remove('selected')
+                );
+
+                // เพิ่ม selected ให้ปุ่มที่เลือก
+                this.classList.add('selected');
+
+                // ส่งค่าไป Backend
+                repairTypeInput.value =
+                    this.getAttribute('data-value');
+
+            });
+
+        });
+
+    </script>
+
+</body>
+
+</html>

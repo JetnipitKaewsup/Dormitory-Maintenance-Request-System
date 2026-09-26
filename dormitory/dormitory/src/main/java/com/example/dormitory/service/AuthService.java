@@ -11,6 +11,8 @@ import com.example.dormitory.dto.LoginRequest;
 import com.example.dormitory.dto.RegisterRequest;
 import com.example.dormitory.dto.SupabaseAuthResponse;
 
+import tools.jackson.databind.ObjectMapper;
+
 @Service
 public class AuthService {
 
@@ -27,15 +29,57 @@ public class AuthService {
         body.put("email", request.getEmail());
         body.put("password", request.getPassword());
 
+        System.out.println("Login email = " + request.getEmail());
+
         return supabaseWebClient
                 .post()
                 .uri("/auth/v1/token?grant_type=password")
                 .contentType(MediaType.APPLICATION_JSON)
                 .bodyValue(body)
-                .retrieve()
-                .bodyToMono(SupabaseAuthResponse.class)
+                .exchangeToMono(response -> {
+
+                    return response.bodyToMono(String.class)
+                            .map(responseBody -> {
+
+                                System.out.println(
+                                        "Supabase status = "
+                                        + response.statusCode()
+                                );
+
+                                System.out.println(
+                                        "Supabase response = "
+                                        + responseBody
+                                );
+
+                                if (response.statusCode().isError()) {
+                                    throw new RuntimeException(
+                                            "Supabase Auth Error: "
+                                            + responseBody
+                                    );
+                                }
+
+                                try {
+
+                                    ObjectMapper mapper =
+                                            new ObjectMapper();
+
+                                    return mapper.readValue(
+                                            responseBody,
+                                            SupabaseAuthResponse.class
+                                    );
+
+                                } catch (Exception e) {
+
+                                    throw new RuntimeException(
+                                            "Cannot parse Supabase response",
+                                            e
+                                    );
+                                }
+                            });
+                })
                 .block();
     }
+
 
     public void register(RegisterRequest request) {
 
@@ -69,6 +113,52 @@ public class AuthService {
                 .bodyValue(body)
                 .retrieve()
                 .bodyToMono(String.class)
+                .block();
+    }
+
+
+    public void forgotPassword(String email) {
+
+        Map<String, String> body = new HashMap<>();
+
+        body.put("email", email);
+
+        System.out.println(
+                "Forgot password email = " + email
+        );
+
+        supabaseWebClient
+                .post()
+                .uri("/auth/v1/recover")
+                .contentType(MediaType.APPLICATION_JSON)
+                .bodyValue(body)
+                .exchangeToMono(response -> {
+
+                    return response.bodyToMono(String.class)
+                            .defaultIfEmpty("")
+                            .map(responseBody -> {
+
+                                System.out.println(
+                                        "Supabase recovery status = "
+                                        + response.statusCode()
+                                );
+
+                                System.out.println(
+                                        "Supabase recovery response = "
+                                        + responseBody
+                                );
+
+                                if (response.statusCode().isError()) {
+
+                                    throw new RuntimeException(
+                                            "Supabase Auth Error: "
+                                            + responseBody
+                                    );
+                                }
+
+                                return responseBody;
+                            });
+                })
                 .block();
     }
 }

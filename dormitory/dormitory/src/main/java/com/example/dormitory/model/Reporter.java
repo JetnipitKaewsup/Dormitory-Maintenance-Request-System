@@ -13,11 +13,11 @@ public class Reporter {
     private UUID reporterId;
     // FK
     @OneToOne 
-    @JoinColumn (name = "userId")
+    @JoinColumn (name = "user_id")
     private User user;
     
     @OneToOne 
-    @JoinColumn (name = "residentId")
+    @JoinColumn (name = "resident_id")
     private Resident resident;
 
     public Reporter(){

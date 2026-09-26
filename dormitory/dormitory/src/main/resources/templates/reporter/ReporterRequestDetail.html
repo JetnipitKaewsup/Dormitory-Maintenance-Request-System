@@ -1,0 +1,544 @@
+<!doctype html>
+<html lang="th" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
+
+    <title>DormCare - รายละเอียดคำร้อง</title>
+
+    <link rel="stylesheet"
+          th:href="@{/css/reporter.css}">
+
+    <script src="https://unpkg.com/lucide@latest"></script>
+
+</head>
+
+<body>
+
+
+<!-- ================= NAVBAR ================= -->
+<nav class="navbar">
+
+    <a th:href="@{/}"
+       class="brand">
+
+        <i data-lucide="wrench"></i>
+
+        <span>
+            ระบบแจ้งซ่อมในหอพัก
+        </span>
+
+    </a>
+
+
+    <div class="nav-actions">
+
+        <button class="notification-btn">
+
+            <i data-lucide="bell"></i>
+
+            <span class="notification-dot"></span>
+
+        </button>
+
+
+        <div class="user-profile">
+
+            <div>
+
+                <div
+                    th:text="${request.reporter.user.firstName + ' ' + request.reporter.user.lastName}">
+                    สมชาย ใจดี
+                </div>
+
+
+                <div
+                    style="font-size: 0.75rem; opacity: 0.8;"
+                    th:text="'ห้อง ' + ${request.room.roomNo}">
+                    ห้อง 302
+                </div>
+
+            </div>
+
+
+            <a th:href="@{/login}"
+               class="logout-btn"
+               title="ออกจากระบบ">
+
+                <i data-lucide="log-out"></i>
+
+            </a>
+
+        </div>
+
+    </div>
+
+</nav>
+
+
+<!-- ================= TABS ================= -->
+<div class="tabs-container">
+
+    <a th:href="@{/reporter/add}"
+       class="tab-btn">
+        แจ้งซ่อมใหม่
+    </a>
+
+    <a th:href="@{/reporter/requests}"
+       class="tab-btn active">
+        ประวัติคำร้อง
+    </a>
+
+    <a th:href="@{/reporter/latest}"
+       class="tab-btn">
+        คำร้องล่าสุด
+    </a>
+
+</div>
+
+
+<!-- ================= MAIN ================= -->
+<main class="main-content">
+
+
+    <a th:href="@{/reporter/requests}"
+       class="back-btn">
+
+        <i data-lucide="arrow-left"></i>
+
+    </a>
+
+
+    <!-- ================= STATUS ================= -->
+    <div class="stepper-container">
+
+        <div class="stepper-title">
+            ขั้นตอนการดำเนินการ
+        </div>
+
+
+        <div class="stepper">
+
+            <div class="step-line">
+
+                <div
+                    class="step-line-progress"
+                    th:style="|width: ${
+                        request.status == 'SUBMITTED' ? '0%' :
+                        request.status == 'APPROVED' ? '33%' :
+                        request.status == 'IN_PROGRESS' ? '66%' :
+                        request.status == 'COMPLETED' ? '100%' :
+                        request.status == 'REJECTED' ? '33%' :
+                        request.status == 'CANCELLED' ? '0%' :
+                        '0%'
+                    }|">
+                </div>
+
+            </div>
+
+
+            <!-- ================= STEP 1 ================= -->
+            <div
+                class="step completed">
+
+                <div class="step-circle">
+
+                    <i data-lucide="check"
+                       style="width:20px;">
+                    </i>
+
+                </div>
+
+
+                <div class="step-text">
+
+                    <strong>
+                        1. ส่งคำร้อง
+                    </strong>
+
+                    <span
+                        th:text="${#temporals.format(request.startDateTime, 'dd/MM/yyyy HH:mm')}">
+                        16/09/2026 13:00
+                    </span>
+
+                </div>
+
+            </div>
+
+
+            <!-- ================= STEP 2 ================= -->
+            <div
+                class="step"
+                th:classappend="|${
+                    request.status == 'SUBMITTED' ? 'active' :
+                    request.status == 'REJECTED' ? 'rejected' :
+                    request.status == 'CANCELLED' ? '' :
+                    'completed'
+                }|">
+
+                <div
+                    class="step-circle"
+                    th:if="${request.status != 'REJECTED'}">
+                    2
+                </div>
+
+
+                <div
+                    class="step-circle"
+                    th:if="${request.status == 'REJECTED'}">
+
+                    <i data-lucide="x"
+                       style="width:20px;">
+                    </i>
+
+                </div>
+
+
+                <div class="step-text">
+
+                    <strong
+                        th:if="${request.status == 'SUBMITTED'}">
+                        รอ Admin ตรวจสอบ
+                    </strong>
+
+
+                    <strong
+                        th:if="${request.status == 'APPROVED' or request.status == 'IN_PROGRESS' or request.status == 'COMPLETED'}">
+                        2. Admin อนุมัติ
+                    </strong>
+
+
+                    <strong
+                        th:if="${request.status == 'REJECTED'}">
+                        คำร้องถูกปฏิเสธ
+                    </strong>
+
+
+                    <span
+                        th:if="${request.status == 'SUBMITTED'}">
+                        รอ Admin ตรวจสอบ
+                    </span>
+
+
+                    <span
+                        th:if="${request.status == 'APPROVED' or request.status == 'IN_PROGRESS' or request.status == 'COMPLETED'}">
+                        อนุมัติและเตรียมดำเนินการ
+                    </span>
+
+
+                    <span
+                        th:if="${request.status == 'REJECTED'}">
+                        คำร้องถูกปฏิเสธ
+                    </span>
+
+                </div>
+
+            </div>
+
+
+            <!-- ================= STEP 3 ================= -->
+            <div
+                class="step"
+                th:classappend="|${
+                    request.status == 'IN_PROGRESS' ? 'active' :
+                    request.status == 'COMPLETED' ? 'completed' :
+                    ''
+                }|">
+
+                <div class="step-circle">
+                    3
+                </div>
+
+
+                <div class="step-text">
+
+                    <strong>
+                        3. ช่างดำเนินการซ่อม
+                    </strong>
+
+
+                    <span
+                        th:if="${request.status == 'IN_PROGRESS'}">
+                        ช่างกำลังดำเนินการ
+                    </span>
+
+
+                    <span
+                        th:if="${request.status != 'IN_PROGRESS'}">
+                        รอช่างเข้าดำเนินการ
+                    </span>
+
+                </div>
+
+            </div>
+
+
+            <!-- ================= STEP 4 ================= -->
+            <div
+                class="step"
+                th:classappend="${request.status == 'COMPLETED' ? 'completed' : ''}">
+
+                <div class="step-circle">
+                    4
+                </div>
+
+
+                <div class="step-text">
+
+                    <strong>
+                        4. ตรวจสอบและเสร็จสิ้น
+                    </strong>
+
+
+                    <span
+                        th:if="${request.status == 'COMPLETED'}">
+                        ดำเนินการเสร็จสิ้น
+                    </span>
+
+
+                    <span
+                        th:if="${request.status != 'COMPLETED'}">
+                        รอการยืนยัน
+                    </span>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <!-- ================= DETAIL ================= -->
+    <div class="detail-card">
+
+        <div class="detail-header">
+
+            <i data-lucide="file-text"
+               style="color: var(--primary-blue);">
+            </i>
+
+            <span>
+                รายละเอียดข้อมูลคำร้อง
+            </span>
+
+        </div>
+
+
+        <div class="detail-grid">
+
+
+            <!-- ผู้แจ้ง -->
+            <div class="detail-label">
+                ผู้แจ้ง:
+            </div>
+
+            <div class="detail-value">
+
+                <span
+                    th:text="${request.reporter.user.firstName + ' ' + request.reporter.user.lastName}">
+                    สมชาย ใจดี
+                </span>
+
+            </div>
+
+
+            <!-- เบอร์โทร -->
+            <div class="detail-label">
+                เบอร์ติดต่อ:
+            </div>
+
+            <div class="detail-value">
+
+                <span
+                    th:text="${request.reporter.user.phoneNo}">
+                    0812345678
+                </span>
+
+            </div>
+
+
+            <!-- ห้อง -->
+            <div class="detail-label">
+                ห้องพัก:
+            </div>
+
+            <div class="detail-value">
+
+                <span
+                    th:text="'ห้อง ' + ${request.room.roomNo}">
+                    ห้อง 302
+                </span>
+
+            </div>
+
+
+            <!-- ตึก -->
+            <div class="detail-label">
+                ตึก:
+            </div>
+
+            <div class="detail-value">
+
+                <span
+                    th:text="${request.room.building.buildingNo}">
+                    3
+                </span>
+
+            </div>
+
+
+            <!-- ประเภทงาน -->
+            <div class="detail-label">
+                ประเภทงาน:
+            </div>
+
+            <div
+                class="detail-value"
+                th:text="${request.repairType}">
+                ELECTRICAL
+            </div>
+
+
+            <!-- Status -->
+            <div class="detail-label">
+                สถานะ:
+            </div>
+
+            <div class="detail-value">
+
+                <span
+                    class="status-badge"
+                    th:classappend="|
+
+                        ${request.status == 'SUBMITTED' ? 'status-submitted' : ''}
+
+                        ${request.status == 'APPROVED' ? 'status-approved' : ''}
+
+                        ${request.status == 'IN_PROGRESS' ? 'status-progress' : ''}
+
+                        ${request.status == 'COMPLETED' ? 'status-complete' : ''}
+
+                        ${request.status == 'REJECTED' ? 'status-rejected' : ''}
+
+                        ${request.status == 'CANCELLED' ? 'status-cancelled' : ''}
+
+                    |"
+                    th:text="${request.status}">
+
+                    SUBMITTED
+
+                </span>
+
+            </div>
+
+
+            <!-- วันเวลา -->
+            <div class="detail-label">
+                วันเวลาที่สะดวก:
+            </div>
+
+            <div class="detail-value">
+
+                <span
+                    th:text="${#temporals.format(request.startDateTime, 'dd/MM/yyyy HH:mm')}">
+                    16/09/2026 13:00
+                </span>
+
+                -
+
+                <span
+                    th:text="${#temporals.format(request.endDateTime, 'HH:mm')}">
+                    14:00
+                </span>
+
+            </div>
+
+
+            <!-- อาการ -->
+            <div
+                class="detail-label"
+                style="grid-column: 1 / -1; margin-top: 8px;">
+
+                อาการที่แจ้ง:
+
+            </div>
+
+
+            <div
+                class="note-box"
+                style="grid-column: 1 / -1;"
+                th:text="${request.description}">
+
+                แอร์ไม่เย็น
+
+            </div>
+
+
+            <!-- หมายเหตุ -->
+            <div
+                class="detail-label"
+                style="grid-column: 1 / -1; margin-top: 8px;"
+                th:if="${request.reporterNote != null and !request.reporterNote.isEmpty()}">
+
+                หมายเหตุเพิ่มเติม:
+
+            </div>
+
+
+            <div
+                class="note-box"
+                style="grid-column: 1 / -1;"
+                th:if="${request.reporterNote != null and !request.reporterNote.isEmpty()}"
+                th:text="${request.reporterNote}">
+
+                -
+
+            </div>
+
+
+        </div>
+
+    </div>
+
+
+    <!-- ================= CANCEL ================= -->
+    <div
+        style="margin-top: 20px; text-align: right;"
+        th:if="${request.status == 'SUBMITTED'}">
+
+        <form
+            th:action="@{'/reporter/requests/' + ${request.repairRequestId} + '/cancel'}"
+            method="post">
+
+            <button
+                type="submit"
+                class="btn-outline-danger"
+                onclick="return confirm('คุณต้องการยกเลิกคำร้องนี้หรือไม่?');">
+
+                ยกเลิกคำร้อง
+
+            </button>
+
+        </form>
+
+    </div>
+
+
+</main>
+
+
+<script>
+
+    lucide.createIcons();
+
+</script>
+
+</body>
+
+</html>

@@ -1,15 +1,18 @@
 package com.example.dormitory.controller;
 
-import com.example.dormitory.dto.LoginRequest;
-import com.example.dormitory.dto.RegisterRequest;
-import com.example.dormitory.dto.SupabaseAuthResponse;
-import com.example.dormitory.service.AuthService;
-import jakarta.servlet.http.HttpSession;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+
+import com.example.dormitory.dto.LoginRequest;
+import com.example.dormitory.dto.RegisterRequest;
+import com.example.dormitory.dto.SupabaseAuthResponse;
+import com.example.dormitory.service.AuthService;
+
+import jakarta.servlet.http.HttpSession;
 
 @Controller
 public class AuthController {
@@ -59,8 +62,13 @@ public class AuthController {
                     "refreshToken",
                     response.getRefresh_token()
             );
-
-            return "redirect:/";
+            session.setAttribute(
+                    "userId",
+                    response.getUser().getId()
+            );
+        
+            
+            return "redirect:/dashboard";
 
         } catch (Exception e) {
 
@@ -88,20 +96,126 @@ public class AuthController {
         return "register";
     }
 
+    
+
     // =========================
     // REGISTER PROCESS
     // =========================
 
     @PostMapping("/register")
-    public String processRegister(
-            @ModelAttribute RegisterRequest registerRequest,
+public String processRegister(
+        @ModelAttribute("registerRequest") RegisterRequest registerRequest,
+        Model model) {
+
+    System.out.println("========== REGISTER ==========");
+    System.out.println("Username: " + registerRequest.getUsername());
+    System.out.println("Email: " + registerRequest.getEmail());
+
+    System.out.println("Password received: "
+            + (registerRequest.getPassword() != null ? "YES" : "NO"));
+
+    System.out.println("Confirm password received: "
+            + (registerRequest.getConfirmPassword() != null ? "YES" : "NO"));
+
+    System.out.println("Password length: "
+            + (registerRequest.getPassword() != null
+                ? registerRequest.getPassword().length()
+                : 0));
+
+    System.out.println("Confirm length: "
+            + (registerRequest.getConfirmPassword() != null
+                ? registerRequest.getConfirmPassword().length()
+                : 0));
+
+    // Prevent NullPointerException
+    if (registerRequest.getPassword() == null
+            || registerRequest.getConfirmPassword() == null) {
+
+        model.addAttribute("error", "Password is required");
+        return "register";
+    }
+
+    // Check password confirmation
+    if (!registerRequest.getPassword()
+            .equals(registerRequest.getConfirmPassword())) {
+
+        System.out.println(">>> PASSWORD DOES NOT MATCH");
+
+        model.addAttribute("error", "Passwords do not match");
+        return "register";
+    }
+
+    System.out.println(">>> PASSWORD MATCHES");
+
+    try {
+
+        authService.register(registerRequest);
+
+        return "redirect:/login";
+
+    } catch (Exception e) {
+
+        e.printStackTrace();
+
+        model.addAttribute(
+                "error",
+                e.getMessage()
+        );
+
+        return "register";
+    }
+}
+
+// =========================
+// DASHBOARD PAGE
+// =========================
+
+        @GetMapping("/dashboard")
+        public String showDashboard(HttpSession session, Model model) {
+
+            String accessToken =
+                    (String) session.getAttribute("accessToken");
+
+            // ถ้ายังไม่ได้ Login
+            if (accessToken == null) {
+                return "redirect:/login";
+            }
+
+            model.addAttribute(
+                    "message",
+                    "Login successful!"
+            );
+
+            return "dashboard";
+        }
+
+        @GetMapping("/logout")
+public String logout(HttpSession session) {
+
+    session.invalidate();
+
+    return "redirect:/login";
+}
+
+    @GetMapping("/forgot")
+    public String forgotPassword() {
+        return "forgot";
+    }
+    @PostMapping("/forgot")
+    public String processForgotPassword(
+            @RequestParam String email,
             Model model) {
 
         try {
 
-            authService.register(registerRequest);
+            authService.forgotPassword(email);
 
-            return "redirect:/login";
+            model.addAttribute(
+                    "message",
+                    "ส่งลิงก์รีเซ็ตรหัสผ่านไปยัง Email ของคุณแล้ว"
+            );
+
+            return "forgot";
 
         } catch (Exception e) {
 
@@ -110,7 +224,7 @@ public class AuthController {
                     e.getMessage()
             );
 
-            return "register";
+            return "forgot";
         }
     }
 }
