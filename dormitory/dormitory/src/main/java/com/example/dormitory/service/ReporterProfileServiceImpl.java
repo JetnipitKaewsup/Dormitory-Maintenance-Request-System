@@ -1,3 +1,4 @@
+
 package com.example.dormitory.service;
 
 import java.util.UUID;
@@ -25,6 +26,7 @@ public class ReporterProfileServiceImpl
         this.userRepository = userRepository;
     }
 
+    // ดึงข้อมูล Reporter จาก User ID
     @Override
     @Transactional(readOnly = true)
     public Reporter getReporterByUserId(UUID userId) {
@@ -35,6 +37,7 @@ public class ReporterProfileServiceImpl
                                 "Reporter not found"));
     }
 
+    // แก้ไขเบอร์โทรศัพท์
     @Override
     @Transactional
     public void updatePhone(
