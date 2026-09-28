@@ -1,3 +1,4 @@
+
 package com.example.dormitory.service;
 
 import java.util.UUID;
@@ -8,7 +9,5 @@ public interface ReporterProfileService {
 
     Reporter getReporterByUserId(UUID userId);
 
-    void updatePhone(
-            UUID userId,
-            String phoneNo);
+    void updatePhone(UUID userId, String phoneNo);
 }

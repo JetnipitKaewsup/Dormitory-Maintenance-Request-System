@@ -1,0 +1,444 @@
+<!doctype html>
+<html lang="th" xmlns:th="http://www.thymeleaf.org">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>DormCare - แก้ไขโปรไฟล์</title>
+
+    <link rel="stylesheet" th:href="@{/css/reporter.css}" />
+    <script src="https://unpkg.com/lucide@latest"></script>
+
+    <style>
+      body {
+        background: #e9e9e9;
+      }
+
+      /* Main content */
+      .main-content {
+        max-width: 1100px;
+        margin: 65px auto;
+        padding: 0 20px;
+      }
+
+      .back-btn {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        text-decoration: none;
+        color: #475569;
+        margin-bottom: 20px;
+      }
+
+      /* Profile card */
+      .profile-card {
+        background: #fff;
+        border-radius: 12px;
+        padding: 22px 24px 16px;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.18);
+        max-width: 784px;
+        width: 100%;
+        margin: auto;
+        box-sizing: border-box;
+      }
+
+      .profile-heading {
+        display: flex;
+        align-items: center;
+        gap: 25px;
+        margin-bottom: 10px;
+      }
+
+      .profile-header {
+        font-size: 1.15rem;
+        font-weight: 600;
+        color: #222;
+      }
+
+      .edit-notice {
+        color: #ef4444;
+        font-size: 0.75rem;
+      }
+
+      /* Profile form grid */
+      .profile-grid {
+        display: grid;
+        grid-template-columns: repeat(4, minmax(0, 1fr));
+        column-gap: 35px;
+        row-gap: 27px;
+        padding: 0 25px;
+      }
+
+      .form-group {
+        min-width: 0;
+        margin-bottom: 5px;
+      }
+
+      .form-label {
+        display: block;
+        font-size: 0.85rem;
+        font-weight: 400;
+        color: #222;
+        margin-bottom: 7px;
+      }
+
+      .form-control {
+        display: block;
+        width: 100%;
+        height: 26px;
+        box-sizing: border-box;
+        padding: 4px 10px;
+        border: none;
+        border-radius: 12px;
+        font-size: 0.85rem;
+        outline: none;
+        background: #fff;
+        color: #333;
+        box-shadow: 0 3px 5px rgba(0, 0, 0, 0.18);
+      }
+
+      /* Read-only fields */
+      .form-control[readonly] {
+        background: #e2e3e5;
+        color: #555;
+        cursor: not-allowed;
+      }
+
+      /* Editable phone field */
+      .form-control:not([readonly]) {
+        background: #fff;
+      }
+
+      .form-control:not([readonly]):focus {
+        box-shadow: 0 0 0 2px #4c8df6;
+      }
+
+      /* Alert messages */
+      .alert {
+        padding: 10px 14px;
+        border-radius: 8px;
+        margin: 12px 0;
+        font-size: 0.85rem;
+      }
+
+      .alert-success {
+        background: #dcfce7;
+        color: #166534;
+      }
+
+      .alert-error {
+        background: #fee2e2;
+        color: #991b1b;
+      }
+
+      /* Buttons */
+      .form-actions {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        gap: 18px;
+        margin-top: 40px;
+      }
+
+      .btn-cancel,
+      .btn-save {
+        min-width: 98px;
+        padding: 7px 14px;
+        border-radius: 10px;
+        font-size: 0.8rem;
+        cursor: pointer;
+        text-decoration: none;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 7px;
+        box-sizing: border-box;
+        height: 28px;
+      }
+
+      .btn-cancel {
+        border: 1px solid #aaa;
+        color: #777;
+        background: #fff;
+      }
+
+      .btn-cancel:hover {
+        background: #f5f5f5;
+      }
+
+      .btn-save {
+        border: none;
+        background: #4c8df6;
+        color: #fff;
+      }
+
+      .btn-save:hover {
+        background: #3577df;
+      }
+
+      .field-error {
+        color: #dc2626;
+        font-size: 0.75rem;
+        margin-top: 5px;
+      }
+
+      /* Responsive */
+      @media (max-width: 800px) {
+        .profile-grid {
+          grid-template-columns: repeat(2, minmax(0, 1fr));
+          gap: 22px;
+          padding: 0 10px;
+        }
+
+        .main-content {
+          margin: 35px auto;
+        }
+      }
+
+      @media (max-width: 480px) {
+        .main-content {
+          margin: 25px auto;
+          padding: 0 12px;
+        }
+
+        .profile-card {
+          padding: 18px 14px;
+        }
+
+        .profile-grid {
+          grid-template-columns: 1fr;
+          gap: 15px;
+        }
+
+        .profile-heading {
+          flex-wrap: wrap;
+          gap: 5px;
+        }
+
+        .form-actions {
+          flex-direction: column-reverse;
+          margin-top: 25px;
+        }
+
+        .btn-cancel,
+        .btn-save {
+          width: 100%;
+          height: 38px;
+        }
+      }
+    </style>
+  </head>
+
+  <body>
+    <!-- NAVBAR -->
+    <nav class="navbar">
+      <a th:href="@{/}" class="brand">
+        <i data-lucide="wrench"></i>
+        <span>ระบบแจ้งซ่อมในหอพัก</span>
+      </a>
+
+      <div class="nav-actions">
+        <button class="notification-btn" type="button">
+          <i data-lucide="bell"></i>
+          <span class="notification-dot"></span>
+        </button>
+
+        <div class="user-profile">
+          <div>
+            <div
+              th:if="${reporter != null and reporter.user != null}"
+              th:text="${reporter.user.firstName + ' ' + reporter.user.lastName}"
+            >
+              สมชาย ใจดี
+            </div>
+
+            <div
+              style="font-size: 0.75rem; opacity: 0.8"
+              th:if="${reporter != null
+                            and reporter.resident != null
+                            and reporter.resident.room != null}"
+              th:text="'ห้อง ' + ${reporter.resident.room.roomNo}"
+            >
+              ห้อง 302
+            </div>
+          </div>
+
+          <a th:href="@{/login}" class="logout-btn" title="ออกจากระบบ">
+            <i data-lucide="log-out"></i>
+          </a>
+        </div>
+      </div>
+    </nav>
+
+    <!-- TABS -->
+    <div class="tabs-container">
+      <a th:href="@{/reporter/add}" class="tab-btn"> แจ้งซ่อมใหม่ </a>
+
+      <a th:href="@{/reporter/requests}" class="tab-btn"> ประวัติคำร้อง </a>
+
+      <a th:href="@{/reporter/latest}" class="tab-btn"> คำร้องล่าสุด </a>
+    </div>
+
+    <!-- MAIN CONTENT -->
+    <main class="main-content">
+      <!-- BACK BUTTON -->
+      <a th:href="@{/reporter/add}" class="back-btn">
+        <i data-lucide="arrow-left"></i>
+        กลับ
+      </a>
+
+      <!-- PROFILE CARD -->
+      <div class="profile-card">
+        <!-- HEADER -->
+        <div class="profile-heading">
+          <div class="profile-header">ข้อมูลบัญชีผู้ใช้</div>
+
+          <span class="edit-notice"> แก้ไขได้เฉพาะเบอร์โทรศัพท์ </span>
+        </div>
+
+        <!-- SUCCESS MESSAGE -->
+        <div
+          th:if="${successMessage}"
+          class="alert alert-success"
+          th:text="${successMessage}"
+        ></div>
+
+        <!-- ERROR MESSAGE -->
+        <div
+          th:if="${errorMessage}"
+          class="alert alert-error"
+          th:text="${errorMessage}"
+        ></div>
+
+        <!-- PROFILE FORM -->
+        <form
+          th:action="@{/reporter/profile/edit}"
+          method="post"
+          th:object="${profileForm}"
+        >
+          <div class="profile-grid">
+            <!-- FIRST NAME -->
+            <div class="form-group">
+              <label class="form-label" for="firstName"> ชื่อ </label>
+
+              <input
+                type="text"
+                id="firstName"
+                class="form-control"
+                th:value="${reporter.user.firstName}"
+                readonly
+              />
+            </div>
+
+            <!-- LAST NAME -->
+            <div class="form-group">
+              <label class="form-label" for="lastName"> สกุล </label>
+
+              <input
+                type="text"
+                id="lastName"
+                class="form-control"
+                th:value="${reporter.user.lastName}"
+                readonly
+              />
+            </div>
+
+            <!-- PHONE NUMBER -->
+            <div class="form-group">
+              <label class="form-label" for="phoneNo"> เบอร์ติดต่อ </label>
+
+              <input
+                type="tel"
+                id="phoneNo"
+                class="form-control"
+                th:field="*{phoneNo}"
+                placeholder="08XXXXXXXX"
+                maxlength="10"
+                pattern="[0-9]{10}"
+                title="กรุณากรอกเบอร์โทรศัพท์ 10 หลัก"
+                inputmode="numeric"
+                required
+              />
+            </div>
+
+            <!-- EMAIL -->
+            <div class="form-group">
+              <label class="form-label" for="email"> ที่อยู่อีเมล </label>
+
+              <input
+                type="email"
+                id="email"
+                class="form-control"
+                th:value="${reporter.user.email}"
+                readonly
+              />
+            </div>
+
+            <!-- DORM -->
+            <div class="form-group">
+              <label class="form-label" for="dorm"> หอ </label>
+
+              <input
+                type="text"
+                id="dorm"
+                class="form-control"
+                value="หอพัก"
+                readonly
+              />
+            </div>
+
+            <!-- BUILDING -->
+            <div class="form-group">
+              <label class="form-label" for="building"> ตึก </label>
+
+              <input
+                type="text"
+                id="building"
+                class="form-control"
+                th:value="${reporter.resident != null
+                                and reporter.resident.room != null
+                                and reporter.resident.room.building != null
+                                ? reporter.resident.room.building.buildingNo : ''}"
+                readonly
+              />
+            </div>
+
+            <!-- ROOM NUMBER -->
+            <div class="form-group">
+              <label class="form-label" for="roomNo"> หมายเลขห้อง </label>
+
+              <input
+                type="text"
+                id="roomNo"
+                class="form-control"
+                th:value="${reporter.resident != null
+                                and reporter.resident.room != null
+                                ? reporter.resident.room.roomNo : ''}"
+                readonly
+              />
+            </div>
+          </div>
+
+          <!-- BUTTONS -->
+          <div class="form-actions">
+            <a th:href="@{/reporter/requests}" class="btn btn-secondary">
+              ย้อนกลับ
+            </a>
+
+            <button type="submit" class="btn-save">บันทึกการแก้ไข</button>
+          </div>
+        </form>
+      </div>
+    </main>
+
+    <script>
+      lucide.createIcons();
+
+      // อนุญาตเฉพาะตัวเลขในช่องเบอร์โทรศัพท์
+      const phoneInput = document.getElementById("phoneNo");
+
+      phoneInput.addEventListener("input", function () {
+        this.value = this.value.replace(/\D/g, "").slice(0, 10);
+      });
+    </script>
+  </body>
+</html>
