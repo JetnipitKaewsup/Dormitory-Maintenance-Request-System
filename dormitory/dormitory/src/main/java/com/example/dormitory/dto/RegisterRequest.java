@@ -11,6 +11,7 @@ public class RegisterRequest {
     private String password;
     private String confirmPassword;
     private String phoneNo;
+    private boolean terms;
 
     public String getFirstName() {
         return firstName;
@@ -78,9 +79,16 @@ public class RegisterRequest {
 
     public String getPhoneNo() {
     return phoneNo;
-}
+    }
 
-public void setPhoneNo(String phoneNo) {
-    this.phoneNo = phoneNo;
-}
+    public void setPhoneNo(String phoneNo) {
+        this.phoneNo = phoneNo;
+    }
+    public boolean isTerms() {
+        return terms;
+    }
+
+    public void setTerms(boolean terms) {
+        this.terms = terms;
+    }
 }

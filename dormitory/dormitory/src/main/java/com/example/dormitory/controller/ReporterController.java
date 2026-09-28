@@ -1,3 +1,4 @@
+
 package com.example.dormitory.controller;
 
 import java.util.UUID;
@@ -9,23 +10,21 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import com.example.dormitory.dto.ProfileForm;
 import com.example.dormitory.dto.RepairRequestForm;
 import com.example.dormitory.model.RepairRequest;
 import com.example.dormitory.model.Reporter;
-import com.example.dormitory.repository.RepairRequestRepository;
-import com.example.dormitory.repository.ReporterRepository;
 import com.example.dormitory.service.RepairRequestService;
 import com.example.dormitory.service.ReporterProfileService;
 
 import jakarta.servlet.http.HttpSession;
 
-/**
- * ReporterController
- */
 @Controller
 @RequestMapping("/reporter")
 public class ReporterController {
+
     private final RepairRequestService repairRequestService;
     private final ReporterProfileService reporterProfileService;
 
@@ -42,20 +41,18 @@ public class ReporterController {
     public String showAddForm(
             HttpSession session,
             Model model) {
+
         UUID userId = getUserId(session);
+
         if (userId == null) {
             return "redirect:/login";
         }
 
-        Reporter reporter = reporterProfileService.getReporterByUserId(userId);
+        Reporter reporter =
+                reporterProfileService.getReporterByUserId(userId);
 
-        model.addAttribute(
-                "repairForm",
-                new RepairRequestForm());
-
-        model.addAttribute(
-                "reporter",
-                reporter);
+        model.addAttribute("repairForm", new RepairRequestForm());
+        model.addAttribute("reporter", reporter);
 
         return "reporter/ReporterAddRequest";
     }
@@ -73,10 +70,7 @@ public class ReporterController {
         }
 
         try {
-
-            repairRequestService.createRequest(
-                    userId,
-                    form);
+            repairRequestService.createRequest(userId, form);
 
             return "redirect:/reporter/requests";
 
@@ -84,7 +78,8 @@ public class ReporterController {
 
             model.addAttribute("error", e.getMessage());
 
-            Reporter reporter = reporterProfileService.getReporterByUserId(userId);
+            Reporter reporter =
+                    reporterProfileService.getReporterByUserId(userId);
 
             model.addAttribute("reporter", reporter);
 
@@ -108,13 +103,15 @@ public class ReporterController {
                 "requests",
                 repairRequestService.getMyRequests(userId));
 
-        Reporter reporter = reporterProfileService.getReporterByUserId(userId);
+        Reporter reporter =
+                reporterProfileService.getReporterByUserId(userId);
 
         model.addAttribute("reporter", reporter);
 
         return "reporter/ReporterRequests";
     }
 
+    // รายละเอียดคำร้อง
     @GetMapping("/requests/{id}")
     public String showRequestDetail(
             @PathVariable UUID id,
@@ -127,17 +124,14 @@ public class ReporterController {
             return "redirect:/login";
         }
 
-        RepairRequest request = repairRequestService.getMyRequest(
-                userId,
-                id);
+        RepairRequest request =
+                repairRequestService.getMyRequest(userId, id);
 
         model.addAttribute("request", request);
 
         model.addAttribute(
                 "history",
-                repairRequestService.getRequestHistory(
-                        userId,
-                        id));
+                repairRequestService.getRequestHistory(userId, id));
 
         return "reporter/ReporterRequestDetail";
     }
@@ -154,7 +148,8 @@ public class ReporterController {
             return "redirect:/login";
         }
 
-        RepairRequest request = repairRequestService.getLatestRequest(userId);
+        RepairRequest request =
+                repairRequestService.getLatestRequest(userId);
 
         model.addAttribute("request", request);
 
@@ -173,9 +168,7 @@ public class ReporterController {
             return "redirect:/login";
         }
 
-        repairRequestService.cancelRequest(
-                userId,
-                id);
+        repairRequestService.cancelRequest(userId, id);
 
         return "redirect:/reporter/requests";
     }
@@ -192,11 +185,83 @@ public class ReporterController {
             return "redirect:/login";
         }
 
-        repairRequestService.confirmCompletion(
-                userId,
-                id);
+        repairRequestService.confirmCompletion(userId, id);
 
         return "redirect:/reporter/requests/" + id;
+    }
+
+    // แสดงหน้าแก้ไขโปรไฟล์
+    @GetMapping("/profile/edit")
+    public String showEditProfile(
+            HttpSession session,
+            Model model) {
+
+        UUID userId = getUserId(session);
+
+        if (userId == null) {
+            return "redirect:/login";
+        }
+
+        Reporter reporter =
+                reporterProfileService.getReporterByUserId(userId);
+
+        ProfileForm profileForm = new ProfileForm();
+        profileForm.setPhoneNo(reporter.getUser().getPhoneNo());
+
+        model.addAttribute("reporter", reporter);
+        model.addAttribute("profileForm", profileForm);
+
+        return "reporter/ReporterEditProfile";
+    }
+
+    // บันทึกการแก้ไขเบอร์โทรศัพท์
+    @PostMapping("/profile/edit")
+    public String updateProfile(
+            @ModelAttribute("profileForm") ProfileForm form,
+            HttpSession session,
+            Model model,
+            RedirectAttributes redirectAttributes) {
+
+        UUID userId = getUserId(session);
+
+        if (userId == null) {
+            return "redirect:/login";
+        }
+
+        Reporter reporter =
+                reporterProfileService.getReporterByUserId(userId);
+
+        String phoneNo = form.getPhoneNo();
+
+        // ตรวจสอบเบอร์โทรศัพท์ฝั่ง Backend
+        if (phoneNo == null || !phoneNo.matches("[0-9]{10}")) {
+
+            model.addAttribute("reporter", reporter);
+            model.addAttribute("profileForm", form);
+            model.addAttribute(
+                    "errorMessage",
+                    "กรุณากรอกเบอร์โทรศัพท์เป็นตัวเลข 10 หลัก");
+
+            return "reporter/ReporterEditProfile";
+        }
+
+        try {
+            reporterProfileService.updatePhone(userId, phoneNo);
+
+            redirectAttributes.addFlashAttribute(
+                    "successMessage",
+                    "แก้ไขเบอร์โทรศัพท์สำเร็จ");
+
+            return "redirect:/reporter/profile/edit";
+
+        } catch (IllegalArgumentException | IllegalStateException e) {
+
+            model.addAttribute("reporter", reporter);
+            model.addAttribute("profileForm", form);
+            model.addAttribute("errorMessage", e.getMessage());
+
+            return "reporter/ReporterEditProfile";
+        }
     }
 
     // อ่าน User ID จาก Session
@@ -213,24 +278,5 @@ public class ReporterController {
         } catch (IllegalArgumentException e) {
             return null;
         }
-    }
-
-    // แสดงหน้าแก้ไขข้อมูลผู้ใช้
-    @GetMapping("/profile/edit")
-    public String showEditProfile(
-            HttpSession session,
-            Model model) {
-
-        UUID userId = getUserId(session);
-
-        if (userId == null) {
-            return "redirect:/login";
-        }
-
-        Reporter reporter = reporterProfileService.getReporterByUserId(userId);
-
-        model.addAttribute("reporter", reporter);
-
-        return "reporter/ReporterEditProfile";
     }
 }
