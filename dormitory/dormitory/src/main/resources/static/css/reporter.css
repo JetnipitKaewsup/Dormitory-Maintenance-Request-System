@@ -555,7 +555,7 @@ th {
 }
 
 /* รอ Admin ตรวจสอบ */
-.status-submitted {
+.status-pending {
   background: #fff3cd;
   color: #856404;
 }

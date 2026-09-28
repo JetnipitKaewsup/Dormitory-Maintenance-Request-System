@@ -162,7 +162,7 @@ public class RepairRequestServiceImpl implements RepairRequestService {
         // ข้อมูลจากระบบ 
         request.setReporter(reporter);
         request.setRoom(reporter.getResident().getRoom());
-        request.setStatus(RepairRequestStatus.SUBMITTED);
+        request.setStatus(RepairRequestStatus.PENDING);
 
         RepairRequest savedRequest =
                 repairRequestRepository.save(request);
@@ -172,7 +172,7 @@ public class RepairRequestServiceImpl implements RepairRequestService {
                 new RepairRequestStatusHistory(
                         savedRequest,
                         reporter.getUser(),
-                        RepairRequestStatus.SUBMITTED,
+                        RepairRequestStatus.PENDING,
                         null,
                         LocalDateTime.now());
 
@@ -258,7 +258,7 @@ public class RepairRequestServiceImpl implements RepairRequestService {
                 getMyRequest(userId, repairRequestId);
 
         // ยกเลิกได้เฉพาะก่อน Admin ดำเนินการ
-        if (request.getStatus() != RepairRequestStatus.SUBMITTED) {
+        if (request.getStatus() != RepairRequestStatus.PENDING) {
             throw new IllegalStateException(
                     "สามารถยกเลิกได้เฉพาะคำร้องสถานะ SUBMITTED");
         }
