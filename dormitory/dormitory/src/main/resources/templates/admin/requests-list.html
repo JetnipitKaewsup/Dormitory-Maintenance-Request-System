@@ -8,7 +8,20 @@
 </head>
 <body>
 
-<div th:replace="~{admin/adminHeader :: header('requests')}"></div>
+
+<div th:replace="~{admin/adminHeader :: homeHeader()}"></div>
+
+<div class="welcome-banner">
+    <div>
+        <div class="welcome-title">ยินดีต้อนรับ, <span th:text="${session.userFullName} ?: 'แอดมิน'">แอดมิน</span></div>
+        <div class="welcome-subtitle">ตรวจสอบและจัดการคำร้องแจ้งซ่อมได้ที่นี่</div>
+    </div>
+    <div class="welcome-actions">
+        <a class="btn-welcome" th:href="@{/admin/requests}">📋 คำร้อง</a>
+        <a class="btn-welcome" th:href="@{/admin/assignments}">🛠️ มอบหมายงาน</a>
+        <a class="btn-welcome" th:href="@{/admin/inspections}">✅ ตรวจงาน</a>
+    </div>
+</div>
 
 <main>
     <!-- ============ สรุปสถานะ (stat cards) ============ -->
