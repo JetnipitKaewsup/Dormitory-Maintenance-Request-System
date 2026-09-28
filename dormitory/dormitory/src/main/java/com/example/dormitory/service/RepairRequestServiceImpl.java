@@ -3,7 +3,9 @@ package com.example.dormitory.service;
 import com.example.dormitory.dto.RepairRequestForm;
 import com.example.dormitory.model.Admin;
 import com.example.dormitory.model.RepairRequest;
+import com.example.dormitory.model.RepairRequestStatus;
 import com.example.dormitory.model.RepairRequestStatusHistory;
+import com.example.dormitory.model.RepairType;
 import com.example.dormitory.model.Reporter;
 import com.example.dormitory.model.User;
 import com.example.dormitory.repository.AdminRepository;
@@ -46,25 +48,25 @@ public class RepairRequestServiceImpl implements RepairRequestService {
     @Override
     @Transactional
     public void approve(UUID repairRequestId, UUID adminId) {
-        changeStatus(repairRequestId, adminId, "APPROVED", null);
+        changeStatus(repairRequestId, adminId, RepairRequestStatus.APPROVED, null);
     }
 
     @Override
     @Transactional
     public void reject(UUID repairRequestId, UUID adminId, String rejectReason) {
-        changeStatus(repairRequestId, adminId, "REJECTED", rejectReason);
+        changeStatus(repairRequestId, adminId, RepairRequestStatus.REJECTED, rejectReason);
     }
 
     // logic กลางที่ approve()/reject() เรียกใช้ร่วมกัน
     // 1) อัปเดตสถานะ + ผูก admin คนที่ทำรายการ ลงใน RepairRequest
     // 2) เขียน record ลง RepairRequestStatusHistory เพื่อเก็บ audit trail
     // ทำใน @Transactional เดียวกัน เพื่อกันกรณี save สำเร็จแค่ครึ่งเดียว
-    private void changeStatus(UUID repairRequestId, UUID adminId, String newStatus, String note) {
+    private void changeStatus(UUID repairRequestId, UUID adminId, RepairRequestStatus newStatus, String note) {
         RepairRequest request = getById(repairRequestId);
         Admin admin = adminRepository.findById(adminId)
                 .orElseThrow(() -> new IllegalArgumentException("ไม่พบ admin id: " + adminId));
 
-        String previousStatus = request.getStatus();
+        RepairRequestStatus previousStatus = request.getStatus();
 
         request.setStatus(newStatus);
         request.setAdmin(admin);
@@ -146,9 +148,9 @@ public class RepairRequestServiceImpl implements RepairRequestService {
         }
 
         RepairRequest request = new RepairRequest();
-        
+
         // ข้อมูลที่ผู้แจ้งกรอก
-        request.setRepairType(form.getRepairType());
+        request.setRepairType(RepairType.valueOf(form.getRepairType()));
         request.setDescription(form.getDescription());
         request.setReporterNote(form.getReporterNote());
         request.setStartDateTime(startDateTime);
@@ -157,10 +159,10 @@ public class RepairRequestServiceImpl implements RepairRequestService {
         // บันทึกวันที่และเวลาที่สร้างคำร้อง
         request.setCreatedAt(LocalDateTime.now());
 
-        // ข้อมูลจากระบบ ห้ามรับจาก form
+        // ข้อมูลจากระบบ 
         request.setReporter(reporter);
         request.setRoom(reporter.getResident().getRoom());
-        request.setStatus("SUBMITTED");
+        request.setStatus(RepairRequestStatus.SUBMITTED);
 
         RepairRequest savedRequest =
                 repairRequestRepository.save(request);
@@ -170,7 +172,7 @@ public class RepairRequestServiceImpl implements RepairRequestService {
                 new RepairRequestStatusHistory(
                         savedRequest,
                         reporter.getUser(),
-                        "SUBMITTED",
+                        RepairRequestStatus.SUBMITTED,
                         null,
                         LocalDateTime.now());
 
@@ -256,15 +258,15 @@ public class RepairRequestServiceImpl implements RepairRequestService {
                 getMyRequest(userId, repairRequestId);
 
         // ยกเลิกได้เฉพาะก่อน Admin ดำเนินการ
-        if (!"SUBMITTED".equals(request.getStatus())) {
+        if (request.getStatus() != RepairRequestStatus.SUBMITTED) {
             throw new IllegalStateException(
                     "สามารถยกเลิกได้เฉพาะคำร้องสถานะ SUBMITTED");
         }
 
-        String previousStatus =
+        RepairRequestStatus previousStatus =
                 request.getStatus();
 
-        request.setStatus("CANCELLED");
+        request.setStatus(RepairRequestStatus.CANCELLED);
 
         repairRequestRepository.save(request);
 
@@ -275,13 +277,13 @@ public class RepairRequestServiceImpl implements RepairRequestService {
                 new RepairRequestStatusHistory(
                         request,
                         reporter.getUser(),
-                        "CANCELLED",
+                        RepairRequestStatus.CANCELLED,
                         previousStatus,
                         LocalDateTime.now());
 
         historyRepository.save(history);
     }
-
+/* 
     // Reporter - Confirm Completion
     @Override
     @Transactional
@@ -292,20 +294,16 @@ public class RepairRequestServiceImpl implements RepairRequestService {
         RepairRequest request =
                 getMyRequest(userId, repairRequestId);
 
-        /*
-         * Technician ทำงานเสร็จแล้ว
-         * แต่ RepairRequest ยังเป็น IN_PROGRESS
-         * จนกว่า Reporter จะยืนยัน
-         */
+        
         if (!"IN_PROGRESS".equals(request.getStatus())) {
             throw new IllegalStateException(
                     "คำร้องยังไม่พร้อมสำหรับการยืนยันงานเสร็จ");
         }
 
-        String previousStatus =
+        RepairRequestStatus previousStatus =
                 request.getStatus();
 
-        request.setStatus("COMPLETED");
+        request.setStatus(RepairRequestStatus.);
 
         repairRequestRepository.save(request);
 
@@ -322,5 +320,7 @@ public class RepairRequestServiceImpl implements RepairRequestService {
 
         historyRepository.save(history);
     }
+    
+    */
 
 }
