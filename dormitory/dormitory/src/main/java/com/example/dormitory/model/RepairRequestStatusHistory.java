@@ -23,10 +23,12 @@ public class RepairRequestStatusHistory {
     @JoinColumn(name = "change_by", nullable = false)
     private User changeBy;
 
+    @Enumerated(EnumType.STRING)
     @Column(nullable = false)
-    private String newStatus;
+    private RepairRequestStatus newStatus;
 
-    private String previousStatus;
+    @Enumerated(EnumType.STRING)
+    private RepairRequestStatus previousStatus;
 
     @Column(nullable = false)
     private LocalDateTime changeDate;
@@ -34,7 +36,7 @@ public class RepairRequestStatusHistory {
     public RepairRequestStatusHistory() {
     }
     public RepairRequestStatusHistory(RepairRequest repairRequest, User changeBy,
-                                       String newStatus, String previousStatus,
+                                       RepairRequestStatus newStatus, RepairRequestStatus previousStatus,
                                        LocalDateTime changeDate) {
         this.repairRequest = repairRequest;
         this.changeBy = changeBy;
@@ -69,19 +71,19 @@ public class RepairRequestStatusHistory {
         this.changeBy = changeBy;
     }
 
-    public String getNewStatus() {
+    public RepairRequestStatus getNewStatus() {
         return newStatus;
     }
 
-    public void setNewStatus(String newStatus) {
+    public void setNewStatus(RepairRequestStatus newStatus) {
         this.newStatus = newStatus;
     }
 
-    public String getPreviousStatus() {
+    public RepairRequestStatus getPreviousStatus() {
         return previousStatus;
     }
 
-    public void setPreviousStatus(String previousStatus) {
+    public void setPreviousStatus(RepairRequestStatus previousStatus) {
         this.previousStatus = previousStatus;
     }
 

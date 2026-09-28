@@ -172,7 +172,7 @@ public class ReporterController {
 
         return "redirect:/reporter/requests";
     }
-
+/* 
     // ยืนยันงานซ่อมเสร็จ
     @PostMapping("/requests/{id}/confirm-completion")
     public String confirmCompletion(
@@ -188,7 +188,7 @@ public class ReporterController {
         repairRequestService.confirmCompletion(userId, id);
 
         return "redirect:/reporter/requests/" + id;
-    }
+    }*/
 
     // แสดงหน้าแก้ไขโปรไฟล์
     @GetMapping("/profile/edit")
