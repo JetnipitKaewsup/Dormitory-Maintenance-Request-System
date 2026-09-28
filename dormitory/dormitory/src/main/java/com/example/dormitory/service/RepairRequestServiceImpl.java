@@ -5,6 +5,7 @@ import com.example.dormitory.model.Admin;
 import com.example.dormitory.model.RepairRequest;
 import com.example.dormitory.model.RepairRequestStatus;
 import com.example.dormitory.model.RepairRequestStatusHistory;
+import com.example.dormitory.model.RepairType;
 import com.example.dormitory.model.Reporter;
 import com.example.dormitory.model.User;
 import com.example.dormitory.repository.AdminRepository;
@@ -147,9 +148,9 @@ public class RepairRequestServiceImpl implements RepairRequestService {
         }
 
         RepairRequest request = new RepairRequest();
-        
+
         // ข้อมูลที่ผู้แจ้งกรอก
-        request.setRepairType(form.getRepairType());
+        request.setRepairType(RepairType.valueOf(form.getRepairType()));
         request.setDescription(form.getDescription());
         request.setReporterNote(form.getReporterNote());
         request.setStartDateTime(startDateTime);

@@ -27,8 +27,9 @@ public class RepairRequest {
     @JoinColumn(name = "room_no", nullable = false)
     private Room room;
 
+    @Enumerated(EnumType.STRING)
     @Column(nullable = false)
-    private String repairType;
+    private RepairType repairType;
 
     @Enumerated (EnumType.STRING)
 
@@ -52,7 +53,7 @@ public class RepairRequest {
     }
 
     public RepairRequest(UUID repairRequestId, Reporter reporter, Admin admin,
-                        Room room, String repairType, RepairRequestStatus status,
+                        Room room, RepairType repairType, RepairRequestStatus status,
                         String description, String reporterNote,
                         LocalDateTime startDateTime, LocalDateTime endDateTime) {
         this.repairRequestId = repairRequestId;
@@ -100,11 +101,11 @@ public class RepairRequest {
         this.room = room;
     }
 
-    public String getRepairType() {
+    public RepairType getRepairType() {
         return repairType;
     }
 
-    public void setRepairType(String repairType) {
+    public void setRepairType(RepairType repairType) {
         this.repairType = repairType;
     }
 
