@@ -203,8 +203,12 @@
 
             <!-- ประเภทงาน -->
 
-            <td th:text="${request.repairType}">
-              ELECTRICAL
+            <td>
+              <span
+                   th:if="${request.repairType != null}"
+                    th:text="${request.repairType.thaiName}">
+                    ไฟฟ้า
+              </span>
             </td>
 
 
@@ -292,4 +296,3 @@
 </body>
 
 </html>
-```
