@@ -3,9 +3,9 @@
 <body>
 
 <!-- ใช้กับหน้าอื่นๆ ที่ต้องมี nav tabs -->
-<div th:fragment="header(activeTab)">
+<div th:fragment="adminHeader(activeTab)">
     <header class="topbar">
-        <div class="brand">Dormitory Repair System</div>
+        <a class="brand" th:href="@{/admin/requests}">Dormitory Repair System</a>
         <div class="right">
             <div class="user-chip">
                 <span class="avatar"></span>
@@ -29,7 +29,7 @@
 <!-- ใช้เฉพาะหน้า admin home: ไม่มี nav tabs -->
 <div th:fragment="homeHeader()">
     <header class="topbar">
-        <div class="brand">Dormitory Repair System</div>
+        <a class="brand" th:href="@{/admin/requests}">Dormitory Repair System</a>
         <div class="right">
             <div class="user-chip">
                 <span class="avatar"></span>
