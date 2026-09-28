@@ -33,6 +33,10 @@ public class User {
     @Column(name = "role")
     private String role;
 
+    @Column(name = "email", unique = true)
+    private String email;
+
+
     public UUID getUserId() {
         return userId;
     }
@@ -87,5 +91,12 @@ public class User {
 
     public void setRole(String role) {
         this.role = role;
+    }
+    public String getEmail() {
+        return email;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
     }
 }

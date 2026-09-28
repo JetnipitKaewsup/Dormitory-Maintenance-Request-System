@@ -68,7 +68,7 @@ public class AuthController {
             );
         
             
-            return "redirect:/dashboard";
+            return "redirect:/reporter/requests";
 
         } catch (Exception e) {
 
@@ -127,25 +127,9 @@ public String processRegister(
                 ? registerRequest.getConfirmPassword().length()
                 : 0));
 
-    // Prevent NullPointerException
-    if (registerRequest.getPassword() == null
-            || registerRequest.getConfirmPassword() == null) {
 
-        model.addAttribute("error", "Password is required");
-        return "register";
-    }
 
-    // Check password confirmation
-    if (!registerRequest.getPassword()
-            .equals(registerRequest.getConfirmPassword())) {
 
-        System.out.println(">>> PASSWORD DOES NOT MATCH");
-
-        model.addAttribute("error", "Passwords do not match");
-        return "register";
-    }
-
-    System.out.println(">>> PASSWORD MATCHES");
 
     try {
 
