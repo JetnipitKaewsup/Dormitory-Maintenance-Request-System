@@ -18,6 +18,7 @@ import tools.jackson.databind.ObjectMapper;
 public class AuthService {
 
     private final WebClient supabaseWebClient;
+    private final ObjectMapper objectMapper = new ObjectMapper();
 
     public AuthService(WebClient supabaseWebClient) {
         this.supabaseWebClient = supabaseWebClient;
@@ -29,10 +30,42 @@ public class AuthService {
 
     public SupabaseAuthResponse login(LoginRequest request) {
 
-        Map<String, String> body = new HashMap<>();
-        body.put("email", request.getEmail());
-        body.put("password", request.getPassword());
+        // Validate request
+        if (request == null) {
+            throw new IllegalArgumentException(
+                    "Login request is required"
+            );
+        }
 
+        // Validate email
+        if (request.getEmail() == null
+                || request.getEmail().isBlank()) {
+            throw new IllegalArgumentException(
+                    "Email is required"
+            );
+        }
+
+        if (!isValidEmail(request.getEmail())) {
+            throw new IllegalArgumentException(
+                    "Invalid email format"
+            );
+        }
+
+        // Validate password
+        if (request.getPassword() == null
+                || request.getPassword().isBlank()) {
+            throw new IllegalArgumentException(
+                    "Password is required"
+            );
+        }
+
+        // Prepare request body
+        Map<String, String> body = Map.of(
+                "email", request.getEmail(),
+                "password", request.getPassword()
+        );
+
+        // Send request to Supabase Auth
         return supabaseWebClient
                 .post()
                 .uri("/auth/v1/token?grant_type=password")
@@ -40,6 +73,7 @@ public class AuthService {
                 .bodyValue(body)
                 .exchangeToMono(response ->
                         response.bodyToMono(String.class)
+                                .defaultIfEmpty("")
                                 .map(responseBody -> {
 
                                     if (response.statusCode().isError()) {
@@ -50,14 +84,10 @@ public class AuthService {
                                     }
 
                                     try {
-                                        ObjectMapper mapper =
-                                                new ObjectMapper();
-
-                                        return mapper.readValue(
+                                        return objectMapper.readValue(
                                                 responseBody,
                                                 SupabaseAuthResponse.class
                                         );
-
                                     } catch (Exception e) {
                                         throw new RuntimeException(
                                                 "Cannot parse Supabase response",
@@ -74,6 +104,13 @@ public class AuthService {
     // ============================================================
 
     public void register(RegisterRequest request) {
+
+        // Validate request
+        if (request == null) {
+            throw new IllegalArgumentException(
+                    "Register request is required"
+            );
+        }
 
         // Validate first name
         if (request.getFirstName() == null
@@ -161,9 +198,8 @@ public class AuthService {
     // ============================================================
 
     private boolean isValidEmail(String email) {
-
         return email.matches(
-                "^[A-Za-z0-9+_.-]+@[A-Za-z0-9.-]+$"
+                "^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,}$"
         );
     }
 
@@ -172,6 +208,18 @@ public class AuthService {
     // ============================================================
 
     public void forgotPassword(String email) {
+
+        if (email == null || email.isBlank()) {
+            throw new IllegalArgumentException(
+                    "Email is required"
+            );
+        }
+
+        if (!isValidEmail(email)) {
+            throw new IllegalArgumentException(
+                    "Invalid email format"
+            );
+        }
 
         Map<String, String> body = new HashMap<>();
         body.put("email", email);
