@@ -5,6 +5,7 @@ import java.util.UUID;
 
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -20,6 +21,7 @@ import com.example.dormitory.service.RepairRequestService;
 import com.example.dormitory.service.ReporterProfileService;
 
 import jakarta.servlet.http.HttpSession;
+import jakarta.validation.Valid;
 
 @Controller
 @RequestMapping("/reporter")
@@ -59,7 +61,8 @@ public class ReporterController {
 
     @PostMapping("/add")
     public String createRequest(
-            @ModelAttribute("repairForm") RepairRequestForm form,
+            @Valid @ModelAttribute("repairForm") RepairRequestForm form,
+            BindingResult bindingResult,
             HttpSession session,
             Model model) {
 
@@ -69,6 +72,14 @@ public class ReporterController {
             return "redirect:/login";
         }
 
+        // ตรวจ binding errors (จาก DTO annotations)
+        if (bindingResult.hasErrors()) {
+            Reporter reporter = reporterProfileService.getReporterByUserId(userId);
+            model.addAttribute("reporter", reporter);
+            return "reporter/ReporterAddRequest";
+        }
+
+        // เรียก service
         try {
             repairRequestService.createRequest(userId, form);
 
@@ -172,7 +183,7 @@ public class ReporterController {
 
         return "redirect:/reporter/requests";
     }
-
+/* 
     // ยืนยันงานซ่อมเสร็จ
     @PostMapping("/requests/{id}/confirm-completion")
     public String confirmCompletion(
@@ -188,7 +199,7 @@ public class ReporterController {
         repairRequestService.confirmCompletion(userId, id);
 
         return "redirect:/reporter/requests/" + id;
-    }
+    }*/
 
     // แสดงหน้าแก้ไขโปรไฟล์
     @GetMapping("/profile/edit")

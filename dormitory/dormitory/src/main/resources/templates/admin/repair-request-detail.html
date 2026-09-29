@@ -8,7 +8,7 @@
 </head>
 <body>
 
-<div th:replace="~{admin/adminHeader :: header('requests')}"></div>
+<div th:replace="~{admin/adminHeader :: adminHeader(activeTab='requests')}"></div>
 
 <main>
     <h1 class="page-title">รายละเอียดคำร้องแจ้งซ่อม</h1>
@@ -132,9 +132,9 @@
             <div class="value" th:text="${request.description}">-</div>
         </div>
 
-        <div class="desc-block" style="margin-top:12px;" th:if="${request.remark != null and !request.remark.isEmpty()}">
+        <div class="desc-block" style="margin-top:12px;" th:if="${request.reporterNote != null and !request.reporterNote.isEmpty()}">
             <div class="label">หมายเหตุจากผู้แจ้ง</div>
-            <div class="value" th:text="${request.remark}">-</div>
+            <div class="value" th:text="${request.reporterNote}">-</div>
         </div>
 
         <!-- ============ Actions: only when still pending ============ -->

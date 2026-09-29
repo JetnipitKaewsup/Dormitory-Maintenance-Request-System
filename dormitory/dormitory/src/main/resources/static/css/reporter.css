@@ -555,7 +555,7 @@ th {
 }
 
 /* รอ Admin ตรวจสอบ */
-.status-submitted {
+.status-pending {
   background: #fff3cd;
   color: #856404;
 }
@@ -793,7 +793,7 @@ th {
 }
 .detail-value {
   font-weight: 500;
-  text-align: right;
+  text-align: left;
 }
 .detail-value.text-left {
   text-align: left;
@@ -839,4 +839,194 @@ th {
 
 .edit-profile-btn:hover {
   background: #f5f5f5;
+}
+
+/* ================= MODAL STYLES ================= */
+.modal-overlay {
+  position: fixed;
+  top: 0; left: 0; width: 100%; height: 100%;
+  background: rgba(0, 0, 0, 0.4);
+  display: none; /* ซ่อนไว้ก่อน */
+  justify-content: center;
+  align-items: center;
+  z-index: 9999;
+}
+
+.modal-overlay.show {
+  display: flex; /* แสดงเมื่อมี class show */
+}
+
+.modal-content {
+  background: #fff;
+  padding: 30px 24px;
+  border-radius: 12px;
+  width: 90%;
+  max-width: 480px;
+  box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+  text-align: center;
+}
+
+.modal-title {
+  color: #d32f2f; /* สีแดงตามภาพ */
+  font-size: 1.25rem;
+  font-weight: 700;
+  margin-bottom: 20px;
+  line-height: 1.5;
+}
+
+.modal-subtitle {
+  color: #333;
+  font-weight: 600;
+  font-size: 1.1rem;
+  margin-bottom: 20px;
+}
+
+.modal-subtitle span {
+  font-weight: 400;
+  color: #777;
+  font-size: 0.95rem;
+}
+
+.modal-body {
+  text-align: left;
+  background: #fff;
+  border: 1px solid #e0e0e0;
+  border-radius: 8px;
+  padding: 16px 20px;
+  margin-bottom: 24px;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+}
+
+.modal-body p {
+  margin: 8px 0;
+  font-size: 1rem;
+  color: #222;
+}
+
+.modal-actions {
+  display: flex;
+  justify-content: center;
+  gap: 20px;
+}
+
+.modal-actions button {
+  padding: 10px 24px;
+  border-radius: 25px;
+  font-size: 0.95rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.btn-cancel {
+  background: #fff;
+  border: 1px solid #aaa;
+  color: #666;
+}
+
+.btn-cancel:hover {
+  background: #f5f5f5;
+}
+
+.btn-confirm {
+  background: #d32f2f;
+  border: none;
+  color: #fff;
+}
+
+.btn-confirm:hover {
+  background: #b71c1c;
+}
+
+/* ================= CANCELLED BANNER ================= */
+.cancelled-banner {
+  background: #fff5f5;
+  border: 2px solid #f5c2c7;
+  border-radius: 12px;
+  padding: 32px 24px;
+  text-align: center;
+  margin-bottom: 24px;
+  color: #d32f2f;
+}
+
+.cancelled-banner i {
+  color: #d32f2f;
+  margin-bottom: 12px;
+}
+
+.cancelled-banner h3 {
+  font-size: 1.25rem;
+  font-weight: 700;
+  margin: 8px 0;
+}
+
+.cancelled-banner p {
+  color: #666;
+  font-size: 0.95rem;
+  margin: 0;
+}
+
+/* ================= TOP BAR (Back + Cancel) ================= */
+.top-bar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 24px; /* เว้นระยะห่างจาก Stepper ด้านล่าง */
+}
+
+.top-bar .back-btn {
+  margin-bottom: 0;
+}
+
+.top-bar .btn-outline-danger {
+  padding: 10px 20px;
+  font-size: 0.95rem;
+  font-weight: 500;
+}
+
+/* ================= FIELD ERROR ================= */
+.field-error {
+  color: var(--danger-red, #ea4335);
+  font-size: 0.85rem;
+  margin-top: 4px;
+}
+
+/* ================= ALERT ================= */
+.alert-danger {
+  background: #fce8e6;
+  color: #d32f2f;
+  border: 1px solid #f5c2c7;
+  border-radius: 8px;
+  padding: 12px 16px;
+  margin-bottom: 16px;
+}
+
+/* ================= ERROR MODAL ================= */
+.error-modal { text-align: center; }
+
+.error-icon {
+  color: var(--danger-red, #ea4335);
+  display: flex;
+  justify-content: center;
+  margin-bottom: 16px;
+  animation: shake 0.4s ease;
+}
+
+@keyframes shake {
+  0%, 100% { transform: translateX(0); }
+  25%      { transform: translateX(-8px); }
+  75%      { transform: translateX(8px); }
+}
+
+.error-title {
+  color: var(--danger-red, #ea4335);
+  font-size: 1.25rem;
+  font-weight: 700;
+  margin-bottom: 8px;
+}
+
+.error-text {
+  color: #666;
+  font-size: 0.95rem;
+  margin-bottom: 24px;
 }
