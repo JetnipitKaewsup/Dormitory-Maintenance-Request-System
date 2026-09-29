@@ -5,7 +5,7 @@ import java.util.UUID;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 
-import com.example.dormitory.model.Reporter;
+import com.example.dormitory.domain.entity.Reporter;
 /**
  * ReporterRepository
  */

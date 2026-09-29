@@ -1,4 +1,4 @@
-package com.example.dormitory.model;
+package com.example.dormitory.domain.entity;
 
 import java.util.ArrayList;
 import java.util.List;

@@ -1,11 +1,12 @@
-package com.example.dormitory.model;
+package com.example.dormitory.domain.entity;
 
-import com.example.dormitory.model.Technician;
-import com.example.dormitory.model.RepairRequest;
-import com.example.dormitory.model.Admin;
 import jakarta.persistence.*;
 import java.time.LocalDateTime;
 import java.util.UUID;
+
+import com.example.dormitory.domain.entity.Admin;
+import com.example.dormitory.domain.entity.RepairRequest;
+import com.example.dormitory.domain.entity.Technician;
 
 @Entity
 @Table(name = "RepairAssignment")

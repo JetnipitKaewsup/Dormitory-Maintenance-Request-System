@@ -1,4 +1,4 @@
-package com.example.dormitory.model;
+package com.example.dormitory.domain.enums;
 
 public enum RepairRequestStatus {
     PENDING("รอดำเนินการ", "pending"),

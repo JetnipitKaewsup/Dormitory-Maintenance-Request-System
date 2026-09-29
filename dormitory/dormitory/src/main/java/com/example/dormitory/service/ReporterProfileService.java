@@ -3,7 +3,7 @@ package com.example.dormitory.service;
 
 import java.util.UUID;
 
-import com.example.dormitory.model.Reporter;
+import com.example.dormitory.domain.entity.Reporter;
 
 public interface ReporterProfileService {
 
