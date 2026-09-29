@@ -34,8 +34,11 @@ public interface RepairRequestService {
     void cancelRequest(
             UUID userId,
             UUID repairRequestId);
-
+/* 
     void confirmCompletion(
             UUID userId,
-            UUID repairRequestId);
+            UUID repairRequestId);*/
+            
+    // Admin - list all
+    List<RepairRequest> getAllRequests();
 }

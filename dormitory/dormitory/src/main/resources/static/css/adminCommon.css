@@ -159,4 +159,11 @@ textarea.remark-box {
     margin-bottom: 12px;
     transition: border-color 0.15s ease;
 }
+header.topbar .brand {
+    font-size: 20px;
+    font-weight: 600;
+    color: #fff;
+    text-decoration: none;
+}
+header.topbar .brand:hover { opacity: 0.85; }
 textarea.remark-box:focus { outline: none; border-color: var(--color-primary); }
