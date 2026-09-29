@@ -1,4 +1,6 @@
-package com.example.dormitory.dto;
+package com.example.dormitory.dto.response;
+
+import com.example.dormitory.dto.SupabaseUser;
 
 public class SupabaseAuthResponse {
 

@@ -1,4 +1,4 @@
-package com.example.dormitory.model;
+package com.example.dormitory.domain.entity;
 
 public enum RepairType {
 

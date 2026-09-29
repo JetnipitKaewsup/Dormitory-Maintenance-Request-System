@@ -8,9 +8,9 @@ import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
 
-import com.example.dormitory.dto.LoginRequest;
-import com.example.dormitory.dto.RegisterRequest;
-import com.example.dormitory.dto.SupabaseAuthResponse;
+import com.example.dormitory.dto.request.LoginRequest;
+import com.example.dormitory.dto.request.RegisterRequest;
+import com.example.dormitory.dto.response.SupabaseAuthResponse;
 
 import tools.jackson.databind.ObjectMapper;
 

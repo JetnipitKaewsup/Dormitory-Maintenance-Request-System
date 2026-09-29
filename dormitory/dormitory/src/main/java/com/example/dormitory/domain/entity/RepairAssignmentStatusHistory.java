@@ -1,10 +1,11 @@
-package com.example.dormitory.model;
+package com.example.dormitory.domain.entity;
 
-import com.example.dormitory.model.RepairAssignment;
-import com.example.dormitory.model.User;
 import jakarta.persistence.*;
 import java.time.LocalDateTime;
 import java.util.UUID;
+
+import com.example.dormitory.domain.entity.RepairAssignment;
+import com.example.dormitory.domain.entity.User;
 
 @Entity
 @Table(name = "RepairAssignmentStatusHistory")

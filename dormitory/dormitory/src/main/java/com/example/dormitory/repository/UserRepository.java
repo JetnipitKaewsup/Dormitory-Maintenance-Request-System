@@ -1,7 +1,9 @@
 package com.example.dormitory.repository;
 
-import com.example.dormitory.model.User;
 import org.springframework.data.jpa.repository.JpaRepository;
+
+import com.example.dormitory.domain.entity.User;
+
 import java.util.Optional;
 import java.util.UUID;
 

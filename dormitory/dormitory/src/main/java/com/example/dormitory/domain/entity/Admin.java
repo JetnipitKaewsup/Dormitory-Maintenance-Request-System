@@ -1,4 +1,4 @@
-package com.example.dormitory.model;
+package com.example.dormitory.domain.entity;
 
 import jakarta.persistence.*;
 import java.util.UUID;

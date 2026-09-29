@@ -1,15 +1,16 @@
 
-package com.example.dormitory.service;
+package com.example.dormitory.service.impl;
 
 import java.util.UUID;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.example.dormitory.model.Reporter;
-import com.example.dormitory.model.User;
+import com.example.dormitory.domain.entity.Reporter;
+import com.example.dormitory.domain.entity.User;
 import com.example.dormitory.repository.ReporterRepository;
 import com.example.dormitory.repository.UserRepository;
+import com.example.dormitory.service.ReporterProfileService;
 
 @Service
 public class ReporterProfileServiceImpl
