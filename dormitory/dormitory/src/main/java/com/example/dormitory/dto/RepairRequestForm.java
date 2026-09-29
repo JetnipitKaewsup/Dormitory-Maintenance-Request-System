@@ -5,21 +5,30 @@ import java.time.LocalTime;
 
 import org.springframework.format.annotation.DateTimeFormat;
 
-public class RepairRequestForm {
+import jakarta.validation.constraints.*;
 
+public class RepairRequestForm {
+    @NotBlank(message = "กรุณาเลือกประเภทงานซ่อม")
     private String repairType;
 
+    @NotBlank(message = "กรุณากรอกอาการ/ปัญหา")
+    @Size(max = 500, message = "รายละเอียดต้องไม่เกิน 500 ตัวอักษร")
     private String description;
 
+    @NotNull(message = "กรุณาเลือกวันที่")
+    @FutureOrPresent(message = "ไม่สามารถเลือกวันที่ในอดีตได้")
     @DateTimeFormat(pattern = "yyyy-MM-dd")
     private LocalDate preferredDate;
 
+    @NotNull(message = "กรุณาระบุเวลาเริ่ม")
     @DateTimeFormat(pattern = "HH:mm")
     private LocalTime startTime;
-
+    
+    @NotNull(message = "กรุณาระบุเวลาสิ้นสุด")
     @DateTimeFormat(pattern = "HH:mm")
     private LocalTime endTime;
 
+    @Size(max = 300)
     private String reporterNote;
 
     public RepairRequestForm() {
