@@ -44,6 +44,11 @@ public class RepairRequestServiceImpl implements RepairRequestService {
         return repairRequestRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("ไม่พบคำร้องแจ้งซ่อม id: " + id));
     }
+        @Override
+    @Transactional(readOnly = true)
+    public List<RepairRequest> getAllRequests() {
+        return repairRequestRepository.findAll();
+    }
 
     @Override
     @Transactional
