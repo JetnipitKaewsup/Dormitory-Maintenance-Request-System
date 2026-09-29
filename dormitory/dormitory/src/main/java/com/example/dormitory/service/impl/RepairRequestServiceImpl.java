@@ -1,17 +1,18 @@
-package com.example.dormitory.service;
+package com.example.dormitory.service.impl;
 
+import com.example.dormitory.domain.entity.Admin;
+import com.example.dormitory.domain.entity.RepairRequest;
+import com.example.dormitory.domain.entity.RepairRequestStatusHistory;
+import com.example.dormitory.domain.entity.RepairType;
+import com.example.dormitory.domain.entity.Reporter;
+import com.example.dormitory.domain.entity.User;
+import com.example.dormitory.domain.enums.RepairRequestStatus;
 import com.example.dormitory.dto.RepairRequestForm;
-import com.example.dormitory.model.Admin;
-import com.example.dormitory.model.RepairRequest;
-import com.example.dormitory.model.RepairRequestStatus;
-import com.example.dormitory.model.RepairRequestStatusHistory;
-import com.example.dormitory.model.RepairType;
-import com.example.dormitory.model.Reporter;
-import com.example.dormitory.model.User;
 import com.example.dormitory.repository.AdminRepository;
 import com.example.dormitory.repository.RepairRequestRepository;
 import com.example.dormitory.repository.RepairRequestStatusHistoryRepository;
 import com.example.dormitory.repository.ReporterRepository;
+import com.example.dormitory.service.RepairRequestService;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;

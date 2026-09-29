@@ -1,8 +1,9 @@
-package com.example.dormitory.model;
+package com.example.dormitory.domain.entity;
 
-import com.example.dormitory.model.User;
 import jakarta.persistence.*;
 import java.util.UUID;
+
+import com.example.dormitory.domain.entity.User;
 
 @Entity
 @Table(name = "technician")

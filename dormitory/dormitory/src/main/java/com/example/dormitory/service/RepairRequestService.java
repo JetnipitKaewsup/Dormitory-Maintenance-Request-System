@@ -1,8 +1,8 @@
 package com.example.dormitory.service;
 
+import com.example.dormitory.domain.entity.RepairRequest;
+import com.example.dormitory.domain.entity.RepairRequestStatusHistory;
 import com.example.dormitory.dto.RepairRequestForm;
-import com.example.dormitory.model.RepairRequest;
-import com.example.dormitory.model.RepairRequestStatusHistory;
 
 import java.util.*;
 

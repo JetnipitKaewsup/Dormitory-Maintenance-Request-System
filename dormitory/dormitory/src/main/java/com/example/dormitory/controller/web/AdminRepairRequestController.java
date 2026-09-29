@@ -1,14 +1,14 @@
-package com.example.dormitory.controller;
+package com.example.dormitory.controller.web;
 
-import com.example.dormitory.model.RepairRequest;
-import com.example.dormitory.model.RepairRequestStatus;
+import com.example.dormitory.domain.entity.RepairRequest;
+import com.example.dormitory.domain.enums.RepairRequestStatus;
 import com.example.dormitory.service.RepairRequestService;
 import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
-import com.example.dormitory.model.RepairRequestStatus;
+
 import java.util.List;
 
 import java.util.UUID;

@@ -252,7 +252,7 @@
 
 
                 <!-- ยกเลิกได้เฉพาะ PENDING -->
-                <form th:if="${request.status == T(com.example.dormitory.model.RepairRequestStatus).PENDING}"
+                <form th:if="${request.status.name() == 'PENDING'}"
                   th:action="@{/reporter/requests/{id}/cancel(id=${request.repairRequestId})}" method="post"
                   class="cancel-form">
 

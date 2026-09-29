@@ -1,7 +1,8 @@
 package com.example.dormitory.repository;
 
-import com.example.dormitory.model.RepairRequestStatusHistory;
 import org.springframework.data.jpa.repository.JpaRepository;
+
+import com.example.dormitory.domain.entity.RepairRequestStatusHistory;
 
 import java.util.List;
 import java.util.UUID;

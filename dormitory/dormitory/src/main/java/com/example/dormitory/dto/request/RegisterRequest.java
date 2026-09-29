@@ -1,4 +1,4 @@
-package com.example.dormitory.dto;
+package com.example.dormitory.dto.request;
 
 public class RegisterRequest {
 

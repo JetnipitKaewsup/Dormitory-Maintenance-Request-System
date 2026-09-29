@@ -1,5 +1,5 @@
 
-package com.example.dormitory.controller;
+package com.example.dormitory.controller.web;
 
 import java.util.UUID;
 
@@ -13,10 +13,10 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import com.example.dormitory.domain.entity.RepairRequest;
+import com.example.dormitory.domain.entity.Reporter;
 import com.example.dormitory.dto.ProfileForm;
 import com.example.dormitory.dto.RepairRequestForm;
-import com.example.dormitory.model.RepairRequest;
-import com.example.dormitory.model.Reporter;
 import com.example.dormitory.service.RepairRequestService;
 import com.example.dormitory.service.ReporterProfileService;
 
