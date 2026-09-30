@@ -21,7 +21,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import com.example.dormitory.service.RepairRequestService;
 
 import java.util.UUID;
 
@@ -36,7 +35,7 @@ public class RepairRequestRestController {
         this.repairRequestService = repairRequestService;
     }
 
-    // ==================== LIST (Pagination + Sorting + Filter) ====================
+    // ==================== LIST ====================
     @GetMapping
     @Operation(summary = "ดึงรายการคำร้องทั้งหมด (paginated)")
     public ResponseEntity<Page<RepairRequestResponse>> list(
@@ -49,69 +48,55 @@ public class RepairRequestRestController {
         UUID userId = getUserId(session);
         Pageable pageable = buildPageable(page, size, sort);
 
-        Page<RepairRequest> result;
-        if (status != null && !status.isBlank()) {
-            RepairRequestStatus rs = RepairRequestStatus.valueOf(status.toUpperCase());
-            result = repairRequestService.getMyRequestsByStatus(userId, rs, pageable);
-        } else {
-            result = repairRequestService.getMyRequests(userId, pageable);
-        }
+       
+        Page<RepairRequest> result =
+                repairRequestService.getMyRequests(userId, pageable);
 
-        return ResponseEntity.ok(result.map(RepairRequestResponse::from));  // 200
+        return ResponseEntity.ok(result.map(RepairRequestResponse::from));
     }
 
     // ==================== GET by ID ====================
     @GetMapping("/{id}")
-    @Operation(summary = "ดึงรายละเอียดคำร้องตาม ID")
     public ResponseEntity<RepairRequestResponse> getById(
             @PathVariable UUID id, HttpSession session) {
-
         UUID userId = getUserId(session);
         RepairRequest request = repairRequestService.getMyRequest(userId, id);
-        return ResponseEntity.ok(RepairRequestResponse.from(request));  // 200
+        return ResponseEntity.ok(RepairRequestResponse.from(request));
     }
 
     // ==================== CREATE ====================
     @PostMapping
-    @Operation(summary = "สร้างคำร้องใหม่")
     public ResponseEntity<RepairRequestResponse> create(
             @Valid @RequestBody CreateRepairRequestDto dto,
             HttpSession session) {
-
         UUID userId = getUserId(session);
         RepairRequestForm form = mapToForm(dto);
         RepairRequest saved = repairRequestService.createRequest(userId, form);
-
-        return ResponseEntity.status(HttpStatus.CREATED)   // 201
+        return ResponseEntity.status(HttpStatus.CREATED)
                 .body(RepairRequestResponse.from(saved));
     }
 
     // ==================== UPDATE STATUS ====================
     @PatchMapping("/{id}/status")
-    @Operation(summary = "อัปเดตสถานะคำร้อง")
     public ResponseEntity<RepairRequestResponse> updateStatus(
             @PathVariable UUID id,
             @Valid @RequestBody UpdateStatusDto dto,
             HttpSession session) {
 
         UUID userId = getUserId(session);
-        RepairRequestStatus newStatus = RepairRequestStatus.valueOf(dto.getStatus());
 
-        repairRequestService.updateStatus(userId, id, newStatus, dto.getNote());
+        repairRequestService.updateStatus(userId, id, dto.getStatus(), dto.getNote());
         RepairRequest updated = repairRequestService.getMyRequest(userId, id);
-
-        return ResponseEntity.ok(RepairRequestResponse.from(updated));  // 200
+        return ResponseEntity.ok(RepairRequestResponse.from(updated));
     }
 
-    // ==================== CANCEL (DELETE) ====================
+    // ==================== CANCEL ====================
     @DeleteMapping("/{id}")
-    @Operation(summary = "ยกเลิกคำร้อง")
     public ResponseEntity<Void> cancel(
             @PathVariable UUID id, HttpSession session) {
-
         UUID userId = getUserId(session);
         repairRequestService.cancelRequest(userId, id);
-        return ResponseEntity.noContent().build();   // 204
+        return ResponseEntity.noContent().build();
     }
 
     // ==================== Helpers ====================

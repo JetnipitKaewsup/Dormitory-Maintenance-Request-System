@@ -38,8 +38,8 @@ public interface RepairRequestService {
             UUID userId,
             UUID repairRequestId);
 
-    Page<RepairRequest> getMyRequests(UUID userId, Pageable pageable);
-    Page<RepairRequest> getMyRequestsByStatus(UUID userId, RepairRequestStatus status, Pageable pageable);
+    Page<RepairRequest> getMyRequests(UUID userId,Pageable pageable);
+    //Page<RepairRequest> getMyRequestsByStatus(UUID userId, RepairRequestStatus status, Pageable pageable);
     void updateStatus(UUID userId, UUID requestId, RepairRequestStatus newStatus, String note);
 
             

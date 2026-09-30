@@ -1,6 +1,7 @@
 package com.example.dormitory.dto.response;
 
 import com.example.dormitory.domain.entity.RepairRequest;
+import com.example.dormitory.domain.enums.RepairRequestStatus;
 
 import java.time.LocalDateTime;
 import java.util.UUID;
@@ -13,7 +14,7 @@ public record RepairRequestResponse(
         String repairType,
         String description,
         String reporterNote,
-        String status,
+        RepairRequestStatus status,
         LocalDateTime startDateTime,
         LocalDateTime endDateTime,
         LocalDateTime createdAt
@@ -27,7 +28,7 @@ public record RepairRequestResponse(
                 r.getRepairType() != null ? r.getRepairType().name() : null,
                 r.getDescription(),
                 r.getReporterNote(),
-                r.getStatus().name(),
+                r.getStatus(),
                 r.getStartDateTime(),
                 r.getEndDateTime(),
                 r.getCreatedAt()

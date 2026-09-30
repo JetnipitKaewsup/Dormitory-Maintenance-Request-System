@@ -1,21 +1,22 @@
 package com.example.dormitory.dto;
 
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.Pattern;
+import com.example.dormitory.domain.enums.RepairRequestStatus;
+
+import jakarta.validation.constraints.NotNull;
+
 
 public class UpdateStatusDto {
 
-    @NotBlank(message = "กรุณาระบุสถานะ")
-    @Pattern(regexp = "PENDING|APPROVED|REJECTED|IN_PROGRESS|COMPLETED|IN_COMPLETED|CANCELLED", message = "สถานะไม่ถูกต้อง")
-    private String status;
+    @NotNull(message = "กรุณาระบุสถานะ")
+    private RepairRequestStatus status;
 
     private String note;
 
-    public String getStatus() {
+    public RepairRequestStatus getStatus() {
         return status;
     }
 
-    public void setStatus(String status) {
+    public void setStatus(RepairRequestStatus status) {
         this.status = status;
     }
 

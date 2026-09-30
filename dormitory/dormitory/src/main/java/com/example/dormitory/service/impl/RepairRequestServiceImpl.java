@@ -7,6 +7,7 @@ import com.example.dormitory.domain.entity.RepairType;
 import com.example.dormitory.domain.entity.Reporter;
 import com.example.dormitory.domain.entity.User;
 import com.example.dormitory.domain.enums.RepairRequestStatus;
+import com.example.dormitory.domain.state.RepairRequestStateRegistry;
 import com.example.dormitory.dto.RepairRequestForm;
 import com.example.dormitory.exception.BusinessException;
 import com.example.dormitory.exception.ResourceNotFoundException;
@@ -32,16 +33,19 @@ public class RepairRequestServiceImpl implements RepairRequestService {
         private final RepairRequestStatusHistoryRepository historyRepository;
         private final AdminRepository adminRepository;
         private final ReporterRepository reporterRepository;
+        private final RepairRequestStateRegistry repairRequestStateRegistry;
 
         @Autowired
         public RepairRequestServiceImpl(RepairRequestRepository repairRequestRepository,
                         RepairRequestStatusHistoryRepository historyRepository,
                         AdminRepository adminRepository,
-                        ReporterRepository reporterRepository) {
+                        ReporterRepository reporterRepository,
+                        RepairRequestStateRegistry repairRequestStateRegistry) {
                 this.repairRequestRepository = repairRequestRepository;
                 this.historyRepository = historyRepository;
                 this.adminRepository = adminRepository;
                 this.reporterRepository = reporterRepository;
+                this.repairRequestStateRegistry = repairRequestStateRegistry;
         }
 
         @Override
@@ -78,6 +82,12 @@ public class RepairRequestServiceImpl implements RepairRequestService {
                                 .orElseThrow(() -> new IllegalArgumentException("ไม่พบ admin id: " + adminId));
 
                 RepairRequestStatus previousStatus = request.getStatus();
+                
+                // State Pattern
+                if (!repairRequestStateRegistry.canTransition(previousStatus, newStatus)) {
+                        throw new BusinessException(
+                                "ไม่สามารถเปลี่ยนจาก " + previousStatus + " เป็น " + newStatus + " ได้");
+                }
 
                 request.setStatus(newStatus);
                 request.setAdmin(admin);
@@ -197,7 +207,7 @@ public class RepairRequestServiceImpl implements RepairRequestService {
                                                 "ไม่พบข้อมูล Reporter"));
 
                 return repairRequestRepository
-                                .findByReporter_ReporterIdOrderByStartDateTimeDesc(
+                                .findByReporter_ReporterIdOrderByCreatedAtDesc(
                                                 reporter.getReporterId());
         }
 
@@ -256,11 +266,12 @@ public class RepairRequestServiceImpl implements RepairRequestService {
                         UUID repairRequestId) {
 
                 RepairRequest request = getMyRequest(userId, repairRequestId);
-
-                // ยกเลิกได้เฉพาะก่อน Admin ดำเนินการ
-                if (request.getStatus() != RepairRequestStatus.PENDING) {
-                        throw new IllegalStateException(
-                                        "สามารถยกเลิกได้เฉพาะคำร้องสถานะ SUBMITTED");
+                RepairRequestStatus current = request.getStatus();
+                
+                // ยกเลิกได้เฉพาะก่อน Admin ดำเนินการ (PENDING)
+                if (!repairRequestStateRegistry.canTransition(current, RepairRequestStatus.CANCELLED)) {
+                        throw new BusinessException(
+                                        "สามารถยกเลิกได้เฉพาะคำร้องสถานะ PENDING");
                 }
 
                 RepairRequestStatus previousStatus = request.getStatus();
@@ -290,15 +301,7 @@ public class RepairRequestServiceImpl implements RepairRequestService {
                                 reporter.getReporterId(), pageable);
         }
 
-        @Override
-        @Transactional(readOnly = true)
-        public Page<RepairRequest> getMyRequestsByStatus(
-                        UUID userId, RepairRequestStatus status, Pageable pageable) {
-                Reporter reporter = reporterRepository.findByUserUserId(userId)
-                                .orElseThrow(() -> new ResourceNotFoundException("ไม่พบข้อมูล Reporter"));
-                return repairRequestRepository.findByReporter_ReporterIdAndStatus(
-                                reporter.getReporterId(), status, pageable);
-        }
+        
 
         @Override
         @Transactional
@@ -307,27 +310,7 @@ public class RepairRequestServiceImpl implements RepairRequestService {
                 RepairRequest request = getMyRequest(userId, requestId);
                 RepairRequestStatus current = request.getStatus();
 
-                // Business rule ตัวอย่าง
-                if (request.getStatus() == RepairRequestStatus.CANCELLED) {
-                        throw new BusinessException("ไม่สามารถแก้ไขคำร้องที่ยกเลิกแล้ว");
-                }
-                if (current == RepairRequestStatus.COMPLETED) {
-                        throw new BusinessException("คำร้องเสร็จสิ้นแล้ว ไม่สามารถแก้ไขได้");
-                }
-
-                // ตรวจ transition ที่อนุญาต
-                Set<RepairRequestStatus> allowed = switch (current) {
-                        case PENDING -> Set.of(RepairRequestStatus.APPROVED,
-                                        RepairRequestStatus.REJECTED,
-                                        RepairRequestStatus.CANCELLED);
-                        case APPROVED -> Set.of(RepairRequestStatus.IN_PROGRESS,
-                                        RepairRequestStatus.CANCELLED);
-                        case IN_PROGRESS -> Set.of(RepairRequestStatus.COMPLETED,
-                                        RepairRequestStatus.IN_COMPLETED);
-                        default -> Set.of();
-                };
-
-                if (!allowed.contains(newStatus)) {
+                if (!repairRequestStateRegistry.canTransition(current,newStatus)) {
                         throw new BusinessException(
                                         "ไม่สามารถเปลี่ยนจาก " + current + " เป็น " + newStatus + " ได้");
                 }

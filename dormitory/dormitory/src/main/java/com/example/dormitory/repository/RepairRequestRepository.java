@@ -12,7 +12,7 @@ import java.util.*;
 
 public interface RepairRequestRepository extends JpaRepository<RepairRequest, UUID> {
     // ดึงคำร้องทั้งหมดของ Reporter คนนี้
-    List<RepairRequest> findByReporter_ReporterIdOrderByStartDateTimeDesc(
+    List<RepairRequest> findByReporter_ReporterIdOrderByCreatedAtDesc(
             UUID reporterId);
 
     // ดึงคำร้องเฉพาะของ user ที่ login อยู่
