@@ -2,9 +2,12 @@ package com.example.dormitory.service;
 
 import com.example.dormitory.domain.entity.RepairRequest;
 import com.example.dormitory.domain.entity.RepairRequestStatusHistory;
+import com.example.dormitory.domain.enums.RepairRequestStatus;
 import com.example.dormitory.dto.RepairRequestForm;
 
 import java.util.*;
+
+import org.springframework.data.domain.*;
 
 public interface RepairRequestService {
 
@@ -34,10 +37,11 @@ public interface RepairRequestService {
     void cancelRequest(
             UUID userId,
             UUID repairRequestId);
-/* 
-    void confirmCompletion(
-            UUID userId,
-            UUID repairRequestId);*/
+
+    Page<RepairRequest> getMyRequests(UUID userId,Pageable pageable);
+    //Page<RepairRequest> getMyRequestsByStatus(UUID userId, RepairRequestStatus status, Pageable pageable);
+    void updateStatus(UUID userId, UUID requestId, RepairRequestStatus newStatus, String note);
+
             
     // Admin - list all
     List<RepairRequest> getAllRequests();
