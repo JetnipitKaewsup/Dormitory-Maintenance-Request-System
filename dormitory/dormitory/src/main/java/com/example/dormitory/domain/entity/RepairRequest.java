@@ -34,7 +34,6 @@ public class RepairRequest {
     private RepairType repairType;
 
     @Enumerated (EnumType.STRING)
-
     @Column(nullable = false)
     private RepairRequestStatus status;
 
@@ -68,6 +67,7 @@ public class RepairRequest {
         this.reporterNote = reporterNote;
         this.startDateTime = startDateTime;
         this.endDateTime = endDateTime;
+        this.createdAt = LocalDateTime.now();
     }
     // Getter / Setter
 

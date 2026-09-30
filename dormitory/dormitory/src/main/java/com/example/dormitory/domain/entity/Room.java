@@ -13,7 +13,7 @@ public class Room {
     private int roomNo;
 
     // FK
-    @ManyToOne
+    @ManyToOne(optional = false)  
     @JoinColumn(name = "building_no")
     private Building building;
 
