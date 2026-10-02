@@ -8,6 +8,7 @@ import com.example.dormitory.domain.entity.Admin;
 import com.example.dormitory.domain.entity.Reporter;
 import com.example.dormitory.domain.entity.Room;
 import com.example.dormitory.domain.enums.RepairRequestStatus;
+import com.example.dormitory.domain.enums.RepairType;
 
 @Entity
 @Table(name = "repair_request")
