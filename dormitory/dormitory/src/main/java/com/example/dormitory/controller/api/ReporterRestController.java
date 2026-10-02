@@ -72,7 +72,7 @@ public class ReporterRestController {
         return ResponseEntity.ok(ReporterResponse.from(updated));  // 200
     }
 
-    // ==================== SUB-RESOURCE: ตาม pattern โจทย์ ====================
+    
     // GET /api/v1/reporters/{id}/repair-requests → ดูคำร้องของ reporter คนนี้
     @GetMapping("/{id}/repair-requests")
 @Operation(summary = "ดึงคำร้องของ Reporter (sub-resource)")

@@ -183,23 +183,6 @@ public class ReporterController {
 
         return "redirect:/reporter/requests";
     }
-/* 
-    // ยืนยันงานซ่อมเสร็จ
-    @PostMapping("/requests/{id}/confirm-completion")
-    public String confirmCompletion(
-            @PathVariable UUID id,
-            HttpSession session) {
-
-        UUID userId = getUserId(session);
-
-        if (userId == null) {
-            return "redirect:/login";
-        }
-
-        repairRequestService.confirmCompletion(userId, id);
-
-        return "redirect:/reporter/requests/" + id;
-    }*/
 
     // แสดงหน้าแก้ไขโปรไฟล์
     @GetMapping("/profile/edit")
