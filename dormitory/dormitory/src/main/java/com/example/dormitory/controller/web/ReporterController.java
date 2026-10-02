@@ -15,6 +15,7 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.example.dormitory.domain.entity.RepairRequest;
 import com.example.dormitory.domain.entity.Reporter;
+import com.example.dormitory.domain.enums.RepairType;
 import com.example.dormitory.dto.ProfileForm;
 import com.example.dormitory.dto.RepairRequestForm;
 import com.example.dormitory.service.RepairRequestService;
@@ -55,7 +56,8 @@ public class ReporterController {
 
         model.addAttribute("repairForm", new RepairRequestForm());
         model.addAttribute("reporter", reporter);
-
+        addRepairTypes(model);
+        
         return "reporter/ReporterAddRequest";
     }
 
@@ -76,6 +78,7 @@ public class ReporterController {
         if (bindingResult.hasErrors()) {
             Reporter reporter = reporterProfileService.getReporterByUserId(userId);
             model.addAttribute("reporter", reporter);
+            addRepairTypes(model);
             return "reporter/ReporterAddRequest";
         }
 
@@ -93,9 +96,15 @@ public class ReporterController {
                     reporterProfileService.getReporterByUserId(userId);
 
             model.addAttribute("reporter", reporter);
-
+            addRepairTypes(model);
             return "reporter/ReporterAddRequest";
         }
+    }
+
+    private void addRepairTypes(Model model) {
+    model.addAttribute(
+            "repairTypes",
+            RepairType.values());
     }
 
     // ประวัติคำร้อง
