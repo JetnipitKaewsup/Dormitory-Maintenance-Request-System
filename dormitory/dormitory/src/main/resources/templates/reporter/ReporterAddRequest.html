@@ -117,12 +117,14 @@
               <div style="margin-bottom: 8px; font-size: 0.9rem">ประเภทงานซ่อม</div>
 
               <div class="repair-types">
-                <button type="button" class="type-btn" data-value="CARPENTRY">งานไม้</button>
-                <button type="button" class="type-btn" data-value="PLUMBING">งานประปา</button>
-                <button type="button" class="type-btn" data-value="ELECTRICAL">งานไฟฟ้า</button>
-                <button type="button" class="type-btn" data-value="OTHER">อื่นๆ</button>
-              </div>
-
+                <button
+                    type="button"
+                    class="type-btn"
+                    th:each="type : ${repairTypes}"
+                    th:data-value="${type.name()}"
+                    th:text="${type.thaiName}">
+                </button>
+              </div>  
               <!-- ใช้ th:field เพื่อผูกกับ DTO -->
               <input type="hidden" id="repairType" th:field="*{repairType}" />
               <div class="field-error" th:if="${#fields.hasErrors('repairType')}" th:errors="*{repairType}"></div>
