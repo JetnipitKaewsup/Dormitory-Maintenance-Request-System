@@ -1,14 +1,16 @@
-package com.example.dormitory.model;
+package com.example.dormitory.domain.entity;
 
 
-import com.example.dormitory.model.RepairRequest;
-import com.example.dormitory.model.User;
 import jakarta.persistence.*;
 import java.time.LocalDateTime;
 import java.util.UUID;
 
+import com.example.dormitory.domain.entity.RepairRequest;
+import com.example.dormitory.domain.entity.User;
+import com.example.dormitory.domain.enums.RepairRequestStatus;
+
 @Entity
-@Table(name = "RepairRequestStatusHistory")
+@Table(name = "repair_request_status_history")
 public class RepairRequestStatusHistory {
 
     @Id
@@ -16,23 +18,34 @@ public class RepairRequestStatusHistory {
     private UUID requestHistoryId;
 
     @ManyToOne(optional = false)
-    @JoinColumn(name = "repairRequestId", nullable = false)
+    @JoinColumn(name = "repair_request_id", nullable = false)
     private RepairRequest repairRequest;
 
     @ManyToOne(optional = false)
-    @JoinColumn(name = "changeBy", nullable = false)
+    @JoinColumn(name = "change_by", nullable = false)
     private User changeBy;
 
+    @Enumerated(EnumType.STRING)
     @Column(nullable = false)
-    private String newStatus;
+    private RepairRequestStatus newStatus;
 
-    private String previousStatus;
+    @Enumerated(EnumType.STRING)
+    private RepairRequestStatus previousStatus;
 
     @Column(nullable = false)
     private LocalDateTime changeDate;
 
     public RepairRequestStatusHistory() {
     }
+    public RepairRequestStatusHistory(RepairRequest repairRequest, User changeBy,
+                                       RepairRequestStatus newStatus, RepairRequestStatus previousStatus,
+                                       LocalDateTime changeDate) {
+        this.repairRequest = repairRequest;
+        this.changeBy = changeBy;
+        this.newStatus = newStatus;
+        this.previousStatus = previousStatus;
+        this.changeDate = changeDate;
+    }  
 
     // Getter / Setter
 
@@ -60,19 +73,19 @@ public class RepairRequestStatusHistory {
         this.changeBy = changeBy;
     }
 
-    public String getNewStatus() {
+    public RepairRequestStatus getNewStatus() {
         return newStatus;
     }
 
-    public void setNewStatus(String newStatus) {
+    public void setNewStatus(RepairRequestStatus newStatus) {
         this.newStatus = newStatus;
     }
 
-    public String getPreviousStatus() {
+    public RepairRequestStatus getPreviousStatus() {
         return previousStatus;
     }
 
-    public void setPreviousStatus(String previousStatus) {
+    public void setPreviousStatus(RepairRequestStatus previousStatus) {
         this.previousStatus = previousStatus;
     }
 

@@ -1,0 +1,111 @@
+.stat-cards {
+    display: flex;
+    gap: 16px;
+    margin-bottom: 24px;
+    flex-wrap: wrap;
+}
+.stat-card {
+    flex: 1;
+    min-width: 150px;
+    border-radius: 10px;
+    padding: 18px 20px;
+    text-align: center;
+}
+.stat-label { font-weight: 700; font-size: 14px; margin-bottom: 8px; }
+.stat-value { font-size: 26px; font-weight: 700; }
+
+.stat-pending    { background: #f4dfa3; color: #6b5416; }
+.stat-approved   { background: #b7d8f2; color: #1c4c73; }
+.stat-progress   { background: #d9dbde; color: #40444a; }
+.stat-completed  { background: #b6ecc1; color: #1b6b32; }
+.stat-rejected   { background: #f3b3b3; color: #8a1f1f; }
+
+.table-title { font-size: 18px; font-weight: 700; margin-bottom: 4px; }
+.table-subtitle { color: var(--color-muted); font-size: 13px; margin-bottom: 18px; }
+
+.filter-row {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 12px;
+    flex-wrap: wrap;
+}
+.filter-row-secondary { margin-bottom: 20px; }
+
+.filter-chip {
+    border: 1px solid var(--color-border);
+    background: #fff;
+    border-radius: 20px;
+    padding: 8px 16px;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    color: #444;
+    transition: background 0.15s ease, color 0.15s ease, border-color 0.15s ease;
+}
+.filter-chip:hover { border-color: var(--color-primary); }
+.filter-chip.active {
+    background: var(--color-primary);
+    border-color: var(--color-primary);
+    color: #fff;
+}
+.filter-chip-outline.active {
+    background: #eaf3ec;
+    border-color: var(--color-primary);
+    color: var(--color-primary);
+}
+
+.requests-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 14px;
+}
+.requests-table thead th {
+    text-align: left;
+    color: var(--color-muted);
+    font-weight: 600;
+    padding: 10px 8px;
+    border-bottom: 1px solid var(--color-border);
+}
+.requests-table tbody td {
+    padding: 14px 8px;
+    border-bottom: 1px solid #eef0f2;
+    vertical-align: middle;
+}
+.requests-table .empty-row {
+    text-align: center;
+    color: var(--color-muted);
+    padding: 30px 0;
+}
+.welcome-banner {
+    background: var(--color-primary);
+    color: #fff;
+    border-radius: 12px;
+    margin: 20px 28px 0;
+    padding: 22px 28px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 16px;
+}
+.welcome-title { font-size: 20px; font-weight: 700; }
+.welcome-subtitle { font-size: 14px; color: rgba(255,255,255,0.85); margin-top: 4px; }
+.welcome-actions { display: flex; gap: 10px; flex-wrap: wrap; }
+.btn-welcome {
+    background: rgba(255,255,255,0.15);
+    border: 1px solid rgba(255,255,255,0.4);
+    color: #fff;
+    text-decoration: none;
+    padding: 10px 18px;
+    border-radius: 20px;
+    font-size: 14px;
+    font-weight: 600;
+    transition: background 0.15s ease;
+}
+.btn-welcome:hover { background: rgba(255,255,255,0.3); }
+
+/* badge class เพิ่มเติมให้ตรงกับ RepairRequestStatus.getCssClass() */
+.badge.progress    { background: #e3ecfb; color: #2b57a8; }
+.badge.complete     { background: #e4f5e8; color: var(--color-primary); }
+.badge.in_complete  { background: #fbe6e6; color: var(--color-danger); }
+.badge.cancelled    { background: #ececec; color: #555; }

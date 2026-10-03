@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<body>
+
+<!-- ใช้กับหน้าอื่นๆ ที่ต้องมี nav tabs -->
+<div th:fragment="adminHeader(activeTab)">
+    <header class="topbar">
+        <a class="brand" th:href="@{/admin/requests}">Dormitory Repair System</a>
+        <div class="right">
+            <div class="user-chip">
+                <span class="avatar"></span>
+                <div class="user-info">
+                    <div class="user-name" th:text="${session.userFullName} ?: 'ผู้ใช้งาน'">ชื่อผู้ใช้</div>
+                    <div class="user-role" th:text="${session.role} ?: '-'">ตำแหน่ง</div>
+                </div>
+            </div>
+            <button class="icon-btn" type="button" title="การแจ้งเตือน">&#128276;</button>
+            <a class="icon-btn" th:href="@{/logout}" title="ออกจากระบบ">&#9211;</a>
+        </div>
+    </header>
+
+    <nav class="tabs">
+        <a th:href="@{/admin/requests}" th:classappend="${activeTab == 'requests'} ? 'active' : ''">คำร้อง</a>
+        <a th:href="@{/admin/assignments}" th:classappend="${activeTab == 'assignments'} ? 'active' : ''">มอบหมายงาน</a>
+        <a th:href="@{/admin/inspections}" th:classappend="${activeTab == 'inspections'} ? 'active' : ''">ตรวจงาน</a>
+    </nav>
+</div>
+
+<!-- ใช้เฉพาะหน้า admin home: ไม่มี nav tabs -->
+<div th:fragment="homeHeader()">
+    <header class="topbar">
+        <a class="brand" th:href="@{/admin/requests}">Dormitory Repair System</a>
+        <div class="right">
+            <div class="user-chip">
+                <span class="avatar"></span>
+                <div class="user-info">
+                    <div class="user-name" th:text="${session.userFullName} ?: 'ผู้ใช้งาน'">ชื่อผู้ใช้</div>
+                    <div class="user-role" th:text="${session.role} ?: '-'">ตำแหน่ง</div>
+                </div>
+            </div>
+            <button class="icon-btn" type="button" title="การแจ้งเตือน">&#128276;</button>
+            <a class="icon-btn" th:href="@{/logout}" title="ออกจากระบบ">&#9211;</a>
+        </div>
+    </header>
+</div>
+
+</body>
+</html>

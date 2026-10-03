@@ -1,0 +1,374 @@
+<!doctype html>
+<html lang="th" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+
+  <meta charset="UTF-8" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <title>DormCare - ประวัติคำร้อง</title>
+
+  <link rel="stylesheet" th:href="@{/css/reporter.css}" />
+
+  <script src="https://unpkg.com/lucide@latest"></script>
+
+</head>
+
+<body>
+
+  <!-- ================= NAVBAR ================= -->
+
+  <nav class="navbar">
+
+    <a th:href="@{/}" class="brand">
+
+      <i data-lucide="wrench"></i>
+
+      <span>ระบบแจ้งซ่อมในหอพัก</span>
+
+    </a>
+
+    <div class="nav-actions">
+
+      <button class="notification-btn">
+
+        <i data-lucide="bell"></i>
+
+        <span class="notification-dot"></span>
+
+      </button>
+
+      <div class="user-profile">
+
+        <a th:href="@{/reporter/profile/edit}" class="user-profile-link">
+
+          <div>
+
+            <div th:if="${reporter != null and reporter.user != null}"
+              th:text="${reporter.user.firstName + ' ' + reporter.user.lastName}">
+              สมชาย ใจดี
+            </div>
+
+            <div style="font-size: 0.75rem; opacity: 0.8" th:if="${reporter != null and reporter.resident != null
+                    and reporter.resident.room != null}" th:text="${'ห้อง ' + reporter.resident.room.roomNo}">
+              ห้อง 302
+            </div>
+
+          </div>
+
+        </a>
+
+        <a th:href="@{/login}" class="logout-btn" title="ออกจากระบบ">
+
+          <i data-lucide="log-out"></i>
+
+        </a>
+
+      </div>
+
+    </div>
+
+  </nav>
+
+
+  <!-- ================= TABS ================= -->
+
+  <div class="tabs-container">
+
+    <a th:href="@{/reporter/add}" class="tab-btn">
+      แจ้งซ่อมใหม่
+    </a>
+
+    <a th:href="@{/reporter/requests}" class="tab-btn active">
+      ประวัติคำร้อง
+    </a>
+
+    <a th:href="@{/reporter/latest}" class="tab-btn">
+      คำร้องล่าสุด
+    </a>
+
+  </div>
+
+
+  <!-- ================= MAIN ================= -->
+
+  <main class="main-content">
+
+
+    <!-- ================= WELCOME ================= -->
+
+    <div class="welcome-banner">
+
+      <h2>
+
+        ยินดีต้อนรับ,
+
+        <span th:if="${reporter != null and reporter.user != null}"
+          th:text="${reporter.user.firstName + ' ' + reporter.user.lastName}">
+          สมชาย ใจดี
+        </span>
+
+      </h2>
+
+      <p th:if="${reporter != null and reporter.resident != null
+              and reporter.resident.room != null}">
+
+        ห้องพัก :
+
+        <span th:text="${reporter.resident.room.roomNo}">
+          302
+        </span>
+
+        &nbsp; ตึก :
+
+        <span th:text="${reporter.resident.room.building.buildingNo}">
+          3
+        </span>
+
+      </p>
+
+    </div>
+
+
+    <!-- ================= TABLE ================= -->
+
+    <div class="table-container">
+
+      <table>
+
+        <thead>
+
+          <tr>
+
+            <th>ผู้แจ้ง</th>
+
+            <th>ห้องพัก</th>
+
+            <th>ประเภทงาน</th>
+
+            <th>สถานะ</th>
+
+            <th>วันที่แจ้ง</th>
+
+            <th>วันที่สะดวก</th>
+
+            <th>จัดการ</th>
+
+          </tr>
+
+        </thead>
+
+
+        <tbody>
+
+
+          <!-- ถ้าไม่มีข้อมูล -->
+
+          <tr th:if="${requests == null or #lists.isEmpty(requests)}">
+
+            <td colspan="7" style="text-align: center">
+              ยังไม่มีคำร้องแจ้งซ่อม
+            </td>
+
+          </tr>
+
+
+          <!-- แสดงคำร้อง -->
+
+          <tr th:each="request : ${requests}">
+
+
+            <!-- ผู้แจ้ง -->
+
+            <td>
+
+              <span th:text="${request.reporter.user.firstName + ' ' + request.reporter.user.lastName}">
+                สมชาย ใจดี
+              </span>
+
+            </td>
+
+
+            <!-- ห้อง -->
+
+            <td>
+
+              <span th:text="${'ห้อง ' + request.room.roomNo}">
+                ห้อง 302
+              </span>
+
+            </td>
+
+
+            <!-- ประเภทงาน -->
+
+            <td>
+              <span th:if="${request.repairType != null}" th:text="${request.repairType.thaiName}">
+                ไฟฟ้า
+              </span>
+            </td>
+
+
+            <!-- ================= สถานะ ================= -->
+
+            <td>
+
+              <span th:if="${request.status != null}" th:class="${'status-badge status-' + request.status.cssClass}"
+                th:text="${request.status.thaiName}">
+                รอดำเนินการ
+              </span>
+
+            </td>
+
+
+            <!-- วันที่แจ้ง -->
+
+            <td>
+
+              <span th:text="${#temporals.format(request.createdAt, 'd MMMM yyyy HH:mm' + ' น.')}">
+                16/09/2026 10:30
+              </span>
+
+            </td>
+
+
+            <!-- วันที่สะดวก -->
+
+            <td>
+
+              <span th:text="${#temporals.format(request.startDateTime, 'd MMMM HH:mm') + ' น.' + ' - ' + #temporals.format(request.endDateTime, 'HH:mm') + ' น.'}">
+                18/09/2026 13:00
+              </span>
+
+            </td>
+
+
+            <!-- ================= จัดการ ================= -->
+
+            <td>
+
+              <div class="action-btns">
+
+
+                <!-- ยกเลิกได้เฉพาะ PENDING -->
+                <form th:if="${request.status.name() == 'PENDING'}"
+                  th:action="@{/reporter/requests/{id}/cancel(id=${request.repairRequestId})}" method="post"
+                  class="cancel-form">
+
+                  <button type="button" class="btn-outline-danger cancel-trigger"
+                    th:data-type="${request.repairType != null ? request.repairType.thaiName : 'ไม่ระบุ'}"
+                    th:data-desc="${request.description != null ? request.description : 'ไม่ระบุ'}"
+                    th:data-time="${#temporals.format(request.startDateTime, 'd MMMM HH:mm') + ' - ' + #temporals.format(request.endDateTime, 'HH:mm') + ' น.'}"
+                    th:data-note="${request.reporterNote != null ? request.reporterNote : '-'}"
+                    th:data-createdate="${#temporals.format(request.createdAt, 'd MMMM yyyy, HH:mm น.')}">
+                    ยกเลิกแจ้งซ่อม
+                  </button>
+
+                </form>
+
+
+                <!-- ดูรายละเอียด -->
+
+                <a th:href="@{/reporter/requests/{id}(id=${request.repairRequestId})}" class="btn-outline">
+                  ดูรายละเอียด
+                </a>
+
+              </div>
+
+            </td>
+
+          </tr>
+
+        </tbody>
+
+      </table>
+
+    </div>
+
+  </main>
+  <!-- ================= CANCEL MODAL ================= -->
+  <div id="cancelModal" class="modal-overlay">
+    <div class="modal-content">
+
+      <h3 class="modal-title">คุณแน่ใจว่าต้องการ<br>ยกเลิกคำร้องแจ้งซ่อม</h3>
+
+      <div class="modal-subtitle">
+        คำร้องแจ้งซ่อม<br>
+        <span id="modal-date">16 กันยายน 2569, 12:01 น.</span>
+      </div>
+
+      <div class="modal-body">
+        <p>ประเภทงานซ่อม : <span id="modal-type">-</span></p>
+        <p>อาการ / ปัญหาที่พบ : <span id="modal-desc">-</span></p>
+        <p>ช่วงเวลาที่สะดวก <span id="modal-time">-</span></p>
+        <p>หมายเหตุ : <span id="modal-note">-</span></p>
+      </div>
+
+      <div class="modal-actions">
+        <button type="button" class="btn-cancel" id="closeModalBtn">ย้อนกลับ</button>
+        <button type="button" class="btn-confirm" id="confirmCancelBtn">ยืนยันยกเลิกแจ้งซ่อม</button>
+      </div>
+
+    </div>
+  </div>
+
+  <script>
+
+    lucide.createIcons();
+    document.addEventListener('DOMContentLoaded', () => {
+      lucide.createIcons();
+
+      const modal = document.getElementById('cancelModal');
+      const closeBtn = document.getElementById('closeModalBtn');
+      const confirmBtn = document.getElementById('confirmCancelBtn');
+      const cancelTriggers = document.querySelectorAll('.cancel-trigger');
+
+      let currentForm = null; // เก็บฟอร์มที่กำลังจะถูก submit
+
+      // เมื่อกดปุ่ม "ยกเลิกแจ้งซ่อม" ในตาราง
+      cancelTriggers.forEach(btn => {
+        btn.addEventListener('click', (e) => {
+          e.preventDefault();
+
+          // หาฟอร์มที่ปุ่มนี้อยู่
+          currentForm = btn.closest('form');
+
+          // ดึงข้อมูลจาก data-* มาใส่ใน Modal
+          document.getElementById('modal-type').textContent = btn.dataset.type;
+          document.getElementById('modal-desc').textContent = btn.dataset.desc;
+          document.getElementById('modal-time').textContent = btn.dataset.time;
+          document.getElementById('modal-note').textContent = btn.dataset.note;
+          document.getElementById('modal-date').textContent = btn.dataset.createdate;
+
+          // แสดง Modal
+          modal.classList.add('show');
+        });
+      });
+
+      // เมื่อกดปุ่ม "ย้อนกลับ"
+      closeBtn.addEventListener('click', () => {
+        modal.classList.remove('show');
+        currentForm = null;
+      });
+
+      // เมื่อกดปุ่ม "ยืนยันยกเลิกแจ้งซ่อม"
+      confirmBtn.addEventListener('click', () => {
+        if (currentForm) {
+          currentForm.submit(); // ส่งฟอร์มไปยัง Backend
+        }
+      });
+
+      // ปิด Modal เมื่อคลิกพื้นที่สีดำด้านนอก
+      modal.addEventListener('click', (e) => {
+        if (e.target === modal) {
+          modal.classList.remove('show');
+          currentForm = null;
+        }
+      });
+    });
+  </script>
+
+</body>
+
+</html>
