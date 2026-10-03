@@ -1,8 +1,6 @@
 package com.example.dormitory.domain.entity;
 
 import jakarta.persistence.*;
-
-import com.example.dormitory.domain.enums.RepairRequestStatus;
 import java.time.LocalDateTime;
 import java.util.UUID;
 
@@ -18,33 +16,30 @@ public class RepairAssignmentStatusHistory {
     private UUID historyId;
 
     @ManyToOne(optional = false)
-    @JoinColumn(name = "assignment_id", nullable = false)
+    @JoinColumn(name = "assignmentId", nullable = false)
     private RepairAssignment assignment;
 
     @ManyToOne(optional = false)
-    @JoinColumn(name = "change_by", nullable = false)
+    @JoinColumn(name = "changeBy", nullable = false)
     private User changeBy;
 
-    @Enumerated(EnumType.STRING)
-    @Column(name = "new_status", nullable = false)
-    private RepairRequestStatus newStatus;
+    @Column(nullable = false)
+    private String newStatus;
 
-    @Column(name = "change_date", nullable = false)
+    @Column(nullable = false)
     private LocalDateTime changeDate;
 
-    @Enumerated(EnumType.STRING)
-    @Column(name = "previous_status")
-    private RepairRequestStatus previousStatus;
+    private String previousStatus;
 
-        public RepairAssignmentStatusHistory() {
+    public RepairAssignmentStatusHistory() {
     }
 
     public RepairAssignmentStatusHistory(UUID historyId,
                                         RepairAssignment assignment,
                                         User changeBy,
-                                        RepairRequestStatus newStatus,
+                                        String newStatus,
                                         LocalDateTime changeDate,
-                                        RepairRequestStatus previousStatus) {
+                                        String previousStatus) {
         this.historyId = historyId;
         this.assignment = assignment;
         this.changeBy = changeBy;
@@ -53,9 +48,14 @@ public class RepairAssignmentStatusHistory {
         this.previousStatus = previousStatus;
     }
 
+    // Getter / Setter
 
     public UUID getHistoryId() {
         return historyId;
+    }
+
+    public void setHistoryId(UUID historyId) {
+        this.historyId = historyId;
     }
 
     public RepairAssignment getAssignment() {
@@ -74,11 +74,11 @@ public class RepairAssignmentStatusHistory {
         this.changeBy = changeBy;
     }
 
-    public RepairRequestStatus getNewStatus() {
+    public String getNewStatus() {
         return newStatus;
     }
 
-    public void setNewStatus(RepairRequestStatus newStatus) {
+    public void setNewStatus(String newStatus) {
         this.newStatus = newStatus;
     }
 
@@ -90,11 +90,11 @@ public class RepairAssignmentStatusHistory {
         this.changeDate = changeDate;
     }
 
-    public RepairRequestStatus getPreviousStatus() {
+    public String getPreviousStatus() {
         return previousStatus;
     }
 
-    public void setPreviousStatus(RepairRequestStatus previousStatus) {
+    public void setPreviousStatus(String previousStatus) {
         this.previousStatus = previousStatus;
     }
 }
