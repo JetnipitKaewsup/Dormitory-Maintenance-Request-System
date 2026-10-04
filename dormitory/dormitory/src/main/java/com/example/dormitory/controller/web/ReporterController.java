@@ -1,6 +1,7 @@
 
 package com.example.dormitory.controller.web;
 
+import java.util.Optional;
 import java.util.UUID;
 
 import org.springframework.security.core.Authentication;
@@ -148,6 +149,11 @@ public class ReporterController {
             return "redirect:/login";
         }
 
+        Reporter reporter =
+                reporterProfileService.getReporterByUserId(userId);
+
+        model.addAttribute("reporter", reporter);
+        
         RepairRequest request =
                 repairRequestService.getMyRequest(userId, id);
 
@@ -167,15 +173,23 @@ public class ReporterController {
             Model model) {
 
         UUID userId = user.getUserId();
+        Reporter reporter =
+                reporterProfileService.getReporterByUserId(userId);
 
+        model.addAttribute("reporter", reporter);
         if (userId == null) {
             return "redirect:/login";
         }
 
-        RepairRequest request =
+        Optional<RepairRequest> request =
                 repairRequestService.getLatestRequest(userId);
-
-        model.addAttribute("request", request);
+        if (request.isPresent()){
+            model.addAttribute("request", request.get());
+            model.addAttribute("hasRequest", true);
+        } else {
+            model.addAttribute("hasRequest", false);
+        }
+        
 
         return "reporter/ReporterLatest";
     }

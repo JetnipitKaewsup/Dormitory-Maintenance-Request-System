@@ -229,18 +229,23 @@ public class RepairRequestServiceImpl implements RepairRequestService {
         // Reporter - Latest
         @Override
         @Transactional(readOnly = true)
-        public RepairRequest getLatestRequest(UUID userId) {
+        public Optional<RepairRequest> getLatestRequest(UUID userId) {
 
-                Reporter reporter = reporterRepository
-                                .findByUserUserId(userId)
-                                .orElseThrow(() -> new IllegalArgumentException(
-                                                "ไม่พบข้อมูล Reporter"));
+        
+                // ค้นหาข้อมูล Reporter จาก User ID
+                Optional<Reporter> reporter =
+                        reporterRepository.findByUserUserId(userId);
 
+                // ถ้าไม่พบ Reporter ให้ถือว่าไม่มีข้อมูล
+                if (reporter.isEmpty()) {
+                        return Optional.empty();
+                }
+
+                // ค้นหาคำร้องล่าสุดของ Reporter
                 return repairRequestRepository
-                                .findFirstByReporter_ReporterIdOrderByCreatedAtDesc(
-                                                reporter.getReporterId())
-                                .orElseThrow(() -> new IllegalArgumentException(
-                                                "ยังไม่มีคำร้องแจ้งซ่อม"));
+                        .findFirstByReporter_ReporterIdOrderByCreatedAtDesc(
+                                reporter.get().getReporterId());
+                        
         }
 
         // Reporter - Status History
