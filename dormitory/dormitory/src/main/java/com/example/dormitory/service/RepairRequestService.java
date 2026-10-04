@@ -28,7 +28,7 @@ public interface RepairRequestService {
             UUID userId,
             UUID repairRequestId);
 
-    RepairRequest getLatestRequest(UUID userId);
+    Optional<RepairRequest> getLatestRequest(UUID userId);
 
     List<RepairRequestStatusHistory> getRequestHistory(
             UUID userId,
