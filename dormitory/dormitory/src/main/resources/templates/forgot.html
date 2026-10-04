@@ -70,6 +70,9 @@
           <!-- FORGOT PASSWORD FORM -->
 
           <form th:action="@{/forgot}" method="post" class="login-form">
+            <input type="hidden"
+              th:name="${_csrf.parameterName}"
+              th:value="${_csrf.token}">
             <!-- ================= EMAIL ================= -->
 
             <div class="form-group">

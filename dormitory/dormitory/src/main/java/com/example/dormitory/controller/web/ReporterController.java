@@ -3,6 +3,9 @@ package com.example.dormitory.controller.web;
 
 import java.util.UUID;
 
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -15,6 +18,7 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.example.dormitory.domain.entity.RepairRequest;
 import com.example.dormitory.domain.entity.Reporter;
+import com.example.dormitory.domain.entity.User;
 import com.example.dormitory.domain.enums.RepairType;
 import com.example.dormitory.dto.ProfileForm;
 import com.example.dormitory.dto.RepairRequestForm;
@@ -42,10 +46,10 @@ public class ReporterController {
     // เพิ่ม Repair Request ใหม่
     @GetMapping("/add")
     public String showAddForm(
-            HttpSession session,
+            @AuthenticationPrincipal User user,
             Model model) {
 
-        UUID userId = getUserId(session);
+        UUID userId = user.getUserId();
 
         if (userId == null) {
             return "redirect:/login";
@@ -65,10 +69,10 @@ public class ReporterController {
     public String createRequest(
             @Valid @ModelAttribute("repairForm") RepairRequestForm form,
             BindingResult bindingResult,
-            HttpSession session,
+            @AuthenticationPrincipal User user,
             Model model) {
 
-        UUID userId = getUserId(session);
+        UUID userId = user.getUserId();
 
         if (userId == null) {
             return "redirect:/login";
@@ -110,10 +114,10 @@ public class ReporterController {
     // ประวัติคำร้อง
     @GetMapping("/requests")
     public String showRequests(
-            HttpSession session,
+            @AuthenticationPrincipal User user,
             Model model) {
-
-        UUID userId = getUserId(session);
+   
+        UUID userId = user.getUserId();
 
         if (userId == null) {
             return "redirect:/login";
@@ -135,10 +139,10 @@ public class ReporterController {
     @GetMapping("/requests/{id}")
     public String showRequestDetail(
             @PathVariable UUID id,
-            HttpSession session,
+            @AuthenticationPrincipal User user,
             Model model) {
 
-        UUID userId = getUserId(session);
+        UUID userId = user.getUserId();
 
         if (userId == null) {
             return "redirect:/login";
@@ -159,10 +163,10 @@ public class ReporterController {
     // คำร้องล่าสุด
     @GetMapping("/latest")
     public String showLatestRequest(
-            HttpSession session,
+            @AuthenticationPrincipal User user,
             Model model) {
 
-        UUID userId = getUserId(session);
+        UUID userId = user.getUserId();
 
         if (userId == null) {
             return "redirect:/login";
@@ -180,9 +184,9 @@ public class ReporterController {
     @PostMapping("/requests/{id}/cancel")
     public String cancelRequest(
             @PathVariable UUID id,
-            HttpSession session) {
+            @AuthenticationPrincipal User user) {
 
-        UUID userId = getUserId(session);
+        UUID userId = user.getUserId();
 
         if (userId == null) {
             return "redirect:/login";
@@ -196,10 +200,10 @@ public class ReporterController {
     // แสดงหน้าแก้ไขโปรไฟล์
     @GetMapping("/profile/edit")
     public String showEditProfile(
-            HttpSession session,
+            @AuthenticationPrincipal User user,
             Model model) {
 
-        UUID userId = getUserId(session);
+        UUID userId = user.getUserId();
 
         if (userId == null) {
             return "redirect:/login";
@@ -221,11 +225,11 @@ public class ReporterController {
     @PostMapping("/profile/edit")
     public String updateProfile(
             @ModelAttribute("profileForm") ProfileForm form,
-            HttpSession session,
+            @AuthenticationPrincipal User user,
             Model model,
             RedirectAttributes redirectAttributes) {
 
-        UUID userId = getUserId(session);
+        UUID userId = user.getUserId();
 
         if (userId == null) {
             return "redirect:/login";

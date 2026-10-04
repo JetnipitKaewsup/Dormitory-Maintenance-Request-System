@@ -59,11 +59,19 @@
 
         </a>
 
-        <a th:href="@{/login}" class="logout-btn" title="ออกจากระบบ">
+        <form th:action="@{/logout}" method="post">
+              <input type="hidden"
+                    th:name="${_csrf.parameterName}"
+                    th:value="${_csrf.token}">
 
-          <i data-lucide="log-out"></i>
+              <button type="submit"
+                      class="logout-btn"
+                      title="ออกจากระบบ">
 
-        </a>
+                  <i data-lucide="log-out"></i>
+
+              </button>
+          </form>
 
       </div>
 
@@ -255,6 +263,9 @@
                 <form th:if="${request.status.name() == 'PENDING'}"
                   th:action="@{/reporter/requests/{id}/cancel(id=${request.repairRequestId})}" method="post"
                   class="cancel-form">
+                  <input type="hidden"
+                    th:name="${_csrf.parameterName}"
+                    th:value="${_csrf.token}">
 
                   <button type="button" class="btn-outline-danger cancel-trigger"
                     th:data-type="${request.repairType != null ? request.repairType.thaiName : 'ไม่ระบุ'}"
