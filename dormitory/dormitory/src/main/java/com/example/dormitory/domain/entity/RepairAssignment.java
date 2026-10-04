@@ -1,6 +1,9 @@
 package com.example.dormitory.domain.entity;
 
 import jakarta.persistence.*;
+import com.example.dormitory.domain.enums.RepairRequestStatus;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import java.time.LocalDateTime;
 import java.util.UUID;
 
@@ -28,14 +31,20 @@ public class RepairAssignment {
     @JoinColumn(name = "adminId", nullable = false)
     private Admin admin;
 
-    @Column(nullable = false)
-    private String jobStatus;
+    @Enumerated(EnumType.STRING)
+    @Column(name = "job_status")
+    private RepairRequestStatus jobStatus;
 
     @Column(columnDefinition = "TEXT")
     private String note;
 
+    @Column(name = "technician_note")
+    private String technicianNote;
+
     @Column(nullable = false)
     private LocalDateTime assignDate;
+
+
 
     public RepairAssignment() {
     }
@@ -44,16 +53,19 @@ public class RepairAssignment {
                             RepairRequest repairRequest,
                             Technician technician,
                             Admin admin,
-                            String jobStatus,
+                            RepairRequestStatus jobStatus,
+                            LocalDateTime assignDate,
                             String note,
-                            LocalDateTime assignDate) {
+                            String technicianNote) {
         this.assignmentId = assignmentId;
         this.repairRequest = repairRequest;
         this.technician = technician;
         this.admin = admin;
         this.jobStatus = jobStatus;
         this.note = note;
+        this.technicianNote = technicianNote;
         this.assignDate = assignDate;
+   
     }
 
     // Getter / Setter
@@ -90,11 +102,11 @@ public class RepairAssignment {
         this.admin = admin;
     }
 
-    public String getJobStatus() {
+    public RepairRequestStatus getJobStatus() {
         return jobStatus;
     }
 
-    public void setJobStatus(String jobStatus) {
+    public void setJobStatus(RepairRequestStatus jobStatus) {
         this.jobStatus = jobStatus;
     }
 
@@ -106,6 +118,14 @@ public class RepairAssignment {
         this.note = note;
     }
 
+    public String getTechnicianNote() {
+        return technicianNote;
+    }
+
+    public void setTechnicianNote(String technicianNote) {
+        this.technicianNote = technicianNote;
+    }
+
     public LocalDateTime getAssignDate() {
         return assignDate;
     }
@@ -113,4 +133,5 @@ public class RepairAssignment {
     public void setAssignDate(LocalDateTime assignDate) {
         this.assignDate = assignDate;
     }
+
 }
