@@ -4,6 +4,7 @@ import com.example.dormitory.domain.entity.RepairAssignment;
 import org.springframework.data.jpa.repository.JpaRepository;
 import com.example.dormitory.domain.enums.RepairRequestStatus;
 
+import java.util.Optional;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
@@ -30,4 +31,6 @@ public interface RepairAssignmentRepository
             LocalDateTime end,
             RepairRequestStatus jobStatus
     );
+    Optional<RepairAssignment> findByRepairRequest_RepairRequestId(UUID repairRequestId);
+    
 }
