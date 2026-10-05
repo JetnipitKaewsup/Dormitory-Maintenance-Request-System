@@ -1,341 +1,585 @@
 <!doctype html>
 <html lang="th" xmlns:th="http://www.thymeleaf.org">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>DormCare - แจ้งซ่อมใหม่</title>
 
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" th:href="@{/css/reporter.css}" />
 
-  <title>DormCare - แจ้งซ่อมใหม่</title>
+    <script src="https://unpkg.com/lucide@latest"></script>
+  </head>
 
-  <link rel="stylesheet" th:href="@{/css/reporter.css}" />
-  <script src="https://unpkg.com/lucide@latest"></script>
-</head>
+  <body>
+    <!-- ================= NAVBAR ================= -->
 
-<body>
+    <nav class="navbar">
+      <a th:href="@{/}" class="brand">
+        <i data-lucide="wrench"></i>
+        <span>ระบบแจ้งซ่อมในหอพัก</span>
+      </a>
 
-  <!-- ================= NAVBAR ================= -->
-  <nav class="navbar">
-    <a th:href="@{/}" class="brand">
-      <i data-lucide="wrench"></i>
-      <span>ระบบแจ้งซ่อมในหอพัก</span>
-    </a>
+      <div class="nav-actions">
+        <button class="notification-btn" type="button">
+          <i data-lucide="bell"></i>
+          <span class="notification-dot"></span>
+        </button>
 
-    <div class="nav-actions">
-      <button class="notification-btn">
-        <i data-lucide="bell"></i>
-        <span class="notification-dot"></span>
-      </button>
+        <div class="user-profile">
+          <a th:href="@{/reporter/profile/edit}" class="user-profile-link">
+            <div>
+              <div
+                th:if="${reporter != null and reporter.user != null}"
+                th:text="${reporter.user.firstName + ' ' + reporter.user.lastName}"
+              >
+                สมชาย ใจดี
+              </div>
 
-      <div class="user-profile">
-        <a th:href="@{/reporter/profile/edit}" class="user-profile-link">
-          <div>
-            <div th:if="${reporter != null and reporter.user != null}"
-              th:text="${reporter.user.firstName + ' ' + reporter.user.lastName}">
-              สมชาย ใจดี
+              <div
+                style="font-size: 0.75rem; opacity: 0.8"
+                th:if="${reporter != null and reporter.resident != null and reporter.resident.room != null}"
+                th:text="'ห้อง ' + ${reporter.resident.room.roomNo}"
+              >
+                ห้อง 302
+              </div>
             </div>
+          </a>
 
-            <div style="font-size: 0.75rem; opacity: 0.8" th:if="${reporter != null and reporter.resident != null
-                    and reporter.resident.room != null}" th:text="'ห้อง ' + ${reporter.resident.room.roomNo}">
-              ห้อง 302
-            </div>
-          </div>
-        </a>
+          <form th:action="@{/logout}" method="post">
+              <input type="hidden"
+                    th:name="${_csrf.parameterName}"
+                    th:value="${_csrf.token}">
 
-        <a th:href="@{/login}" class="logout-btn" title="ออกจากระบบ">
-          <i data-lucide="log-out"></i>
-        </a>
+              <button type="submit"
+                      class="logout-btn"
+                      title="ออกจากระบบ">
+
+                  <i data-lucide="log-out"></i>
+
+              </button>
+          </form>
+        </div>
       </div>
+    </nav>
+
+    <!-- ================= TABS ================= -->
+
+    <div class="tabs-container">
+      <a th:href="@{/reporter/add}" class="tab-btn active"> แจ้งซ่อมใหม่ </a>
+
+      <a th:href="@{/reporter/requests}" class="tab-btn"> ประวัติคำร้อง </a>
+
+      <a th:href="@{/reporter/latest}" class="tab-btn"> คำร้องล่าสุด </a>
     </div>
-  </nav>
 
-  <!-- ================= TABS ================= -->
-  <div class="tabs-container">
-    <a th:href="@{/reporter/add}" class="tab-btn active"> แจ้งซ่อมใหม่ </a>
+    <!-- ================= MAIN ================= -->
 
-    <a th:href="@{/reporter/requests}" class="tab-btn"> ประวัติคำร้อง </a>
+    <main class="main-content">
+      <a th:href="@{/reporter/requests}" class="back-btn">
+        <i data-lucide="arrow-left"></i>
+      </a>
 
-    <a th:href="@{/reporter/latest}" class="tab-btn"> คำร้องล่าสุด </a>
-  </div>
+      <div class="form-layout">
+        <!-- ================= FORM ================= -->
 
-  <!-- ================= MAIN CONTENT ================= -->
-  <main class="main-content">
-    <a th:href="@{/reporter/requests}" class="back-btn">
-      <i data-lucide="arrow-left"></i>
-    </a>
+        <div>
+          <div class="form-card">
+            <div class="form-header">แบบฟอร์มคำร้องแจ้งซ่อม</div>
 
-    <div class="form-layout">
-      <!-- ================= LEFT : FORM ================= -->
-      <div>
-        <div class="form-card">
-          <div class="form-header">แบบฟอร์มคำร้องแจ้งซ่อม</div>
+            <div class="form-subheader">ข้อมูลผู้แจ้งซ่อม</div>
 
-          <div class="form-subheader">ข้อมูลผู้แจ้งซ่อม</div>
+            <!-- ================= USER INFO ================= -->
 
-          <!-- ================= USER INFO ================= -->
-          <div class="user-info-box">
-            <div class="user-info-text">
-              <div th:if="${reporter != null and reporter.user != null}">
-                <strong>ชื่อ-สกุล</strong>
-                <span th:text="${reporter.user.firstName + ' ' + reporter.user.lastName}">
-                  สมชาย ใจดี
-                </span>
+            <div class="user-info-box">
+              <div class="user-info-text">
+                <div th:if="${reporter != null and reporter.user != null}">
+                  <strong> ชื่อ-สกุล </strong>
 
-                &nbsp;&nbsp;&nbsp;
+                  <span
+                    th:text="${reporter.user.firstName + ' ' + reporter.user.lastName}"
+                  >
+                    สมชาย ใจดี
+                  </span>
 
-                <strong>เบอร์ติดต่อ</strong>
-                <span th:text="${reporter.user.phoneNo}"> 0812345678 </span>
+                  &nbsp;&nbsp;&nbsp;
+
+                  <strong> เบอร์ติดต่อ </strong>
+
+                  <span th:text="${reporter.user.phoneNo}"> 0812345678 </span>
+                </div>
+
+                <div
+                  th:if="${reporter != null and reporter.resident != null and reporter.resident.room != null}"
+                >
+                  <strong> ห้องพัก : </strong>
+
+                  <span th:text="${reporter.resident.room.roomNo}"> 302 </span>
+
+                  &nbsp;
+
+                  <strong> ตึก : </strong>
+
+                  <span th:text="${reporter.resident.room.building.buildingNo}">
+                    3
+                  </span>
+                </div>
               </div>
 
-              <div th:if="${reporter != null and reporter.resident != null and reporter.resident.room != null}">
-                <strong>ห้องพัก :</strong>
-                <span th:text="${reporter.resident.room.roomNo}"> 302 </span>
+              <a
+                th:if="${reporter != null}"
+                th:href="@{/reporter/profile/edit}"
+                class="edit-profile-btn"
+              >
+                <i data-lucide="user-pen"></i>
 
-                &nbsp;
-
-                <strong>ตึก :</strong>
-                <span th:text="${reporter.resident.room.building.buildingNo}">
-                  3
-                </span>
-              </div>
+                แก้ไขข้อมูล
+              </a>
             </div>
-            <!-- ปุ่มแก้ไขข้อมูลผู้ใช้ -->
-            <a th:if="${reporter != null}" th:href="@{/reporter/profile/edit}" class="edit-profile-btn">
-              <i data-lucide="user-pen"></i>
-              แก้ไขข้อมูล
-            </a>
-          </div>
 
-          <!-- ================= FORM ================= -->
-          <form th:action="@{/reporter/add}" method="post" th:object="${repairForm}" id="repairForm">
+            <!-- ================= FORM ================= -->
 
-            <!-- Server error จาก Service -->
-            <div class="alert alert-danger" th:if="${error != null}" th:text="${error}"></div>
+            <form
+              th:action="@{/reporter/add}"
+              method="post"
+              th:object="${repairForm}"
+              id="repairForm"
+            >
+            <input type="hidden"
+              th:name="${_csrf.parameterName}"
+              th:value="${_csrf.token}">
+              <!-- Server Error -->
 
-            <!-- ================= REPAIR TYPE ================= -->
-            <div class="form-group">
-              <label class="form-label">รายละเอียดคำร้องแจ้งซ่อม</label>
-              <div style="margin-bottom: 8px; font-size: 0.9rem">ประเภทงานซ่อม</div>
+              <div
+                class="alert alert-danger"
+                th:if="${error != null}"
+                th:text="${error}"
+              ></div>
 
-              <div class="repair-types">
-                <button
+              <!-- ================= REPAIR TYPE ================= -->
+
+              <div class="form-group">
+                <label class="form-label"> รายละเอียดคำร้องแจ้งซ่อม </label>
+
+                <div style="margin-bottom: 8px; font-size: 0.9rem">
+                  ประเภทงานซ่อม
+                </div>
+
+                <div class="repair-types">
+                  <button
                     type="button"
                     class="type-btn"
                     th:each="type : ${repairTypes}"
                     th:data-value="${type.name()}"
-                    th:text="${type.thaiName}">
-                </button>
-              </div>  
-              <!-- ใช้ th:field เพื่อผูกกับ DTO -->
-              <input type="hidden" id="repairType" th:field="*{repairType}" />
-              <div class="field-error" th:if="${#fields.hasErrors('repairType')}" th:errors="*{repairType}"></div>
-            </div>
+                    th:text="${type.thaiName}"
+                  ></button>
+                </div>
 
-            <!-- ================= DESCRIPTION ================= -->
-            <div class="form-group">
-              <label class="form-label">อาการ / ปัญหาที่พบ</label>
-              <textarea class="form-control" th:field="*{description}"
-                placeholder="อธิบายอาการหรือปัญหาที่พบ..."></textarea>
-              <div class="field-error" th:if="${#fields.hasErrors('description')}" th:errors="*{description}"></div>
-            </div>
+                <!-- Hidden Repair Type -->
 
-            <!-- ================= DATE / TIME ================= -->
-            <div class="form-group">
-              <label class="form-label">ช่วงเวลาที่สะดวก</label>
-              <div class="time-group">
-                <div>
-                  <span style="margin-right: 8px">วัน</span>
-                  <input type="date" th:field="*{preferredDate}" />
-                  <div class="field-error" th:if="${#fields.hasErrors('preferredDate')}" th:errors="*{preferredDate}">
+                <input type="hidden" id="repairType" th:field="*{repairType}" />
+
+                <div
+                  class="field-error"
+                  th:if="${#fields.hasErrors('repairType')}"
+                  th:errors="*{repairType}"
+                ></div>
+              </div>
+
+              <!-- ================= DESCRIPTION ================= -->
+
+              <div class="form-group">
+                <label class="form-label"> อาการ / ปัญหาที่พบ </label>
+
+                <textarea
+                  class="form-control"
+                  th:field="*{description}"
+                  placeholder="อธิบายอาการหรือปัญหาที่พบ..."
+                >
+                </textarea>
+
+                <div
+                  class="field-error"
+                  th:if="${#fields.hasErrors('description')}"
+                  th:errors="*{description}"
+                ></div>
+              </div>
+
+              <!-- ================= DATE / TIME ================= -->
+
+              <div class="form-group">
+                <label class="form-label"> ช่วงเวลาที่สะดวก </label>
+
+                <div class="time-group">
+                  <div>
+                    <span style="margin-right: 8px"> วัน </span>
+
+                    <input type="date" th:field="*{preferredDate}" />
+
+                    <div
+                      class="field-error"
+                      th:if="${#fields.hasErrors('preferredDate')}"
+                      th:errors="*{preferredDate}"
+                    ></div>
+                  </div>
+
+                  <div>
+                    <span style="margin-right: 8px"> เวลา </span>
+
+                    <input
+                      type="time"
+                      th:field="*{startTime}"
+                      style="width: 100px"
+                    />
+
+                    -
+
+                    <input
+                      type="time"
+                      th:field="*{endTime}"
+                      style="width: 100px"
+                    />
+
+                    <div
+                      class="field-error"
+                      th:if="${#fields.hasErrors('startTime')}"
+                      th:errors="*{startTime}"
+                    ></div>
+
+                    <div
+                      class="field-error"
+                      th:if="${#fields.hasErrors('endTime')}"
+                      th:errors="*{endTime}"
+                    ></div>
                   </div>
                 </div>
-                <div>
-                  <span style="margin-right: 8px">เวลา</span>
-                  <input type="time" th:field="*{startTime}" style="width: 100px" />
-                  -
-                  <input type="time" th:field="*{endTime}" style="width: 100px" />
-                  <div class="field-error" th:if="${#fields.hasErrors('startTime')}" th:errors="*{startTime}"></div>
-                  <div class="field-error" th:if="${#fields.hasErrors('endTime')}" th:errors="*{endTime}"></div>
-                </div>
               </div>
-            </div>
 
-            <!-- ================= NOTE ================= -->
-            <div class="form-group">
-              <label class="form-label">หมายเหตุ</label>
-              <textarea class="form-control" th:field="*{reporterNote}" style="min-height: 80px"
-                placeholder="หมายเหตุเพิ่มเติม (ถ้ามี)"></textarea>
-              <div class="field-error" th:if="${#fields.hasErrors('reporterNote')}" th:errors="*{reporterNote}"></div>
-            </div>
+              <!-- ================= NOTE ================= -->
 
-            <button type="submit" class="btn-submit">บันทึกและส่งคำร้องแจ้งซ่อม</button>
-          </form>
+              <div class="form-group">
+                <label class="form-label"> หมายเหตุ </label>
+
+                <textarea
+                  class="form-control"
+                  th:field="*{reporterNote}"
+                  style="min-height: 80px"
+                  placeholder="หมายเหตุเพิ่มเติม (ถ้ามี)"
+                >
+                </textarea>
+
+                <div
+                  class="field-error"
+                  th:if="${#fields.hasErrors('reporterNote')}"
+                  th:errors="*{reporterNote}"
+                ></div>
+              </div>
+
+              <!-- ================= SUBMIT ================= -->
+
+              <button type="submit" class="btn-submit">
+                บันทึกและส่งคำร้องแจ้งซ่อม
+              </button>
+            </form>
+          </div>
         </div>
-      </div>
 
-      <!-- ================= RIGHT : SIDEBAR ================= -->
-      <div>
-        <div class="emergency-card">
-          <div class="emergency-title">กรณีฉุกเฉินเร่งด่วน</div>
+        <!-- ================= RIGHT SIDEBAR ================= -->
 
-          <div class="emergency-detail">
-            (เช่น ไฟไหม้, ท่อประปาแตก)
-            <br />
+        <div>
+          <div class="emergency-card">
+            <div class="emergency-title">กรณีฉุกเฉินเร่งด่วน</div>
 
-            หน่วยบริการหอพัก
-            <br />
+            <div class="emergency-detail">
+              (เช่น ไฟไหม้, ท่อประปาแตก)
+              <br />
 
-            โทร: 089-999-1122
+              หน่วยบริการหอพัก
+              <br />
+
+              โทร: 089-999-1122
+            </div>
           </div>
         </div>
       </div>
-    </div>
-  </main>
-  <!-- ================= SUCCESS MODAL ================= -->
-  <div id="successModal" class="modal-overlay">
-    <div class="modal-content success-modal">
-      <div class="success-icon">
-        <i data-lucide="check-circle" style="width: 64px; height: 64px"></i>
-      </div>
-      <h3 class="success-title">ส่งคำร้องสำเร็จ</h3>
-      <p class="success-text">ระบบได้บันทึกคำร้องของท่านเรียบร้อยแล้ว<br>กำลังกลับสู่หน้าประวัติคำร้อง...</p>
-    </div>
-  </div>
+    </main>
 
-  <!-- ================= ERROR MODAL ================= -->
-  <div id="errorModal" class="modal-overlay">
-    <div class="modal-content error-modal">
-      <div class="error-icon">
-        <i data-lucide="alert-circle" style="width: 64px; height: 64px"></i>
-      </div>
-      <h3 class="error-title">ไม่สามารถส่งคำร้องได้</h3>
-      <p class="error-text" id="errorMessage">กรุณาตรวจสอบข้อมูลอีกครั้ง</p>
+    <!-- ================= SUCCESS MODAL ================= -->
 
-      <div class="modal-actions">
-        <button type="button" class="btn-confirm" id="closeErrorBtn">ตกลง</button>
+    <div id="successModal" class="modal-overlay">
+      <div class="modal-content success-modal">
+        <div class="success-icon">
+          <i data-lucide="check-circle" style="width: 64px; height: 64px"> </i>
+        </div>
+
+        <h3 class="success-title">ส่งคำร้องสำเร็จ</h3>
+
+        <p class="success-text">
+          ระบบได้บันทึกคำร้องของท่านเรียบร้อยแล้ว
+          <br />
+
+          กำลังกลับสู่หน้าประวัติคำร้อง...
+        </p>
       </div>
     </div>
-  </div>
-  <script>
-    lucide.createIcons();
 
-    // ================= เลือกประเภทงานซ่อม =================
-    const typeButtons = document.querySelectorAll(".type-btn");
-    const repairTypeInput = document.getElementById("repairType");
+    <!-- ================= ERROR MODAL ================= -->
 
-    // คงค่าที่เคยเลือกไว้ (หลัง validation fail)
-    if (repairTypeInput.value) {
-      typeButtons.forEach(btn => {
-        if (btn.getAttribute("data-value") === repairTypeInput.value) {
-          btn.classList.add("selected");
-        }
-      });
-    }
+    <div id="errorModal" class="modal-overlay">
+      <div class="modal-content error-modal">
+        <div class="error-icon">
+          <i data-lucide="alert-circle" style="width: 64px; height: 64px"> </i>
+        </div>
 
-    typeButtons.forEach((button) => {
-      button.addEventListener("click", function () {
-        typeButtons.forEach((btn) => btn.classList.remove("selected"));
-        this.classList.add("selected");
-        repairTypeInput.value = this.getAttribute("data-value");
-      });
-    });
+        <h3 class="error-title">ไม่สามารถส่งคำร้องได้</h3>
 
-    // ================= Client-side Validation =================
-    const form = document.getElementById("repairForm");
+        <p class="error-text" id="errorMessage">กรุณาตรวจสอบข้อมูลอีกครั้ง</p>
 
-    function validateForm() {
-      const repairType = repairTypeInput.value;
-      const description = form.querySelector('[name="description"]').value.trim();
-      const preferredDate = form.querySelector('[name="preferredDate"]').value;
-      const startTime = form.querySelector('[name="startTime"]').value;
-      const endTime = form.querySelector('[name="endTime"]').value;
+        <div class="modal-actions">
+          <button type="button" class="btn-confirm" id="closeErrorBtn">
+            ตกลง
+          </button>
+        </div>
+      </div>
+    </div>
 
-      if (!repairType) return "กรุณาเลือกประเภทงานซ่อม";
-      if (!description) return "กรุณากรอกอาการ / ปัญหาที่พบ";
-      if (!preferredDate) return "กรุณาเลือกวันที่";
-      if (!startTime || !endTime) return "กรุณาระบุเวลาเริ่มและเวลาสิ้นสุด";
-      if (endTime <= startTime) return "เวลาสิ้นสุดต้องมากกว่าเวลาเริ่ม";
+    <!-- ================= JAVASCRIPT ================= -->
 
-      const today = new Date(); today.setHours(0, 0, 0, 0);
-      if (new Date(preferredDate) < today) return "ไม่สามารถเลือกวันที่ในอดีตได้";
+    <script>
+      document.addEventListener("DOMContentLoaded", function () {
+        lucide.createIcons();
 
-      return null;
-    }
+        // =====================================================
+        // ELEMENTS
+        // =====================================================
 
-    // ================= Modal Helpers =================
-    const successModal = document.getElementById("successModal");
-    const errorModal = document.getElementById("errorModal");
-    const errorMsgEl = document.getElementById("errorMessage");
+        const form = document.getElementById("repairForm");
 
-    function showSuccess() {
-      successModal.classList.add("show");
-      lucide.createIcons();
-    }
+        const repairTypeInput = document.getElementById("repairType");
 
-    function showError(message) {
-      errorMsgEl.textContent = message;
-      errorModal.classList.add("show");
-      lucide.createIcons();
-    }
+        const typeButtons = document.querySelectorAll(".type-btn");
 
-    // ================= AJAX Submit =================
-    form.addEventListener("submit", async (e) => {
-      e.preventDefault();
+        const successModal = document.getElementById("successModal");
 
-      // 1) Client validation
-      const err = validateForm();
-      if (err) { showError(err); return; }
+        const errorModal = document.getElementById("errorModal");
 
-      // 2) ส่งไป Backend
-      try {
-        const response = await fetch(form.action, {
-          method: "POST",
-          body: new FormData(form),
-          credentials: "same-origin",
-          redirect: "follow"
+        const errorMessage = document.getElementById("errorMessage");
+
+        const closeErrorBtn = document.getElementById("closeErrorBtn");
+
+        // =====================================================
+        // REPAIR TYPE
+        // =====================================================
+
+        typeButtons.forEach(function (button) {
+          button.addEventListener("click", function () {
+            typeButtons.forEach(function (btn) {
+              btn.classList.remove("selected");
+            });
+
+            this.classList.add("selected");
+
+            repairTypeInput.value = this.getAttribute("data-value");
+          });
         });
 
-        const finalUrl = new URL(response.url);
+        // Restore selected repair type
+        // after server-side validation
 
-        // ============ ตรวจสอบ success vs error ============
-        // success → Controller redirect ไป /reporter/requests (redirected=true)
-        // error   → Controller return view เดิม (redirected=false)
-        if (response.redirected && finalUrl.pathname === "/reporter/requests") {
-          showSuccess();
-          setTimeout(() => { window.location.href = "/reporter/requests"; }, 1500);
-          return;
+        if (repairTypeInput && repairTypeInput.value) {
+          typeButtons.forEach(function (button) {
+            if (button.getAttribute("data-value") === repairTypeInput.value) {
+              button.classList.add("selected");
+            }
+          });
         }
 
-        // ============ ERROR: parse HTML หา error message ============
-        const html = await response.text();
-        const doc = new DOMParser().parseFromString(html, "text/html");
+        // =====================================================
+        // VALIDATION
+        // =====================================================
 
-        // หา error จากหลายแหล่งตามลำดับความสำคัญ
-        const alertEl = doc.querySelector(".alert-danger");   // error จาก Service
-        const fieldEl = doc.querySelector(".field-error");    // error จาก DTO
+        function validateForm() {
+          const repairType = repairTypeInput.value.trim();
 
-        let message = "เกิดข้อผิดพลาด กรุณาตรวจสอบข้อมูลอีกครั้ง";
-        if (alertEl && alertEl.textContent.trim()) {
-          message = alertEl.textContent.trim();
-        } else if (fieldEl && fieldEl.textContent.trim()) {
-          message = fieldEl.textContent.trim();
+          const description = form
+            .querySelector('[name="description"]')
+            .value.trim();
+
+          const preferredDate = form.querySelector(
+            '[name="preferredDate"]',
+          ).value;
+
+          const startTime = form.querySelector('[name="startTime"]').value;
+
+          const endTime = form.querySelector('[name="endTime"]').value;
+
+          if (!repairType) {
+            return "กรุณาเลือกประเภทงานซ่อม";
+          }
+
+          if (!description) {
+            return "กรุณากรอกอาการ / ปัญหาที่พบ";
+          }
+
+          if (!preferredDate) {
+            return "กรุณาเลือกวันที่";
+          }
+
+          if (!startTime) {
+            return "กรุณาระบุเวลาเริ่ม";
+          }
+
+          if (!endTime) {
+            return "กรุณาระบุเวลาสิ้นสุด";
+          }
+
+          if (endTime <= startTime) {
+            return "เวลาสิ้นสุดต้องมากกว่าเวลาเริ่ม";
+          }
+
+          const today = new Date();
+
+          today.setHours(0, 0, 0, 0);
+
+          const selectedDate = new Date(preferredDate);
+
+          selectedDate.setHours(0, 0, 0, 0);
+
+          if (selectedDate < today) {
+            return "ไม่สามารถเลือกวันที่ในอดีตได้";
+          }
+
+          return null;
         }
 
-        showError(message);
+        // =====================================================
+        // SUCCESS MODAL
+        // =====================================================
 
-      } catch (error) {
-        console.error(error);
-        showError("ไม่สามารถเชื่อมต่อเซิร์ฟเวอร์ได้ กรุณาลองใหม่");
-      }
-    });
+        function showSuccess() {
+          successModal.classList.add("show");
 
-    // ================= ปุ่มปิด Modal =================
-    document.getElementById("closeErrorBtn").addEventListener("click", () => {
-      errorModal.classList.remove("show");
-    });
-    errorModal.addEventListener("click", (e) => {
-      if (e.target === errorModal) errorModal.classList.remove("show");
-    });
-  </script>
-</body>
+          lucide.createIcons();
+        }
 
+        // =====================================================
+        // ERROR MODAL
+        // =====================================================
+
+        function showError(message) {
+          errorMessage.textContent = message;
+
+          errorModal.classList.add("show");
+
+          lucide.createIcons();
+        }
+
+        // =====================================================
+        // FORM SUBMIT
+        // =====================================================
+
+        form.addEventListener("submit", async function (e) {
+          e.preventDefault();
+
+          // -----------------------------
+          // Client-side validation
+          // -----------------------------
+
+          const validationError = validateForm();
+
+          if (validationError) {
+            showError(validationError);
+
+            return;
+          }
+
+          // -----------------------------
+          // Submit to Spring Boot
+          // -----------------------------
+
+          try {
+            const response = await fetch(form.action, {
+              method: "POST",
+
+              body: new FormData(form),
+
+              credentials: "same-origin",
+
+              redirect: "follow",
+            });
+
+            // -----------------------------------------
+            // SUCCESS
+            // Backend redirects to /reporter/requests
+            // -----------------------------------------
+
+            if (response.redirected) {
+              const redirectedUrl = new URL(
+                response.url,
+                window.location.origin,
+              );
+
+              if (redirectedUrl.pathname === "/reporter/requests") {
+                showSuccess();
+
+                setTimeout(function () {
+                  window.location.href = "/reporter/requests";
+                }, 1500);
+
+                return;
+              }
+            }
+
+            // -----------------------------------------
+            // BACKEND VALIDATION ERROR
+            // -----------------------------------------
+
+            const responseHtml = await response.text();
+
+            const parser = new DOMParser();
+
+            const documentHtml = parser.parseFromString(
+              responseHtml,
+              "text/html",
+            );
+
+            const serverError = documentHtml.querySelector(".alert-danger");
+
+            const fieldError = documentHtml.querySelector(".field-error");
+
+            let message = "เกิดข้อผิดพลาด กรุณาตรวจสอบข้อมูลอีกครั้ง";
+
+            if (serverError && serverError.textContent.trim()) {
+              message = serverError.textContent.trim();
+            } else if (fieldError && fieldError.textContent.trim()) {
+              message = fieldError.textContent.trim();
+            }
+
+            showError(message);
+          } catch (error) {
+            console.error("Submit error:", error);
+
+            showError("ไม่สามารถเชื่อมต่อเซิร์ฟเวอร์ได้ กรุณาลองใหม่");
+          }
+        });
+
+        // =====================================================
+        // CLOSE ERROR MODAL
+        // =====================================================
+
+        closeErrorBtn.addEventListener("click", function () {
+          errorModal.classList.remove("show");
+        });
+
+        // =====================================================
+        // CLICK OUTSIDE ERROR MODAL
+        // =====================================================
+
+        errorModal.addEventListener("click", function (e) {
+          if (e.target === errorModal) {
+            errorModal.classList.remove("show");
+          }
+        });
+      });
+    </script>
+  </body>
 </html>
