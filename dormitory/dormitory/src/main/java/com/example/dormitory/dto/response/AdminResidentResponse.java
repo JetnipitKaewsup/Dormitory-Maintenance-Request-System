@@ -1,4 +1,4 @@
-package com.example.dormitory.dto.adminResident;
+package com.example.dormitory.dto.response;
 
 import java.util.UUID;
 

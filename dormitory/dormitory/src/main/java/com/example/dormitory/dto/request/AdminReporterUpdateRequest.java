@@ -1,4 +1,4 @@
-package com.example.dormitory.dto.adminReporter;
+package com.example.dormitory.dto.request;
 
 import jakarta.validation.constraints.Pattern;
 

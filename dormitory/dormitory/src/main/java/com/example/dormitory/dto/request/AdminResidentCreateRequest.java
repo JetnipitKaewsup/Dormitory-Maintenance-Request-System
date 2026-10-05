@@ -1,4 +1,4 @@
-package com.example.dormitory.dto.adminResident;
+package com.example.dormitory.dto.request;
 
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;

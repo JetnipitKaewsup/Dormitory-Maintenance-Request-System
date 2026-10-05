@@ -1,4 +1,4 @@
-package com.example.dormitory.dto.adminTechnician;
+package com.example.dormitory.dto.request;
 
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
