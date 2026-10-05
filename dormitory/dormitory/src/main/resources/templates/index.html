@@ -1,0 +1,237 @@
+<!doctype html>
+<html lang="th" xmlns:th="http://www.thymeleaf.org">
+  <head>
+    <meta charset="UTF-8" />
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <title>DormCare - ระบบแจ้งซ่อมหอพัก</title>
+
+    <link rel="stylesheet" th:href="@{/css/index.css}" />
+
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+  </head>
+
+  <body>
+    <!-- =========================================
+         NAVBAR
+         ========================================= -->
+
+    <nav class="navbar">
+      <div class="nav-container">
+        <!-- BRAND -->
+
+        <a href="/" class="brand">
+          <div class="brand-icon">
+            <i data-lucide="wrench"></i>
+          </div>
+
+          <span>DormCare</span>
+        </a>
+
+        <!-- NAVIGATION -->
+
+        <div class="nav-actions">
+          <!-- Notification -->
+
+          <button
+            type="button"
+            class="notification-button"
+            aria-label="การแจ้งเตือน"
+          >
+            <i data-lucide="bell"></i>
+
+            <span class="notification-dot"></span>
+          </button>
+
+          <!-- Login -->
+
+          <a href="/login" class="login-button"> เข้าสู่ระบบ </a>
+        </div>
+      </div>
+    </nav>
+
+    <!-- =========================================
+         HERO
+         ========================================= -->
+
+    <main class="hero">
+      <div class="hero-container">
+        <!-- LEFT CONTENT -->
+
+        <section class="hero-content">
+          <!-- Badge -->
+
+          <div class="hero-badge">
+            <i data-lucide="sparkles"></i>
+
+            <span> ระบบจัดการแจ้งซ่อมหอพัก </span>
+          </div>
+
+          <!-- Heading -->
+
+          <h1>
+            แจ้งซ่อมหอพัก
+
+            <span> ง่าย รวดเร็ว </span>
+
+            และติดตามได้
+          </h1>
+
+          <!-- Description -->
+
+          <p class="hero-description">
+            DormCare ช่วยให้การแจ้งปัญหาภายในหอพัก เป็นเรื่องง่าย
+            ไม่ว่าจะเป็นปัญหาไฟฟ้า น้ำประปา เครื่องปรับอากาศ หรือปัญหาอื่น ๆ
+            พร้อมติดตามสถานะการซ่อมได้ทุกเวลา
+          </p>
+
+          <!-- CTA -->
+
+          <div class="hero-actions">
+            <a href="/register" class="primary-button">
+              <i data-lucide="user-plus"></i>
+
+              <span> สมัครสมาชิก </span>
+
+              <i data-lucide="arrow-right" class="arrow-icon"></i>
+            </a>
+
+            <a href="/login" class="secondary-button"> เข้าสู่ระบบ </a>
+          </div>
+
+          <!-- Small Information -->
+
+          <div class="hero-info">
+            <div class="info-item">
+              <div class="info-icon">
+                <i data-lucide="clock-3"></i>
+              </div>
+
+              <div>
+                <strong> แจ้งได้ตลอดเวลา </strong>
+
+                <span> 24 ชั่วโมง </span>
+              </div>
+            </div>
+
+            <div class="info-item">
+              <div class="info-icon">
+                <i data-lucide="search-check"></i>
+              </div>
+
+              <div>
+                <strong> ติดตามสถานะ </strong>
+
+                <span> ตรวจสอบได้ง่าย </span>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- RIGHT VISUAL -->
+
+        <section class="hero-visual">
+          <div class="visual-card">
+            <!-- Decorative background -->
+
+            <div class="visual-circle circle-one"></div>
+
+            <div class="visual-circle circle-two"></div>
+
+            <!-- Main illustration -->
+
+            <div class="maintenance-card">
+              <div class="maintenance-header">
+                <div class="maintenance-icon">
+                  <i data-lucide="wrench"></i>
+                </div>
+
+                <div>
+                  <span> แจ้งซ่อม </span>
+
+                  <strong> Maintenance Request </strong>
+                </div>
+              </div>
+
+              <div class="maintenance-content">
+                <div class="request-item">
+                  <div class="request-icon electricity">
+                    <i data-lucide="zap"></i>
+                  </div>
+
+                  <div class="request-text">
+                    <strong> ระบบไฟฟ้า </strong>
+
+                    <span> ไฟห้องไม่ติด </span>
+                  </div>
+
+                  <span class="status pending"> รอดำเนินการ </span>
+                </div>
+
+                <div class="request-item">
+                  <div class="request-icon water">
+                    <i data-lucide="droplets"></i>
+                  </div>
+
+                  <div class="request-text">
+                    <strong> ระบบน้ำ </strong>
+
+                    <span> ก๊อกน้ำรั่ว </span>
+                  </div>
+
+                  <span class="status progress"> กำลังซ่อม </span>
+                </div>
+
+                <div class="request-item">
+                  <div class="request-icon air">
+                    <i data-lucide="fan"></i>
+                  </div>
+
+                  <div class="request-text">
+                    <strong> เครื่องปรับอากาศ </strong>
+
+                    <span> แอร์ไม่เย็น </span>
+                  </div>
+
+                  <span class="status complete"> เสร็จแล้ว </span>
+                </div>
+              </div>
+            </div>
+
+            <!-- Floating notification -->
+
+            <div class="floating-card">
+              <div class="floating-icon">
+                <i data-lucide="check"></i>
+              </div>
+
+              <div>
+                <strong> แจ้งซ่อมสำเร็จ </strong>
+
+                <span> ช่างได้รับรายการแล้ว </span>
+              </div>
+            </div>
+          </div>
+        </section>
+      </div>
+    </main>
+
+    <!-- =========================================
+         FOOTER
+         ========================================= -->
+
+    <footer class="footer">
+      <p>© 2026 DormCare. ระบบจัดการแจ้งซ่อมหอพัก</p>
+    </footer>
+
+    <!-- =========================================
+         JAVASCRIPT
+         ========================================= -->
+
+    <script>
+      lucide.createIcons();
+    </script>
+  </body>
+</html>
