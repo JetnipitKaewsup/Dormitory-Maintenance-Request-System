@@ -54,6 +54,13 @@ public class RepairRequestServiceImpl implements RepairRequestService {
                                 .orElseThrow(() -> new IllegalArgumentException("ไม่พบคำร้องแจ้งซ่อม id: " + id));
         }
 
+            @Override
+         @Transactional
+         public void adminUpdateStatus(UUID repairRequestId, UUID adminId,
+                    RepairRequestStatus newStatus, String note) {
+        changeStatus(repairRequestId, adminId, newStatus, note);
+        }
+
         @Override
         @Transactional(readOnly = true)
         public List<RepairRequest> getAllRequests() {
