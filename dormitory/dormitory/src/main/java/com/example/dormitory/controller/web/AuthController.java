@@ -17,7 +17,11 @@ import com.example.dormitory.dto.request.LoginRequest;
 import com.example.dormitory.dto.request.RegisterRequest;
 import com.example.dormitory.dto.response.SupabaseAuthResponse;
 import com.example.dormitory.service.AuthService;
+
 import com.example.dormitory.service.SpringSecurityService;
+
+import java.util.UUID;
+
 
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -27,12 +31,16 @@ import jakarta.servlet.http.HttpSession;
 public class AuthController {
 
     private final AuthService authService;
-    private final SpringSecurityService springSecurityService;
 
-    public AuthController(AuthService authService,SpringSecurityService springSecurityService) {
-        this.authService = authService;
-        this.springSecurityService = springSecurityService;
-    }
+private final SpringSecurityService springSecurityService;
+
+public AuthController(
+        AuthService authService,
+        SpringSecurityService springSecurityService) {
+
+    this.authService = authService;
+    this.springSecurityService = springSecurityService;
+}
 
     // =========================
     // LOGIN PAGE
@@ -94,6 +102,7 @@ public class AuthController {
                     "userId",
                     authResponse.getUser().getId()
             );
+
         
             // redirect ตาม Role
             String role = authentication.getAuthorities().iterator().next().getAuthority();
@@ -103,7 +112,7 @@ public class AuthController {
             }
 
             if(role.equals("ROLE_TECHNICIAN")){
-                return "redirect:/technician";
+                return "redirect:/technician/dailywork";
             }
             
             if(role.equals("ROLE_REPORTER")){
@@ -167,9 +176,6 @@ public String processRegister(
             + (registerRequest.getConfirmPassword() != null
                 ? registerRequest.getConfirmPassword().length()
                 : 0));
-
-
-
 
 
     try {
