@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="th" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>ตรวจสอบงาน</title>
+    <link rel="stylesheet" th:href="@{/css/adminCommon.css}">
+    <link rel="stylesheet" th:href="@{/css/inspect-work.css}">
+</head>
+<body>
+
+<div th:replace="~{admin/adminHeader :: adminHeader('inspections')}"></div>
+
+<div class="container">
+    <div class="main">
+        <div class="card">
+            <h2>ตรวจสอบงาน</h2>
+            <p><strong th:text="'RQ-' + ${request.repairRequestId}"></strong></p>
+            <p th:text="${request.repairType} + ': ' + ${request.description}"></p>
+        </div>
+
+        <div class="card">
+            <p><strong>สถานะงานช่าง:</strong>
+                <span class="badge"
+                      th:classappend="${assignment != null ? #strings.toLowerCase(#strings.replace(assignment.jobStatus.name(),'_','-')) : ''}"
+                      th:text="${assignment != null ? assignment.jobStatus : 'ยังไม่ได้มอบหมายงาน'}"></span>
+            </p>
+            <p><strong>สถานะคำร้อง:</strong>
+                <span class="badge"
+                      th:classappend="${#strings.toLowerCase(#strings.replace(request.status.name(),'_','-'))}"
+                      th:text="${request.status}"></span>
+            </p>
+        </div>
+
+        <div class="card">
+            <h3>หมายเหตุจากช่าง</h3>
+            <textarea readonly th:text="${assignment != null ? assignment.technicianNote : '-'}"></textarea>
+        </div>
+
+        <form th:action="@{/admin/requests/{id}/inspect(id=${request.repairRequestId})}" method="post">
+            <div class="card">
+                <h3>หมายเหตุแอดมิน (ถ้ามี)</h3>
+                <textarea name="note" placeholder="บันทึกเพิ่มเติม..."></textarea>
+            </div>
+            <button type="submit" class="confirm"
+                    th:disabled="${assignment == null or assignment.jobStatus.name() != 'COMPLETED'}">
+                ยืนยันสถานะคำร้อง
+            </button>
+        </form>
+    </div>
+
+    <div class="sidebar">
+        <h3>ข้อมูลผู้แจ้ง</h3>
+        <p><strong>ชื่อ:</strong>
+             <span th:text="${request.reporter != null and request.reporter.user != null ? request.reporter.user.firstName + ' ' + request.reporter.user.lastName : '-'}"></span>
+        </p>
+        <p><strong>ห้อง:</strong> <span th:text="${request.room != null ? request.room.roomNo : '-'}"></span></p>
+        <p><strong>ประเภทงาน:</strong> <span th:text="${request.repairType}"></span></p>
+        <p><strong>รายละเอียด:</strong> <span th:text="${request.description}"></span></p>
+    </div>
+</div>
+</body>
+</html>
