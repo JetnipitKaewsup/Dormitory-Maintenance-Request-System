@@ -1,7 +1,13 @@
 package com.example.dormitory.controller.web;
 
+import com.example.dormitory.domain.command.RepairCommand;
+import com.example.dormitory.domain.command.impl.AssignTechnicianCommand;
+import com.example.dormitory.domain.command.impl.ConfirmCompletionCommand;
+import com.example.dormitory.domain.entity.RepairAssignment;
 import com.example.dormitory.domain.entity.RepairRequest;
+import com.example.dormitory.domain.entity.Technician;
 import com.example.dormitory.domain.enums.RepairRequestStatus;
+import com.example.dormitory.service.RepairAssignmentService;
 import com.example.dormitory.service.RepairRequestService;
 import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -10,7 +16,6 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-
 import java.util.UUID;
 
 @Controller
@@ -18,13 +23,16 @@ import java.util.UUID;
 public class AdminRepairRequestController {
 
     private final RepairRequestService repairRequestService;
+    private final RepairAssignmentService repairAssignmentService;
 
     @Autowired
-    public AdminRepairRequestController(RepairRequestService repairRequestService) {
+    public AdminRepairRequestController(RepairRequestService repairRequestService,
+                                         RepairAssignmentService repairAssignmentService) {
         this.repairRequestService = repairRequestService;
+        this.repairAssignmentService = repairAssignmentService;
     }
 
-        @GetMapping
+    @GetMapping
     public String listRequests(Model model) {
         List<RepairRequest> requests = repairRequestService.getAllRequests();
 
@@ -56,7 +64,7 @@ public class AdminRepairRequestController {
     public String approve(@PathVariable UUID id, HttpSession session) {
         UUID adminId = getCurrentAdminId(session);
         repairRequestService.approve(id, adminId);
-        return "redirect:/admin/requests/" + id;   // Post-Redirect-Get กัน refresh แล้ว submit ซ้ำ
+        return "redirect:/admin/requests/" + id;
     }
 
     @PostMapping("/{id}/reject")
@@ -65,6 +73,57 @@ public class AdminRepairRequestController {
                           HttpSession session) {
         UUID adminId = getCurrentAdminId(session);
         repairRequestService.reject(id, adminId, reason);
+        return "redirect:/admin/requests/" + id;
+    }
+
+    // ===================== มอบหมายงานให้ช่าง =====================
+
+    @GetMapping("/{id}/assign")
+    public String showAssignPage(@PathVariable UUID id, Model model) {
+        RepairRequest request = repairRequestService.getById(id);
+        List<Technician> technicians = repairAssignmentService.getAllTechnicians();
+
+        model.addAttribute("request", request);
+        model.addAttribute("technicians", technicians);
+        return "admin/assign-technician";
+    }
+
+    @PostMapping("/{id}/assign")
+    public String submitAssign(@PathVariable UUID id,
+                                @RequestParam UUID technicianId,
+                                @RequestParam(required = false) String adminNote,
+                                HttpSession session) {
+        UUID adminId = getCurrentAdminId(session);
+
+        RepairCommand command = new AssignTechnicianCommand(
+                repairAssignmentService, id, technicianId, adminId, adminNote);
+        command.execute();
+
+        return "redirect:/admin/requests/" + id;
+    }
+
+    // ===================== ตรวจสอบงาน =====================
+
+    @GetMapping("/{id}/inspect")
+    public String showInspectPage(@PathVariable UUID id, Model model) {
+        RepairRequest request = repairRequestService.getById(id);
+        RepairAssignment assignment = repairAssignmentService.getAssignmentByRequestId(id);
+
+        model.addAttribute("request", request);
+        model.addAttribute("assignment", assignment);
+        return "admin/inspect-work";
+    }
+
+    @PostMapping("/{id}/inspect")
+    public String confirmCompletion(@PathVariable UUID id,
+                                     @RequestParam(required = false) String note,
+                                     HttpSession session) {
+        UUID adminId = getCurrentAdminId(session);
+
+        RepairCommand command = new ConfirmCompletionCommand(
+                repairRequestService, id, adminId, note);
+        command.execute();
+
         return "redirect:/admin/requests/" + id;
     }
 
