@@ -36,7 +36,7 @@ public class RepairAssignment {
     private RepairRequestStatus jobStatus;
 
     @Column(columnDefinition = "TEXT")
-    private String note;
+    private String adminNote;
 
     @Column(name = "technician_note")
     private String technicianNote;
@@ -55,14 +55,14 @@ public class RepairAssignment {
                             Admin admin,
                             RepairRequestStatus jobStatus,
                             LocalDateTime assignDate,
-                            String note,
+                            String adminNote,
                             String technicianNote) {
         this.assignmentId = assignmentId;
         this.repairRequest = repairRequest;
         this.technician = technician;
         this.admin = admin;
         this.jobStatus = jobStatus;
-        this.note = note;
+        this.adminNote = adminNote;
         this.technicianNote = technicianNote;
         this.assignDate = assignDate;
    
@@ -110,12 +110,12 @@ public class RepairAssignment {
         this.jobStatus = jobStatus;
     }
 
-    public String getNote() {
-        return note;
+    public String getAdminNote() {
+        return adminNote;
     }
 
-    public void setNote(String note) {
-        this.note = note;
+    public void setAdminNote(String adminNote) {
+        this.adminNote = adminNote;
     }
 
     public String getTechnicianNote() {

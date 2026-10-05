@@ -1,5 +1,11 @@
 package com.example.dormitory.controller.web;
 
+import java.util.UUID;
+
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContext;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.web.context.HttpSessionSecurityContextRepository;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -12,6 +18,13 @@ import com.example.dormitory.dto.request.RegisterRequest;
 import com.example.dormitory.dto.response.SupabaseAuthResponse;
 import com.example.dormitory.service.AuthService;
 
+import com.example.dormitory.service.SpringSecurityService;
+
+import java.util.UUID;
+
+
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 
 @Controller
@@ -19,9 +32,15 @@ public class AuthController {
 
     private final AuthService authService;
 
-    public AuthController(AuthService authService) {
-        this.authService = authService;
-    }
+private final SpringSecurityService springSecurityService;
+
+public AuthController(
+        AuthService authService,
+        SpringSecurityService springSecurityService) {
+
+    this.authService = authService;
+    this.springSecurityService = springSecurityService;
+}
 
     // =========================
     // LOGIN PAGE
@@ -45,31 +64,62 @@ public class AuthController {
     @PostMapping("/login")
     public String processLogin(
             @ModelAttribute LoginRequest loginRequest,
-            HttpSession session,
+            HttpServletRequest request,
+            HttpServletResponse response,
             Model model) {
 
         try {
-
-            SupabaseAuthResponse response =
+            // ตรวจสอบ email / password กับ supabase
+            SupabaseAuthResponse authResponse =
                     authService.login(loginRequest);
+            
+            UUID userId = UUID.fromString(authResponse.getUser().getId());
+            
+            // สร้าง Spring Security Authentication
+            Authentication authentication = springSecurityService.createAuthentication(userId);
+            
+            // สร้าง SecurityContext
+            SecurityContext context = SecurityContextHolder.createEmptyContext();
+            context.setAuthentication(authentication);
+            SecurityContextHolder.setContext(context);
+            
+            // บันทึก SecurityContext ลง Session
+            HttpSession session = request.getSession();
+            HttpSessionSecurityContextRepository securityContextRepository = new HttpSessionSecurityContextRepository();
+            securityContextRepository.saveContext(context, request, response);
 
+            // เก็บ Supabase token
             session.setAttribute(
                     "accessToken",
-                    response.getAccess_token()
+                    authResponse.getAccess_token()
             );
 
             session.setAttribute(
                     "refreshToken",
-                    response.getRefresh_token()
+                    authResponse.getRefresh_token()
             );
             session.setAttribute(
                     "userId",
-                    response.getUser().getId()
+                    authResponse.getUser().getId()
             );
+
         
+            // redirect ตาม Role
+            String role = authentication.getAuthorities().iterator().next().getAuthority();
+
+            if(role.equals("ROLE_ADMIN")){
+                return  "redirect:/admin/requests";
+            }
+
+            if(role.equals("ROLE_TECHNICIAN")){
+                return "redirect:/technician/dailywork";
+            }
+            
+            if(role.equals("ROLE_REPORTER")){
+                return "redirect:/reporter/requests";
+            }
             
             return "redirect:/reporter/requests";
-
         } catch (Exception e) {
 
             model.addAttribute(
@@ -128,9 +178,6 @@ public String processRegister(
                 : 0));
 
 
-
-
-
     try {
 
         authService.register(registerRequest);
@@ -173,14 +220,7 @@ public String processRegister(
             return "dashboard";
         }
 
-        @GetMapping("/logout")
-public String logout(HttpSession session) {
-
-    session.invalidate();
-
-    return "redirect:/login";
-}
-
+      
     @GetMapping("/forgot")
     public String forgotPassword() {
         return "forgot";
