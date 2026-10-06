@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="th" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>มอบหมายงานให้ช่าง</title>
+    <link rel="stylesheet" th:href="@{/css/adminCommon.css}">
+    <link rel="stylesheet" th:href="@{/css/assign-technician.css}">
+</head>
+<body>
+
+<div th:replace="~{admin/adminHeader :: adminHeader('assignments')}"></div>
+
+<div class="container">
+    <div class="main">
+        <div class="card">
+            <h2>มอบหมายงานให้ช่าง</h2>
+            <p><strong th:text="'RQ-' + ${request.repairRequestId}"></strong></p>
+            <p th:text="${request.repairType} + ': ' + ${request.description}"></p>
+        </div>
+
+        <form th:action="@{/admin/requests/{id}/assign(id=${request.repairRequestId})}" method="post">
+            <div class="card">
+                <h3>เลือกช่างผู้รับผิดชอบ</h3>
+                <div class="tech-item"
+                 th:each="tech : ${technicians}"
+                th:classappend="${tech.specialization != null and request.repairType != null and tech.specialization.contains(request.repairType.thaiName)} ? 'matched' : ''">
+
+                 <div>
+                    <strong th:text="${tech.user != null ? tech.user.firstName + ' ' + tech.user.lastName : 'ช่าง'}"></strong>
+                    <span th:text="'(' + ${tech.specialization} + ')'"></span>
+                    <span class="badge-match"
+                        th:if="${tech.specialization != null and request.repairType != null and tech.specialization.contains(request.repairType.thaiName)}">
+                        ตรงความเชี่ยวชาญ
+                     </span>
+                     </div>
+                    <div>
+                        <input type="radio" name="technicianId" th:value="${tech.technicianId}"
+                               th:id="${'tech-' + tech.technicianId}" required>
+                        <label th:for="${'tech-' + tech.technicianId}" class="select-btn">เลือกช่าง</label>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card">
+                <h3>หมายเหตุถึงช่าง</h3>
+                <textarea name="adminNote" placeholder="รายละเอียดเพิ่มเติมสำหรับช่าง..."></textarea>
+            </div>
+
+            <button type="submit" class="confirm">ยืนยันมอบหมายงาน</button>
+        </form>
+    </div>
+
+    <div class="sidebar">
+        <h3>รายละเอียดคำร้อง</h3>
+        <p><strong>ประเภทงาน:</strong> <span th:text="${request.repairType}"></span></p>
+        <p><strong>รายละเอียด:</strong> <span th:text="${request.description}"></span></p>
+        <p><strong>ห้อง:</strong> <span th:text="${request.room != null ? request.room.roomNo : '-'}"></span></p>
+        <p><strong>ผู้แจ้ง:</strong>
+            <span th:text="${request.reporter != null and request.reporter.user != null ? request.reporter.user.firstName + ' ' + request.reporter.user.lastName : '-'}"></span>
+        </p>
+        <p><strong>สถานะปัจจุบัน:</strong> <span th:text="${request.status}"></span></p>
+    </div>
+</div>
+</body>
+</html>

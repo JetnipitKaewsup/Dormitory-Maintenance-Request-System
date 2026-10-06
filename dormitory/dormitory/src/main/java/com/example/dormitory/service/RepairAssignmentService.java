@@ -26,6 +26,10 @@ import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.UUID;
 
+import com.example.dormitory.domain.entity.Admin;
+import com.example.dormitory.repository.AdminRepository;
+import com.example.dormitory.service.RepairRequestService;
+
 @Service
 public class RepairAssignmentService {
 
@@ -33,6 +37,8 @@ public class RepairAssignmentService {
     private final TechnicianRepository technicianRepository;
     private final RepairAssignmentStatusHistoryRepository historyRepository;
     private final List<RepairRequestState> repairRequestStates;
+    private final AdminRepository adminRepository;  
+     private final RepairRequestService repairRequestService;  
     private static final DateTimeFormatter TIME_FORMATTER =
             DateTimeFormatter.ofPattern("HH.mm");
 
@@ -45,12 +51,16 @@ public class RepairAssignmentService {
             RepairAssignmentRepository repairAssignmentRepository,
             TechnicianRepository technicianRepository,
             RepairAssignmentStatusHistoryRepository historyRepository,
-            List<RepairRequestState> repairRequestStates
+            List<RepairRequestState> repairRequestStates,
+            AdminRepository adminRepository,                 
+            RepairRequestService repairRequestService   
     ) {
         this.repairAssignmentRepository = repairAssignmentRepository;
         this.technicianRepository = technicianRepository;
         this.historyRepository = historyRepository;
         this.repairRequestStates = repairRequestStates;
+        this.adminRepository = adminRepository;
+        this.repairRequestService = repairRequestService;
     }
 
 //methodสำหรับ state
@@ -569,6 +579,52 @@ public void updateJobStatus(
         return LocalDate
                 .now()
                 .atTime(LocalTime.MAX);
+    }
+
+     // =====================================================
+    // ASSIGN TECHNICIAN (มอบหมายงานให้ช่าง)
+    // =====================================================
+
+    @Transactional(readOnly = true)
+    public List<Technician> getAllTechnicians() {
+        return technicianRepository.findAll();
+    }
+
+    @Transactional(readOnly = true)
+    public RepairAssignment getAssignmentByRequestId(UUID repairRequestId) {
+        return repairAssignmentRepository
+                .findByRepairRequest_RepairRequestId(repairRequestId)
+                .orElse(null);
+    }
+
+    @Transactional
+    public RepairAssignment assignTechnician(
+            UUID repairRequestId,
+            UUID technicianId,
+            UUID adminId,
+            String adminNote
+    ) {
+        RepairRequest repairRequest = repairRequestService.getById(repairRequestId);
+        Technician technician = getTechnicianOrThrow(technicianId);
+
+        Admin admin = adminRepository.findById(adminId)
+                .orElseThrow(() -> new IllegalArgumentException("ไม่พบ admin ID: " + adminId));
+
+        RepairAssignment assignment = new RepairAssignment();
+        assignment.setRepairRequest(repairRequest);
+        assignment.setTechnician(technician);
+        assignment.setAdmin(admin);
+        assignment.setJobStatus(RepairRequestStatus.IN_PROGRESS);
+        assignment.setAdminNote(adminNote);
+        assignment.setAssignDate(LocalDateTime.now());
+
+        RepairAssignment saved = repairAssignmentRepository.save(assignment);
+
+        // คำร้องหลัก: APPROVED -> IN_PROGRESS (ผ่าน State pattern ใน RepairRequestService)
+        repairRequestService.adminUpdateStatus(
+                repairRequestId, adminId, RepairRequestStatus.IN_PROGRESS, adminNote);
+
+        return saved;
     }
 
 }

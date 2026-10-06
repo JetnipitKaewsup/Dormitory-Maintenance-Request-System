@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="th" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>ตรวจงาน</title>
+    <link rel="stylesheet" th:href="@{/css/adminCommon.css}">
+    <link rel="stylesheet" th:href="@{/css/admin-worklist.css}">
+</head>
+<body>
+
+<div th:replace="~{admin/adminHeader :: adminHeader('inspections')}"></div>
+
+<div class="page">
+    <h2>รายการงานที่กำลังดำเนินการ</h2>
+
+    <div class="empty" th:if="${#lists.isEmpty(requests)}">
+        ไม่มีงานที่กำลังดำเนินการในขณะนี้
+    </div>
+
+    <div class="work-item" th:each="r : ${requests}">
+        <div>
+            <strong th:text="${r.repairType}"></strong>
+            <span th:text="' - ' + ${r.description}"></span>
+            <div class="meta" th:text="'ห้อง ' + (${r.room != null ? r.room.roomNo : '-'})"></div>
+        </div>
+        <a class="btn" th:href="@{/admin/requests/{id}/inspect(id=${r.repairRequestId})}">ตรวจสอบงาน</a>
+    </div>
+</div>
+
+</body>
+</html>

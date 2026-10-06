@@ -42,7 +42,7 @@ public interface RepairRequestService {
     //Page<RepairRequest> getMyRequestsByStatus(UUID userId, RepairRequestStatus status, Pageable pageable);
     void updateStatus(UUID userId, UUID requestId, RepairRequestStatus newStatus, String note);
 
-            
+        void adminUpdateStatus(UUID repairRequestId, UUID adminId, RepairRequestStatus newStatus, String note);    
     // Admin - list all
     List<RepairRequest> getAllRequests();
 }
