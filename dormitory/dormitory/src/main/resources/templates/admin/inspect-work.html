@@ -13,23 +13,36 @@
 <div class="container">
     <div class="main">
         <div class="card">
-            <h2>ตรวจสอบงาน</h2>
+             <h2>ตรวจสอบงาน</h2>
             <p><strong th:text="'RQ-' + ${request.repairRequestId}"></strong></p>
-            <p th:text="${request.repairType} + ': ' + ${request.description}"></p>
+          <p th:text="${request.repairType} + ': ' + ${request.description}"></p>
         </div>
 
         <div class="card">
-            <p><strong>สถานะงานช่าง:</strong>
-                <span class="badge"
-                      th:classappend="${assignment != null ? #strings.toLowerCase(#strings.replace(assignment.jobStatus.name(),'_','-')) : ''}"
-                      th:text="${assignment != null ? assignment.jobStatus : 'ยังไม่ได้มอบหมายงาน'}"></span>
-            </p>
-            <p><strong>สถานะคำร้อง:</strong>
-                <span class="badge"
-                      th:classappend="${#strings.toLowerCase(#strings.replace(request.status.name(),'_','-'))}"
-                      th:text="${request.status}"></span>
-            </p>
+                <h3>ช่างผู้รับผิดชอบ</h3>
+                <p th:if="${assignment != null and assignment.technician != null}">
+                  <strong th:text="${assignment.technician.user != null
+                              ? assignment.technician.user.firstName + ' ' + assignment.technician.user.lastName
+                              : 'ช่าง'}"></strong>
+                 <span th:text="'(' + ${assignment.technician.specialization} + ')'"></span>
+               </p>
+                   <p th:if="${assignment == null or assignment.technician == null}">
+                     ยังไม่ได้มอบหมายงานให้ช่าง
+                </p>
         </div>
+
+        <div class="card">
+        <p><strong>สถานะงานช่าง:</strong>
+            <span class="badge"
+                  th:classappend="${assignment != null ? #strings.toLowerCase(#strings.replace(assignment.jobStatus.name(),'_','-')) : ''}"
+                  th:text="${assignment != null ? assignment.jobStatus : 'ยังไม่ได้มอบหมายงาน'}"></span>
+        </p>
+        <p><strong>สถานะคำร้อง:</strong>
+            <span class="badge"
+                  th:classappend="${#strings.toLowerCase(#strings.replace(request.status.name(),'_','-'))}"
+                  th:text="${request.status}"></span>
+             </p>
+         </div>
 
         <div class="card">
             <h3>หมายเหตุจากช่าง</h3>

@@ -168,3 +168,49 @@
         text-align: center;
     }
 }
+
+/* ===== งานที่ช่างแจ้งเสร็จแล้ว รอแอดมินตรวจสอบ ===== */
+:root {
+    --work-amber: #B45309;
+    --work-amber-wash: #FDF1DF;
+}
+
+.work-head-side {
+    display: flex;
+    align-items: baseline;
+    gap: 12px;
+}
+
+.work-ready-count {
+    padding: 4px 12px;
+    border-radius: 999px;
+    background: var(--work-amber-wash);
+    color: var(--work-amber);
+    font-size: 12.5px;
+    font-weight: 600;
+}
+
+.work-row.is-ready {
+    border-color: var(--work-amber);
+    background: #FFFCF6;
+}
+
+.work-row.is-ready .work-status {
+    background: var(--work-amber);
+}
+
+.work-badge-ready {
+    background: var(--work-amber-wash);
+    color: var(--work-amber);
+}
+
+/* งานที่ช่างยังไม่เสร็จ: ปุ่มเบากว่า เพราะยังยืนยันไม่ได้ */
+.work-btn-quiet {
+    background: transparent;
+    color: var(--work-green-dark);
+    box-shadow: inset 0 0 0 1px var(--work-green);
+}
+
+.work-btn-quiet:hover {
+    background: var(--work-green-wash);
+}
