@@ -1,0 +1,108 @@
+<!doctype html>
+<html lang="th" xmlns:th="http://www.thymeleaf.org">
+  <head>
+    <meta charset="UTF-8" />
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <title>ยืนยัน Email สำเร็จ - DormCare</title>
+
+    <link rel="stylesheet" th:href="@{/css/register-success.css}" />
+
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+
+    <!-- Redirect Login -->
+    <meta http-equiv="refresh" content="3;url=/login" />
+  </head>
+
+  <body>
+    <!-- ================= NAVBAR ================= -->
+
+    <nav class="navbar">
+      <div class="nav-container">
+        <a href="/" class="brand">
+          <i data-lucide="wrench"></i>
+
+          <span>DormCare</span>
+        </a>
+
+        <div class="nav-actions">
+          <a href="/login" class="login-trigger"> เข้าสู่ระบบ </a>
+        </div>
+      </div>
+    </nav>
+
+    <!-- ================= VERIFIED PAGE ================= -->
+
+    <main class="auth-page">
+      <div class="auth-backdrop">
+        <div class="success-modal">
+          <!-- CLOSE -->
+
+          <a href="/" class="modal-close" aria-label="ปิด">
+            <i data-lucide="x"></i>
+          </a>
+
+          <!-- HEADER -->
+
+          <div class="modal-header">
+            <div class="modal-icon success-icon">
+              <i data-lucide="shield-check"></i>
+            </div>
+
+            <h2>ยืนยัน Email สำเร็จ</h2>
+
+            <p>บัญชี DormCare ของคุณพร้อมใช้งานแล้ว</p>
+          </div>
+
+          <!-- SUCCESS MESSAGE -->
+
+          <div class="success-message">
+            <i data-lucide="circle-check"></i>
+
+            <div>
+              <strong> Email ได้รับการยืนยันแล้ว </strong>
+
+              <p>คุณสามารถเข้าสู่ระบบ และเริ่มใช้งาน DormCare ได้ทันที</p>
+            </div>
+          </div>
+
+          <!-- REDIRECT INFO -->
+
+          <div class="instruction">
+            <i data-lucide="log-in"></i>
+
+            <p>
+              กำลังนำคุณไปหน้า
+              <strong>เข้าสู่ระบบ</strong>
+              ใน <strong>3</strong> วินาที
+            </p>
+          </div>
+
+          <!-- LOGIN BUTTON -->
+
+          <a href="/login" class="submit-button">
+            <span> เข้าสู่ระบบทันที </span>
+
+            <i data-lucide="arrow-right"></i>
+          </a>
+
+          <!-- FOOTER -->
+
+          <div class="modal-footer">
+            <span> DormCare </span>
+
+            <span class="footer-note"> ระบบจัดการแจ้งซ่อมหอพัก </span>
+          </div>
+        </div>
+      </div>
+    </main>
+
+    <!-- ================= JAVASCRIPT ================= -->
+
+    <script>
+      lucide.createIcons();
+    </script>
+  </body>
+</html>

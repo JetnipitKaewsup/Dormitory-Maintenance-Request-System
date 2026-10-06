@@ -1,0 +1,103 @@
+<!doctype html>
+<html lang="th" xmlns:th="http://www.thymeleaf.org">
+  <head>
+    <meta charset="UTF-8" />
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <title>สมัครสมาชิกสำเร็จ - DormCare</title>
+
+    <link rel="stylesheet" th:href="@{/css/register-success.css}" />
+
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+  </head>
+
+  <body>
+    <!-- ================= NAVBAR ================= -->
+
+    <nav class="navbar">
+      <div class="nav-container">
+        <a href="/" class="brand">
+          <i data-lucide="wrench"></i>
+
+          <span>DormCare</span>
+        </a>
+
+        <div class="nav-actions">
+          <a href="/login" class="login-trigger"> เข้าสู่ระบบ </a>
+        </div>
+      </div>
+    </nav>
+
+    <!-- ================= SUCCESS PAGE ================= -->
+
+    <main class="auth-page">
+      <div class="auth-backdrop">
+        <div class="success-modal">
+          <!-- CLOSE -->
+
+          <a href="/" class="modal-close" aria-label="ปิด">
+            <i data-lucide="x"></i>
+          </a>
+
+          <!-- HEADER -->
+
+          <div class="modal-header">
+            <div class="modal-icon success-icon">
+              <i data-lucide="mail-check"></i>
+            </div>
+
+            <h2>สมัครสมาชิกสำเร็จ</h2>
+
+            <p>กรุณายืนยัน Email ของคุณ</p>
+          </div>
+
+          <!-- MESSAGE -->
+
+          <div class="success-message">
+            <i data-lucide="circle-check"></i>
+
+            <div>
+              <strong> ตรวจสอบ Email ของคุณ </strong>
+
+              <p>เราได้ส่งลิงก์ยืนยันบัญชี ไปยัง Email ของคุณแล้ว</p>
+            </div>
+          </div>
+
+          <div class="instruction">
+            <i data-lucide="info"></i>
+
+            <p>
+              กรุณาเปิด Email และกดลิงก์
+              <strong>Confirm your email</strong>
+              เพื่อเปิดใช้งานบัญชี DormCare
+            </p>
+          </div>
+
+          <!-- LOGIN BUTTON -->
+
+          <a href="/login" class="submit-button">
+            <span> กลับไปหน้าเข้าสู่ระบบ </span>
+
+            <i data-lucide="arrow-right"></i>
+          </a>
+
+          <!-- FOOTER -->
+
+          <div class="modal-footer">
+            <span> ยังไม่ได้รับ Email? </span>
+
+            <span class="footer-note"> กรุณาตรวจสอบใน Spam / Junk </span>
+          </div>
+        </div>
+      </div>
+    </main>
+
+    <!-- ================= JAVASCRIPT ================= -->
+
+    <script>
+      lucide.createIcons();
+    </script>
+  </body>
+</html>
