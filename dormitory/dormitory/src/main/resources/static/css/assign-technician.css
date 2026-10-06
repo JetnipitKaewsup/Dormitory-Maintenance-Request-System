@@ -1,0 +1,291 @@
+/* ===== Tokens ===== */
+:root {
+    --assign-ink: #1B211D;
+    --assign-muted: #5B6058;
+    --assign-bg: #F6F5F1;
+    --assign-surface: #FFFFFF;
+    --assign-line: #E4E1D9;
+    --assign-green: #2F9442;
+    --assign-green-dark: #153D2B;
+    --assign-green-wash: #EAF4EE;
+    --assign-amber: #B45309;
+    --assign-amber-wash: #FDF1DF;
+}
+
+/* ===== Layout: header strip, then 2-col grid (form left, sticky ticket summary right) ===== */
+.assign-page {
+    max-width: 1080px;
+    margin: 0 auto;
+    padding: 32px 24px 64px;
+    font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+    color: var(--assign-ink);
+}
+
+.assign-head {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 16px;
+    margin-bottom: 24px;
+}
+
+.assign-head h1 {
+    font-family: 'Space Grotesk', 'Segoe UI', sans-serif;
+    font-size: 26px;
+    font-weight: 600;
+    margin: 0 0 6px;
+}
+
+.req-ref {
+    margin: 0;
+    font-family: 'Courier New', monospace;
+    font-size: 13px;
+    color: var(--assign-muted);
+}
+
+.type-chip {
+    flex-shrink: 0;
+    padding: 6px 16px;
+    border-radius: 999px;
+    background: var(--assign-green-wash);
+    color: var(--assign-green-dark);
+    font-size: 13px;
+    font-weight: 600;
+    white-space: nowrap;
+}
+
+.assign-grid {
+    display: grid;
+    grid-template-columns: 1fr 300px;
+    gap: 20px;
+    align-items: start;
+}
+
+@media (max-width: 760px) {
+    .assign-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+.assign-main {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    min-width: 0;
+}
+
+.panel {
+    background: var(--assign-surface);
+    border: 1px solid var(--assign-line);
+    border-radius: 10px;
+    padding: 20px;
+}
+
+.panel-title {
+    font-family: 'Space Grotesk', 'Segoe UI', sans-serif;
+    font-size: 15px;
+    font-weight: 600;
+    margin: 0 0 14px;
+    color: var(--assign-ink);
+}
+
+/* ===== Technician rows: work-order ticket style, whole row clickable ===== */
+.tech-list {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.tech-row {
+    position: relative;
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding: 14px 16px 14px 18px;
+    border: 1px solid var(--assign-line);
+    border-left: 4px solid var(--assign-line);
+    border-radius: 8px;
+    cursor: pointer;
+    transition: border-color .15s ease, background .15s ease;
+}
+
+.tech-row:hover {
+    border-color: #CFCBC0;
+}
+
+.tech-row.is-matched {
+    border-left-color: var(--assign-amber);
+}
+
+.tech-row input[type="radio"] {
+    position: absolute;
+    opacity: 0;
+    width: 0;
+    height: 0;
+}
+
+.tech-row:has(input:checked) {
+    border-color: var(--assign-green);
+    border-left-color: var(--assign-green);
+    background: var(--assign-green-wash);
+}
+
+.tech-avatar {
+    flex-shrink: 0;
+    width: 38px;
+    height: 38px;
+    border-radius: 50%;
+    background: var(--assign-green-dark);
+    color: #fff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: 'Space Grotesk', sans-serif;
+    font-weight: 600;
+    font-size: 15px;
+}
+
+.tech-info {
+    flex: 1;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+
+.tech-name {
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--assign-ink);
+}
+
+.tech-spec {
+    font-size: 12.5px;
+    color: var(--assign-muted);
+}
+
+.tech-match {
+    flex-shrink: 0;
+    padding: 4px 10px;
+    border-radius: 999px;
+    background: var(--assign-amber-wash);
+    color: var(--assign-amber);
+    font-size: 11.5px;
+    font-weight: 600;
+    white-space: nowrap;
+}
+
+.tech-check {
+    flex-shrink: 0;
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    border: 2px solid #CFCBC0;
+    box-sizing: border-box;
+}
+
+.tech-row:has(input:checked) .tech-check {
+    border-color: var(--assign-green);
+    background: var(--assign-green);
+    position: relative;
+}
+
+.tech-row:has(input:checked) .tech-check::after {
+    content: '';
+    position: absolute;
+    top: 3px;
+    left: 6px;
+    width: 5px;
+    height: 9px;
+    border: solid #fff;
+    border-width: 0 2px 2px 0;
+    transform: rotate(45deg);
+}
+
+/* ===== Notes ===== */
+textarea {
+    width: 100%;
+    min-height: 90px;
+    padding: 12px;
+    border: 1px solid var(--assign-line);
+    border-radius: 8px;
+    font-family: inherit;
+    font-size: 14px;
+    resize: vertical;
+    box-sizing: border-box;
+}
+
+textarea:focus {
+    outline: 2px solid var(--assign-green);
+    outline-offset: 1px;
+}
+
+/* ===== Submit ===== */
+.confirm-btn {
+    align-self: flex-start;
+    padding: 13px 32px;
+    background: var(--assign-green);
+    color: #fff;
+    border: none;
+    border-radius: 8px;
+    font-size: 15px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background .15s ease;
+}
+
+.confirm-btn:hover {
+    background: var(--assign-green-dark);
+}
+
+/* ===== Sidebar: request summary ticket ===== */
+.assign-side {
+    background: var(--assign-surface);
+    border: 1px solid var(--assign-line);
+    border-radius: 10px;
+    padding: 20px;
+    position: sticky;
+    top: 20px;
+}
+
+.detail-list {
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+}
+
+.detail-list > div {
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+    padding-bottom: 12px;
+    border-bottom: 1px solid var(--assign-line);
+}
+
+.detail-list > div:last-child {
+    border-bottom: none;
+    padding-bottom: 0;
+}
+
+.detail-list dt {
+    font-size: 12px;
+    color: var(--assign-muted);
+}
+
+.detail-list dd {
+    margin: 0;
+    font-size: 14px;
+    color: var(--assign-ink);
+    word-break: break-word;
+}
+
+.status-pill {
+    display: inline-block;
+    padding: 4px 12px;
+    border-radius: 999px;
+    background: var(--assign-green-wash);
+    color: var(--assign-green-dark);
+    font-size: 12.5px;
+    font-weight: 600;
+}

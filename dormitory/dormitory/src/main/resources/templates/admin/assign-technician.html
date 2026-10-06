@@ -3,6 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <title>มอบหมายงานให้ช่าง</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" th:href="@{/css/adminCommon.css}">
     <link rel="stylesheet" th:href="@{/css/assign-technician.css}">
 </head>
@@ -10,56 +13,87 @@
 
 <div th:replace="~{admin/adminHeader :: adminHeader('assignments')}"></div>
 
-<div class="container">
-    <div class="main">
-        <div class="card">
-            <h2>มอบหมายงานให้ช่าง</h2>
-            <p><strong th:text="'RQ-' + ${request.repairRequestId}"></strong></p>
-            <p th:text="${request.repairType} + ': ' + ${request.description}"></p>
+<main class="assign-page">
+
+    <div class="assign-head">
+        <div>
+            <h1>มอบหมายงานให้ช่าง</h1>
+            <p class="req-ref" th:text="'RQ-' + ${request.repairRequestId}"></p>
         </div>
+        <span class="type-chip" th:text="${request.repairType}"></span>
+    </div>
 
-        <form th:action="@{/admin/requests/{id}/assign(id=${request.repairRequestId})}" method="post">
-            <div class="card">
-                <h3>เลือกช่างผู้รับผิดชอบ</h3>
-                <div class="tech-item"
-                 th:each="tech : ${technicians}"
-                th:classappend="${tech.specialization != null and request.repairType != null and tech.specialization.contains(request.repairType.thaiName)} ? 'matched' : ''">
+    <div class="assign-grid">
 
-                 <div>
-                    <strong th:text="${tech.user != null ? tech.user.firstName + ' ' + tech.user.lastName : 'ช่าง'}"></strong>
-                    <span th:text="'(' + ${tech.specialization} + ')'"></span>
-                    <span class="badge-match"
-                        th:if="${tech.specialization != null and request.repairType != null and tech.specialization.contains(request.repairType.thaiName)}">
-                        ตรงความเชี่ยวชาญ
-                     </span>
-                     </div>
-                    <div>
+        <form class="assign-main" th:action="@{/admin/requests/{id}/assign(id=${request.repairRequestId})}" method="post">
+
+            <section class="panel">
+                <h2 class="panel-title">เลือกช่างผู้รับผิดชอบ</h2>
+
+                <div class="tech-list">
+                    <label class="tech-row"
+                           th:each="tech : ${technicians}"
+                           th:classappend="${tech.specialization != null and request.repairType != null and tech.specialization.contains(request.repairType.thaiName)} ? 'is-matched' : ''">
+
                         <input type="radio" name="technicianId" th:value="${tech.technicianId}"
                                th:id="${'tech-' + tech.technicianId}" required>
-                        <label th:for="${'tech-' + tech.technicianId}" class="select-btn">เลือกช่าง</label>
-                    </div>
+
+                        <span class="tech-avatar"
+                              th:text="${tech.user != null and tech.user.firstName != null and !tech.user.firstName.isEmpty()
+                                         ? #strings.substring(tech.user.firstName, 0, 1) : '?'}"></span>
+
+                        <span class="tech-info">
+                            <span class="tech-name"
+                                  th:text="${tech.user != null ? tech.user.firstName + ' ' + tech.user.lastName : 'ช่าง'}"></span>
+                            <span class="tech-spec" th:text="${tech.specialization}"></span>
+                        </span>
+
+                        <span class="tech-match"
+                              th:if="${tech.specialization != null and request.repairType != null and tech.specialization.contains(request.repairType.thaiName)}">
+                            ตรงความเชี่ยวชาญ
+                        </span>
+
+                        <span class="tech-check" aria-hidden="true"></span>
+                    </label>
                 </div>
-            </div>
+            </section>
 
-            <div class="card">
-                <h3>หมายเหตุถึงช่าง</h3>
+            <section class="panel">
+                <h2 class="panel-title">หมายเหตุถึงช่าง</h2>
                 <textarea name="adminNote" placeholder="รายละเอียดเพิ่มเติมสำหรับช่าง..."></textarea>
-            </div>
+            </section>
 
-            <button type="submit" class="confirm">ยืนยันมอบหมายงาน</button>
+            <button type="submit" class="confirm-btn">ยืนยันมอบหมายงาน</button>
         </form>
-    </div>
 
-    <div class="sidebar">
-        <h3>รายละเอียดคำร้อง</h3>
-        <p><strong>ประเภทงาน:</strong> <span th:text="${request.repairType}"></span></p>
-        <p><strong>รายละเอียด:</strong> <span th:text="${request.description}"></span></p>
-        <p><strong>ห้อง:</strong> <span th:text="${request.room != null ? request.room.roomNo : '-'}"></span></p>
-        <p><strong>ผู้แจ้ง:</strong>
-            <span th:text="${request.reporter != null and request.reporter.user != null ? request.reporter.user.firstName + ' ' + request.reporter.user.lastName : '-'}"></span>
-        </p>
-        <p><strong>สถานะปัจจุบัน:</strong> <span th:text="${request.status}"></span></p>
+        <aside class="assign-side">
+            <h2 class="panel-title">รายละเอียดคำร้อง</h2>
+            <dl class="detail-list">
+                <div>
+                    <dt>ประเภทงาน</dt>
+                    <dd th:text="${request.repairType}"></dd>
+                </div>
+                <div>
+                    <dt>รายละเอียด</dt>
+                    <dd th:text="${request.description}"></dd>
+                </div>
+                <div>
+                    <dt>ห้อง</dt>
+                    <dd th:text="${request.room != null ? request.room.roomNo : '-'}"></dd>
+                </div>
+                <div>
+                    <dt>ผู้แจ้ง</dt>
+                    <dd th:text="${request.reporter != null and request.reporter.user != null
+                                   ? request.reporter.user.firstName + ' ' + request.reporter.user.lastName : '-'}"></dd>
+                </div>
+                <div>
+                    <dt>สถานะปัจจุบัน</dt>
+                    <dd><span class="status-pill" th:text="${request.status}"></span></dd>
+                </div>
+            </dl>
+        </aside>
+
     </div>
-</div>
+</main>
 </body>
 </html>
