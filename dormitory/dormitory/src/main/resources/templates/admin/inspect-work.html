@@ -2,7 +2,10 @@
 <html lang="th" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>ตรวจสอบงาน</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" th:href="@{/css/adminCommon.css}">
     <link rel="stylesheet" th:href="@{/css/inspect-work.css}">
 </head>
@@ -10,66 +13,158 @@
 
 <div th:replace="~{admin/adminHeader :: adminHeader('inspections')}"></div>
 
-<div class="container">
-    <div class="main">
-        <div class="card">
-             <h2>ตรวจสอบงาน</h2>
-            <p><strong th:text="'RQ-' + ${request.repairRequestId}"></strong></p>
-          <p th:text="${request.repairType} + ': ' + ${request.description}"></p>
+<main class="ins-page"
+      th:with="phone=${request.reporter?.user?.phoneNo ?: request.reporter?.resident?.phoneNo},
+               hasPhone=${(request.reporter?.user?.phoneNo ?: request.reporter?.resident?.phoneNo) != null},
+               techDone=${assignment != null and assignment.jobStatus != null and assignment.jobStatus.name() == 'COMPLETED'}">
+
+    <a class="ins-back" th:href="@{/admin/inspections}">← กลับไปรายการตรวจงาน</a>
+
+    <header class="ins-head">
+        <div>
+            <h1>ตรวจสอบงาน</h1>
+            <p class="ins-id" th:text="'RQ-' + ${request.repairRequestId}"></p>
+        </div>
+        <span class="ins-type" th:text="${request.repairType}"></span>
+    </header>
+
+    <div class="ins-grid">
+
+        <!-- ซ้าย -->
+        <div class="ins-main">
+
+            <section class="ins-card">
+                <h2 class="ins-card-title">รายละเอียดงาน</h2>
+                <p class="ins-desc" th:text="${request.description}"></p>
+            </section>
+
+            <section class="ins-card">
+                <h2 class="ins-card-title">สถานะ</h2>
+                <div class="ins-status-row">
+                    <span class="ins-status-label">งานของช่าง</span>
+                    <span class="ins-badge"
+                          th:classappend="${assignment != null and assignment.jobStatus != null ? 'is-' + #strings.toLowerCase(#strings.replace(assignment.jobStatus.name(),'_','-')) : 'is-none'}"
+                          th:text="${assignment != null and assignment.jobStatus != null ? assignment.jobStatus : 'ยังไม่ได้มอบหมายงาน'}"></span>
+                </div>
+                <div class="ins-status-row">
+                    <span class="ins-status-label">คำร้อง</span>
+                    <span class="ins-badge"
+                          th:classappend="${'is-' + #strings.toLowerCase(#strings.replace(request.status.name(),'_','-'))}"
+                          th:text="${request.status}"></span>
+                </div>
+            </section>
+
+            <section class="ins-card">
+                <h2 class="ins-card-title">หมายเหตุจากช่าง</h2>
+                <p class="ins-note"
+                   th:classappend="${assignment == null or assignment.technicianNote == null or #strings.isEmpty(assignment.technicianNote)} ? 'is-empty'"
+                   th:text="${assignment != null and assignment.technicianNote != null and !#strings.isEmpty(assignment.technicianNote) ? assignment.technicianNote : 'ช่างไม่ได้ระบุหมายเหตุ'}"></p>
+            </section>
+
+            <form class="ins-card ins-form"
+                  th:action="@{/admin/requests/{id}/inspect(id=${request.repairRequestId})}" method="post">
+                <h2 class="ins-card-title">หมายเหตุแอดมิน <span class="ins-optional">(ถ้ามี)</span></h2>
+                <textarea name="note" rows="3" placeholder="บันทึกเพิ่มเติม..."></textarea>
+
+                <div class="ins-actions">
+                    <p class="ins-hint" th:if="${techDone}">
+                        โทรเช็คกับผู้แจ้งว่างานเสร็จจริงก่อนกดยืนยัน
+                    </p>
+                    <p class="ins-hint is-wait" th:unless="${techDone}">
+                        ยืนยันได้เมื่อช่างแจ้งว่างานเสร็จแล้วเท่านั้น
+                    </p>
+                    <button type="submit" class="ins-confirm" th:disabled="${!techDone}">
+                        ยืนยันสถานะคำร้อง
+                    </button>
+                </div>
+            </form>
         </div>
 
-        <div class="card">
-                <h3>ช่างผู้รับผิดชอบ</h3>
-                <p th:if="${assignment != null and assignment.technician != null}">
-                  <strong th:text="${assignment.technician.user != null
-                              ? assignment.technician.user.firstName + ' ' + assignment.technician.user.lastName
-                              : 'ช่าง'}"></strong>
-                 <span th:text="'(' + ${assignment.technician.specialization} + ')'"></span>
-               </p>
-                   <p th:if="${assignment == null or assignment.technician == null}">
-                     ยังไม่ได้มอบหมายงานให้ช่าง
+        <!-- ขวา -->
+        <aside class="ins-side">
+
+            <section class="ins-card ins-reporter">
+                <h2 class="ins-card-title">ผู้แจ้ง</h2>
+                <dl class="ins-dl">
+                    <dt>ชื่อ</dt>
+                    <dd th:text="${request.reporter != null and request.reporter.user != null ? request.reporter.user.firstName + ' ' + request.reporter.user.lastName : '-'}"></dd>
+                    <dt>ห้อง</dt>
+                    <dd th:text="${request.room != null ? request.room.roomNo : '-'}"></dd>
+                </dl>
+
+                <div class="ins-contact">
+                    <p class="ins-contact-label">โทรยืนยันว่างานเสร็จ</p>
+
+                    <button th:if="${hasPhone}" type="button" class="ins-call"
+                            th:data-phone="${phone}" onclick="copyPhone(this)"
+                            aria-label="คัดลอกเบอร์โทรผู้แจ้ง">
+                        <span class="ins-call-number"
+                              th:text="${#strings.length(phone) == 10
+                                        ? #strings.substring(phone,0,3) + '-' + #strings.substring(phone,3,6) + '-' + #strings.substring(phone,6)
+                                        : phone}"></span>
+                        <span class="ins-call-copy">
+                            <svg class="i-copy" viewBox="0 0 24 24" width="16" height="16" fill="none"
+                                 stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <rect x="9" y="9" width="11" height="11" rx="2"/>
+                                <path d="M5 15V6a2 2 0 0 1 2-2h9"/>
+                            </svg>
+                            <svg class="i-check" viewBox="0 0 24 24" width="16" height="16" fill="none"
+                                 stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M5 12.5l4.5 4.5L19 7.5"/>
+                            </svg>
+                            <span class="ins-call-cta">คัดลอก</span>
+                        </span>
+                    </button>
+
+                    <div th:unless="${hasPhone}" class="ins-nophone">
+                        ไม่พบเบอร์โทรของผู้แจ้งในระบบ
+                    </div>
+                </div>
+            </section>
+
+            <section class="ins-card">
+                <h2 class="ins-card-title">ช่างผู้รับผิดชอบ</h2>
+                <div th:if="${assignment != null and assignment.technician != null}" class="ins-tech">
+                    <span class="ins-avatar"
+                          th:text="${assignment.technician.user != null ? #strings.substring(assignment.technician.user.firstName,0,1) : 'ช'}"></span>
+                    <div>
+                        <p class="ins-tech-name"
+                           th:text="${assignment.technician.user != null ? assignment.technician.user.firstName + ' ' + assignment.technician.user.lastName : 'ช่าง'}"></p>
+                        <p class="ins-tech-spec" th:text="${assignment.technician.specialization}"></p>
+                    </div>
+                </div>
+                <p th:if="${assignment == null or assignment.technician == null}" class="ins-muted">
+                    ยังไม่ได้มอบหมายงานให้ช่าง
                 </p>
-        </div>
-
-        <div class="card">
-        <p><strong>สถานะงานช่าง:</strong>
-            <span class="badge"
-                  th:classappend="${assignment != null ? #strings.toLowerCase(#strings.replace(assignment.jobStatus.name(),'_','-')) : ''}"
-                  th:text="${assignment != null ? assignment.jobStatus : 'ยังไม่ได้มอบหมายงาน'}"></span>
-        </p>
-        <p><strong>สถานะคำร้อง:</strong>
-            <span class="badge"
-                  th:classappend="${#strings.toLowerCase(#strings.replace(request.status.name(),'_','-'))}"
-                  th:text="${request.status}"></span>
-             </p>
-         </div>
-
-        <div class="card">
-            <h3>หมายเหตุจากช่าง</h3>
-            <textarea readonly th:text="${assignment != null ? assignment.technicianNote : '-'}"></textarea>
-        </div>
-
-        <form th:action="@{/admin/requests/{id}/inspect(id=${request.repairRequestId})}" method="post">
-            <div class="card">
-                <h3>หมายเหตุแอดมิน (ถ้ามี)</h3>
-                <textarea name="note" placeholder="บันทึกเพิ่มเติม..."></textarea>
-            </div>
-            <button type="submit" class="confirm"
-                    th:disabled="${assignment == null or assignment.jobStatus.name() != 'COMPLETED'}">
-                ยืนยันสถานะคำร้อง
-            </button>
-        </form>
+            </section>
+        </aside>
     </div>
+</main>
 
-    <div class="sidebar">
-        <h3>ข้อมูลผู้แจ้ง</h3>
-        <p><strong>ชื่อ:</strong>
-             <span th:text="${request.reporter != null and request.reporter.user != null ? request.reporter.user.firstName + ' ' + request.reporter.user.lastName : '-'}"></span>
-        </p>
-        <p><strong>ห้อง:</strong> <span th:text="${request.room != null ? request.room.roomNo : '-'}"></span></p>
-        <p><strong>ประเภทงาน:</strong> <span th:text="${request.repairType}"></span></p>
-        <p><strong>รายละเอียด:</strong> <span th:text="${request.description}"></span></p>
-    </div>
-</div>
+<script>
+    function copyPhone(btn) {
+        var phone = btn.dataset.phone;
+        var cta = btn.querySelector('.ins-call-cta');
+        var done = function () {
+            cta.textContent = 'คัดลอกแล้ว';
+            btn.classList.add('is-copied');
+            setTimeout(function () {
+                cta.textContent = 'คัดลอก';
+                btn.classList.remove('is-copied');
+            }, 1800);
+        };
+        if (navigator.clipboard && window.isSecureContext) {
+            navigator.clipboard.writeText(phone).then(done);
+        } else {
+            var t = document.createElement('textarea');
+            t.value = phone;
+            document.body.appendChild(t);
+            t.select();
+            document.execCommand('copy');
+            document.body.removeChild(t);
+            done();
+        }
+    }
+</script>
 </body>
 </html>
