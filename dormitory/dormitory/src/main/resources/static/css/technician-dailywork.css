@@ -1,0 +1,1404 @@
+/* =====================================================
+   RESET
+===================================================== */
+
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+html {
+    font-family:
+        "Noto Sans Thai",
+        "Segoe UI",
+        Arial,
+        sans-serif;
+}
+
+body {
+    min-height: 100vh;
+    background: #f4f5fa;
+    color: #222;
+}
+
+
+/* =====================================================
+   TOPBAR
+===================================================== */
+
+.topbar {
+    width: 100%;
+    height: 58px;
+
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    padding: 0 48px;
+
+    background: #ff7417;
+    color: white;
+
+    box-shadow:
+        0 2px 5px rgba(0, 0, 0, 0.20);
+}
+
+
+/* Brand */
+
+.brand {
+    font-size: 20px;
+    font-weight: 700;
+    letter-spacing: 0.2px;
+}
+
+
+/* Right side */
+
+.topbar-right {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+}
+
+
+/* =====================================================
+   TECHNICIAN PROFILE
+===================================================== */
+
+.technician-profile {
+    display: flex;
+    align-items: center;
+
+    gap: 8px;
+
+    padding: 4px 10px;
+
+    border: 1px solid rgba(255, 255, 255, 0.9);
+    border-radius: 14px;
+
+    color: white;
+    text-decoration: none;
+
+    transition: background 0.2s ease;
+}
+
+.technician-profile:hover {
+    background: rgba(255, 255, 255, 0.12);
+}
+
+
+.user-icon {
+    width: 26px;
+    height: 26px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.user-icon svg {
+    width: 21px;
+    height: 21px;
+}
+
+
+.technician-info {
+    display: flex;
+    flex-direction: column;
+
+    line-height: 1.15;
+}
+
+
+.technician-name {
+    font-size: 13px;
+    font-weight: 600;
+}
+
+
+.technician-role {
+    font-size: 10px;
+    opacity: 0.95;
+}
+
+
+/* =====================================================
+   ICON BUTTON
+===================================================== */
+
+.icon-button {
+    width: 34px;
+    height: 34px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    border: none;
+    background: transparent;
+
+    color: white;
+
+    text-decoration: none;
+
+    cursor: pointer;
+
+    border-radius: 50%;
+
+    transition:
+        background 0.2s ease,
+        transform 0.15s ease;
+}
+
+.icon-button:hover {
+    background: rgba(255, 255, 255, 0.15);
+}
+
+.icon-button:active {
+    transform: scale(0.94);
+}
+
+.icon-button svg {
+    width: 21px;
+    height: 21px;
+}
+
+
+/* =====================================================
+   MAIN
+===================================================== */
+
+.main-container {
+    width: min(940px, calc(100% - 40px));
+
+    margin: 32px auto 40px;
+}
+
+
+/* =====================================================
+   WELCOME
+===================================================== */
+
+.welcome-section {
+    display: flex;
+    align-items: center;
+
+    gap: 18px;
+
+    margin-bottom: 24px;
+
+    padding-left: 4px;
+}
+
+
+.tools-icon {
+    width: 48px;
+    height: 48px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.tools-icon svg {
+    width: 46px;
+    height: 46px;
+
+    stroke-width: 2.4;
+}
+
+
+.welcome-text h1 {
+    font-size: 22px;
+    font-weight: 700;
+
+    margin-bottom: 2px;
+}
+
+
+.welcome-text h1 span {
+    margin-left: 4px;
+}
+
+
+.welcome-text p {
+    font-size: 14px;
+    color: #555;
+}
+
+
+/* =====================================================
+   SUMMARY CARDS
+===================================================== */
+
+.summary-section {
+    display: grid;
+
+    grid-template-columns:
+        repeat(4, 1fr);
+
+    gap: 14px;
+
+    margin-bottom: 18px;
+}
+
+
+.summary-container {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 18px;
+    margin: 20px 0;
+}
+
+.summary-card {
+    min-height: 85px;
+    border-radius: 20px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+
+    box-shadow: 0 3px 5px rgba(0, 0, 0, 0.20);
+}
+
+.summary-title {
+    font-size: 18px;
+    margin-bottom: 2px;
+}
+
+.summary-number {
+    font-size: 25px;
+    font-weight: bold;
+}
+
+/* สีแต่ละประเภท */
+
+.summary-all {
+    background: #f8ded5;
+}
+
+.summary-completed {
+    background: #bff2c2;
+}
+
+.summary-progress {
+    background: #9fc3f7;
+}
+
+.summary-not-completed {
+    background: #aaa8aa;
+}
+
+
+/* =====================================================
+   FILTER
+===================================================== */
+
+.filter-section {
+    display: flex;
+    align-items: center;
+
+    gap: 8px;
+
+    margin-bottom: 16px;
+
+    flex-wrap: wrap;
+}
+
+
+.filter-button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+
+    min-height: 27px;
+
+    padding: 4px 14px;
+
+    border: 1px solid #ff7417;
+    border-radius: 14px;
+
+    background: white;
+
+    color: #333;
+
+    font-size: 12px;
+    font-weight: 500;
+
+    text-decoration: none;
+
+    white-space: nowrap;
+
+    transition:
+        background 0.2s ease,
+        color 0.2s ease,
+        transform 0.15s ease;
+}
+
+
+.filter-button:hover {
+    background: #fff1e7;
+}
+
+
+.filter-button.active {
+    background: #ff7417;
+    color: white;
+}
+
+
+.filter-button:active {
+    transform: scale(0.97);
+}
+
+
+/* =========================================
+   JOB TABLE
+========================================= */
+
+.job-table-card {
+    width: 100%;
+    margin-top: 20px;
+    background: #ffffff;
+    border-radius: 18px;
+    box-shadow: 0 3px 8px rgba(0, 0, 0, 0.15);
+    overflow: hidden;
+}
+
+.table-wrapper {
+    width: 100%;
+    overflow-x: auto;
+}
+
+.job-table {
+    width: 100%;
+    border-collapse: collapse;
+    table-layout: fixed;
+}
+
+/* =========================================
+   COLUMN WIDTH
+========================================= */
+
+.job-table th:nth-child(1),
+.job-table td:nth-child(1) {
+    width: 11%;
+}
+
+.job-table th:nth-child(2),
+.job-table td:nth-child(2) {
+    width: 17%;
+}
+
+.job-table th:nth-child(3),
+.job-table td:nth-child(3) {
+    width: 15%;
+}
+
+
+.job-table th:nth-child(4),
+.job-table td:nth-child(4) {
+    width: 14%;
+}
+
+.job-table th:nth-child(5),
+.job-table td:nth-child(5) {
+    width: 12%;
+}
+
+.job-table th:nth-child(6),
+.job-table td:nth-child(6) {
+    width: 14%;
+}
+
+.job-table th:nth-child(7),
+.job-table td:nth-child(7) {
+    width: 17%;
+}
+
+/* =========================================
+   WRAP LONG TEXT
+   ========================================= */
+
+.job-table td:nth-child(3),
+.job-table td:nth-child(5),
+.job-table td:nth-child(6) {
+    white-space: normal;
+    overflow: visible;
+    text-overflow: clip;
+    overflow-wrap: anywhere;
+    word-break: break-word;
+    line-height: 1.6;
+}
+
+.job-table td:nth-child(3) .job-link,
+.job-table td:nth-child(5) .job-link,
+.job-table td:nth-child(6) .job-link {
+    white-space: normal;
+    overflow: visible;
+    text-overflow: clip;
+    overflow-wrap: anywhere;
+    word-break: break-word;
+    line-height: 1.6;
+}
+/* =========================================
+   HEADER
+========================================= */
+
+.job-table thead th {
+    padding: 16px 10px;
+    font-weight: 500;
+    font-size: 16px;
+    text-align: center;
+    border-bottom: 1px solid #999;
+    white-space: nowrap;
+}
+
+
+/* =========================================
+   BODY
+========================================= */
+
+.job-table tbody td {
+    padding: 16px 10px;
+    text-align: center;
+    vertical-align: middle;
+    border-bottom: 1px solid #ddd;
+
+    /* ป้องกันข้อความดันตาราง */
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+
+/* =========================================
+   LINK
+========================================= */
+
+.job-link {
+    display: block;
+
+    color: #111;
+    text-decoration: none;
+
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+
+/* =========================================
+   LOCATION
+========================================= */
+
+.location-cell .job-link {
+    line-height: 1.6;
+}
+
+.location-cell div {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+
+/* =========================================
+   STATUS BUTTON
+========================================= */
+
+.status-button {
+    display: inline-flex;
+
+    align-items: center;
+    justify-content: center;
+
+    min-width: 110px;
+    height: 36px;
+
+    padding: 0 14px;
+
+    border-radius: 20px;
+
+    font-family: inherit;
+    font-size: 14px;
+
+    white-space: nowrap;
+
+    box-sizing: border-box;
+}
+
+
+/* กำลังดำเนินการ */
+
+.status-progress {
+    border: none;
+    background: #ff7417;
+    color: white;
+
+    cursor: pointer;
+
+    transition: 0.2s;
+}
+
+.status-progress:hover {
+    background: #e9650d;
+    transform: translateY(-1px);
+}
+
+
+/* เสร็จสิ้น */
+
+.status-completed {
+    background: #68dc75;
+    color: white;
+}
+
+
+/* ดำเนินการไม่สำเร็จ */
+
+.status-unfinished {
+    background: #a9a7aa;
+    color: white;
+}
+
+
+/* =========================================
+   EMPTY
+========================================= */
+
+.empty-state {
+    padding: 40px !important;
+    text-align: center !important;
+    color: #777;
+}
+
+.status-cell {
+    text-align: center !important;
+    white-space: nowrap;
+}
+
+/* =====================================================
+   RESPONSIVE
+===================================================== */
+
+@media (max-width: 800px) {
+
+    .topbar {
+        padding: 0 20px;
+    }
+
+    .brand {
+        font-size: 17px;
+    }
+
+    .main-container {
+        width: min(94%, 700px);
+    }
+
+    .summary-section {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    .job-table {
+        min-width: 720px;
+    }
+
+    .table-wrapper {
+        overflow-x: auto;
+    }
+}
+
+
+@media (max-width: 520px) {
+
+    .topbar {
+        height: 55px;
+        padding: 0 14px;
+    }
+
+    .brand {
+        font-size: 15px;
+    }
+
+    .technician-profile {
+        padding: 4px 7px;
+    }
+
+    .technician-info {
+        display: none;
+    }
+
+    .topbar-right {
+        gap: 5px;
+    }
+
+    .main-container {
+        width: calc(100% - 24px);
+        margin-top: 24px;
+    }
+
+    .welcome-section {
+        gap: 10px;
+    }
+
+    .tools-icon {
+        width: 40px;
+        height: 40px;
+    }
+
+    .tools-icon svg {
+        width: 38px;
+        height: 38px;
+    }
+
+    .welcome-text h1 {
+        font-size: 18px;
+    }
+
+    .welcome-text p {
+        font-size: 12px;
+    }
+
+    .summary-section {
+        gap: 8px;
+    }
+
+    .summary-card {
+        min-height: 72px;
+    }
+
+    .summary-title {
+        font-size: 12px;
+    }
+
+    .summary-number {
+        font-size: 16px;
+    }
+
+    .filter-section {
+        gap: 6px;
+    }
+
+    .filter-button {
+        font-size: 11px;
+        padding: 4px 10px;
+    }
+}
+.status-button {
+    display: inline-flex;
+
+    align-items: center;
+    justify-content: center;
+
+    min-width: 120px;
+
+    padding: 8px 16px;
+
+    border-radius: 999px;
+
+    font-family: inherit;
+    font-size: 14px;
+    font-weight: 600;
+
+    text-decoration: none;
+}
+
+
+/* ปุ่มที่กดได้ */
+
+button.status-button {
+    border: none;
+
+    cursor: pointer;
+
+    transition:
+        transform 0.15s ease,
+        box-shadow 0.15s ease;
+}
+
+
+button.status-button:hover {
+    transform: translateY(-1px);
+
+    box-shadow:
+        0 3px 8px rgba(0, 0, 0, 0.12);
+}
+
+
+/* กำลังดำเนินการ */
+
+.status-progress {
+    background: #fff0d9;
+
+    color: #a86400;
+}
+
+
+/* เสร็จสิ้น */
+
+.status-completed {
+    background: #ff7417;
+
+    color: white;
+}
+
+
+/* ดำเนินการไม่สำเร็จ */
+
+.status-unfinished {
+    background: #fde8e8;
+
+    color: #c62828;
+}
+
+/* ==========================================
+   CLICKABLE ROW
+========================================== */
+
+.clickable-row {
+    cursor: pointer;
+}
+
+.clickable-row:hover {
+    background: #fff8f2;
+}
+
+/* =========================
+   REPAIR MODAL
+   ========================= */
+
+/* ==========================================
+   STATUS BUTTON
+========================================== */
+
+.status-button {
+    display: inline-flex;
+
+    align-items: center;
+    justify-content: center;
+
+    min-width: 120px;
+
+    padding: 8px 16px;
+
+    border-radius: 999px;
+
+    font-family: inherit;
+    font-size: 12px;
+    font-weight: 600;
+
+    line-height: 1;
+
+    text-decoration: none;
+}
+
+
+/* ปุ่ม IN_PROGRESS */
+
+button.status-button {
+    border: none;
+
+    cursor: pointer;
+
+    transition:
+        transform 0.15s ease,
+        box-shadow 0.15s ease;
+}
+
+
+button.status-button:hover {
+    transform: translateY(-1px);
+
+    box-shadow:
+        0 3px 8px rgba(0, 0, 0, 0.15);
+}
+
+
+/* กำลังดำเนินการ */
+
+.status-progress {
+    background: #ff7417;
+
+    color: white;
+}
+
+
+/* เสร็จสิ้น */
+
+.status-completed {
+    background: #6ddd78;
+
+    color: white;
+}
+
+
+/* ดำเนินการไม่สำเร็จ */
+
+.status-unfinished {
+    background: #a8a6aa;
+
+    color: white;
+}
+
+
+/* ==========================================
+   REPAIR MODAL OVERLAY
+========================================== */
+
+.modal-overlay {
+
+    display: none;
+
+    position: fixed;
+
+    inset: 0;
+
+    z-index: 9999;
+
+    align-items: center;
+
+    justify-content: center;
+
+    padding: 20px;
+
+    background: rgba(0, 0, 0, 0.35);
+}
+
+
+/* เปิด Modal */
+
+.modal-overlay.show {
+
+    display: flex;
+}
+
+
+/* ==========================================
+   MODAL BOX
+========================================== */
+
+.repair-modal {
+
+    width: 460px;
+
+    max-width: 100%;
+
+    background: white;
+
+    border-radius: 20px;
+
+    overflow: hidden;
+
+    box-shadow:
+        0 12px 35px rgba(0, 0, 0, 0.25);
+
+    animation:
+        repairModalIn 0.2s ease;
+}
+
+
+@keyframes repairModalIn {
+
+    from {
+
+        opacity: 0;
+
+        transform:
+            translateY(10px)
+            scale(0.98);
+    }
+
+    to {
+
+        opacity: 1;
+
+        transform:
+            translateY(0)
+            scale(1);
+    }
+}
+
+
+/* ==========================================
+   MODAL HEADER
+========================================== */
+
+.modal-header {
+
+    position: relative;
+
+    display: flex;
+
+    align-items: center;
+
+    gap: 14px;
+
+    padding: 20px 24px;
+
+    background: #ff7417;
+
+    color: white;
+}
+
+
+/* Icon */
+
+.modal-icon {
+
+    width: 44px;
+
+    height: 44px;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    border: 2px solid white;
+
+    border-radius: 50%;
+
+    font-size: 25px;
+
+    flex-shrink: 0;
+}
+
+
+.modal-header h2 {
+
+    margin: 0;
+
+    font-size: 27px;
+
+    font-weight: 600;
+}
+
+
+.modal-header p {
+
+    margin-top: 3px;
+
+    font-size: 13px;
+
+    opacity: 0.95;
+}
+
+
+/* ปุ่ม X */
+
+.modal-close {
+
+    position: absolute;
+
+    top: 12px;
+
+    right: 14px;
+
+    width: 34px;
+
+    height: 34px;
+
+    border: none;
+
+    background: transparent;
+
+    color: white;
+
+    font-size: 27px;
+
+    line-height: 1;
+
+    cursor: pointer;
+}
+
+
+.modal-close:hover {
+
+    opacity: 0.75;
+}
+
+
+/* ==========================================
+   MODAL BODY
+========================================== */
+
+.modal-body {
+
+    padding: 22px 28px 8px;
+}
+
+
+/* ข้อมูลงาน */
+
+.repair-info {
+
+    margin-bottom: 18px;
+
+    font-size: 16px;
+
+    line-height: 1.7;
+}
+
+
+.info-row {
+
+    display: flex;
+
+    gap: 8px;
+
+    margin-bottom: 3px;
+}
+
+
+.info-label {
+
+    min-width: 65px;
+
+    font-weight: 600;
+}
+
+
+.info-value {
+
+    color: #333;
+}
+
+
+/* ==========================================
+   RESULT
+========================================== */
+
+.result-section {
+
+    margin-top: 8px;
+}
+
+
+.section-title {
+
+    margin-bottom: 10px;
+
+    font-size: 16px;
+
+    font-weight: 600;
+}
+
+
+.result-buttons {
+
+    display: flex;
+
+    gap: 12px;
+}
+
+
+.result-button {
+
+    flex: 1;
+
+    min-height: 44px;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    gap: 7px;
+
+    padding: 8px 12px;
+
+    border-radius: 999px;
+
+    background: white;
+
+    font-family: inherit;
+
+    font-size: 14px;
+
+    font-weight: 500;
+
+    cursor: pointer;
+
+    transition:
+        transform 0.15s ease,
+        background 0.15s ease,
+        color 0.15s ease;
+}
+
+
+.result-button:hover {
+
+    transform: translateY(-1px);
+}
+
+
+/* ซ่อมเสร็จ */
+
+.completed-button {
+
+    border: 2px solid #ff7417;
+
+    color: #ff7417;
+}
+
+
+.completed-button.selected {
+
+    background: #ff7417;
+
+    color: white;
+}
+
+
+/* ไม่สำเร็จ */
+
+.failed-button {
+
+    border: 2px solid #e57373;
+
+    color: #c62828;
+}
+
+
+.failed-button.selected {
+
+    background: #e57373;
+
+    color: white;
+}
+
+
+.result-icon {
+
+    font-size: 17px;
+
+    font-weight: 700;
+}
+
+
+/* ==========================================
+   NOTE
+========================================== */
+
+.note-section {
+
+    margin-top: 18px;
+}
+
+
+.note-section label {
+
+    display: block;
+
+    margin-bottom: 7px;
+
+    font-size: 15px;
+
+    font-weight: 600;
+}
+
+
+#repairNote {
+
+    width: 100%;
+
+    min-height: 90px;
+
+    padding: 11px 12px;
+
+    box-sizing: border-box;
+
+    resize: vertical;
+
+    border: 1px solid #ccc;
+
+    border-radius: 12px;
+
+    font-family: inherit;
+
+    font-size: 14px;
+
+    outline: none;
+}
+
+
+#repairNote:focus {
+
+    border-color: #ff7417;
+
+    box-shadow:
+        0 0 0 2px rgba(255, 116, 23, 0.15);
+}
+
+
+/* ==========================================
+   WARNING
+========================================== */
+
+.modal-warning {
+
+    margin-top: 13px;
+
+    padding: 8px 10px;
+
+    text-align: center;
+
+    font-size: 13px;
+
+    line-height: 1.5;
+
+    color: #333;
+}
+
+
+/* ==========================================
+   FOOTER
+========================================== */
+
+.modal-footer {
+
+    display: flex;
+
+    justify-content: center;
+
+    gap: 14px;
+
+    padding: 12px 28px 22px;
+}
+
+
+.cancel-button,
+.confirm-button {
+
+    min-width: 110px;
+
+    padding: 9px 22px;
+
+    border-radius: 999px;
+
+    font-family: inherit;
+
+    font-size: 14px;
+
+    cursor: pointer;
+
+    transition:
+        transform 0.15s ease,
+        opacity 0.15s ease;
+}
+
+
+.cancel-button {
+
+    background: white;
+
+    border: 2px solid #ff7417;
+
+    color: #ff7417;
+}
+
+
+.confirm-button {
+
+    background: #ffb13b;
+
+    border: 2px solid #ffb13b;
+
+    color: white;
+}
+
+
+.confirm-button:disabled {
+
+    background: #ddd;
+
+    border-color: #ddd;
+
+    color: #999;
+
+    cursor: not-allowed;
+}
+
+
+.cancel-button:hover:not(:disabled),
+.confirm-button:hover:not(:disabled) {
+
+    transform: translateY(-1px);
+}
+
+
+/* ==========================================
+   MODAL SCROLL LOCK
+========================================== */
+
+body.modal-open {
+
+    overflow: hidden;
+}
+
+
+/* ==========================================
+   MOBILE
+========================================== */
+
+@media (max-width: 600px) {
+
+    .modal-overlay {
+
+        padding: 12px;
+    }
+
+
+    .repair-modal {
+
+        width: 100%;
+
+        border-radius: 16px;
+    }
+
+
+    .modal-header {
+
+        padding: 17px 18px;
+    }
+
+
+    .modal-header h2 {
+
+        font-size: 22px;
+    }
+
+
+    .modal-header p {
+
+        font-size: 12px;
+    }
+
+
+    .modal-body {
+
+        padding: 18px;
+    }
+
+
+    .result-buttons {
+
+        flex-direction: column;
+    }
+
+
+    .result-button {
+
+        width: 100%;
+    }
+
+
+    .modal-footer {
+
+        padding:
+            10px 18px 18px;
+    }
+}

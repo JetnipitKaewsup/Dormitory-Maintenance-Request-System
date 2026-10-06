@@ -1,0 +1,488 @@
+/* ============================================================
+   RESET
+   ============================================================ */
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+/* ============================================================
+   BODY
+   ============================================================ */
+
+body {
+  font-family: Arial, Helvetica, sans-serif;
+
+  background: #f5f7fb;
+
+  color: #1f2937;
+
+  min-height: 100vh;
+}
+
+/* ============================================================
+   NAVBAR
+   ============================================================ */
+
+.navbar {
+  width: 100%;
+
+  background: #ffffff;
+
+  border-bottom: 1px solid #e5e7eb;
+
+  position: relative;
+
+  z-index: 10;
+}
+
+.nav-container {
+  width: 100%;
+
+  max-width: 1200px;
+
+  margin: 0 auto;
+
+  padding: 16px 30px;
+
+  display: flex;
+
+  align-items: center;
+
+  justify-content: space-between;
+}
+
+/* ============================================================
+   BRAND
+   ============================================================ */
+
+.brand {
+  display: flex;
+
+  align-items: center;
+
+  gap: 9px;
+
+  text-decoration: none;
+
+  color: #2563eb;
+
+  font-size: 21px;
+
+  font-weight: 700;
+}
+
+.brand svg {
+  width: 24px;
+
+  height: 24px;
+}
+
+/* ============================================================
+   NAV ACTION
+   ============================================================ */
+
+.nav-actions {
+  display: flex;
+
+  align-items: center;
+}
+
+.login-trigger {
+  text-decoration: none;
+
+  color: #2563eb;
+
+  font-size: 15px;
+
+  font-weight: 600;
+
+  padding: 9px 18px;
+
+  border: 1px solid #2563eb;
+
+  border-radius: 8px;
+
+  transition:
+    background 0.2s ease,
+    color 0.2s ease;
+}
+
+.login-trigger:hover {
+  background: #2563eb;
+
+  color: #ffffff;
+}
+
+/* ============================================================
+   AUTH PAGE
+   ============================================================ */
+
+.auth-page {
+  min-height: calc(100vh - 65px);
+
+  display: flex;
+
+  justify-content: center;
+
+  align-items: center;
+
+  padding: 40px 20px;
+}
+
+.auth-backdrop {
+  width: 100%;
+
+  display: flex;
+
+  justify-content: center;
+
+  align-items: center;
+}
+
+/* ============================================================
+   SUCCESS MODAL
+   ============================================================ */
+
+.success-modal {
+  width: 100%;
+
+  max-width: 520px;
+
+  background: #ffffff;
+
+  border-radius: 18px;
+
+  padding: 42px 40px 35px;
+
+  position: relative;
+
+  box-shadow: 0 15px 40px rgba(0, 0, 0, 0.08);
+
+  border: 1px solid #eef0f4;
+}
+
+/* ============================================================
+   CLOSE BUTTON
+   ============================================================ */
+
+.modal-close {
+  position: absolute;
+
+  top: 18px;
+
+  right: 18px;
+
+  width: 34px;
+
+  height: 34px;
+
+  display: flex;
+
+  align-items: center;
+
+  justify-content: center;
+
+  border-radius: 8px;
+
+  color: #9ca3af;
+
+  text-decoration: none;
+
+  transition:
+    background 0.2s ease,
+    color 0.2s ease;
+}
+
+.modal-close:hover {
+  background: #f3f4f6;
+
+  color: #374151;
+}
+
+.modal-close svg {
+  width: 19px;
+
+  height: 19px;
+}
+
+/* ============================================================
+   HEADER
+   ============================================================ */
+
+.modal-header {
+  text-align: center;
+
+  margin-bottom: 28px;
+}
+
+.modal-icon {
+  width: 72px;
+
+  height: 72px;
+
+  margin: 0 auto 18px;
+
+  border-radius: 50%;
+
+  display: flex;
+
+  align-items: center;
+
+  justify-content: center;
+}
+
+.success-icon {
+  background: #eaf8ef;
+
+  color: #22c55e;
+}
+
+.success-icon svg {
+  width: 35px;
+
+  height: 35px;
+}
+
+.modal-header h2 {
+  font-size: 26px;
+
+  font-weight: 700;
+
+  color: #111827;
+
+  margin-bottom: 8px;
+}
+
+.modal-header p {
+  font-size: 15px;
+
+  color: #6b7280;
+
+  line-height: 1.6;
+}
+
+/* ============================================================
+   SUCCESS MESSAGE
+   ============================================================ */
+
+.success-message {
+  display: flex;
+
+  gap: 14px;
+
+  align-items: flex-start;
+
+  padding: 17px;
+
+  margin-bottom: 16px;
+
+  background: #f0fdf4;
+
+  border: 1px solid #dcfce7;
+
+  border-radius: 10px;
+
+  color: #166534;
+}
+
+.success-message > svg {
+  width: 23px;
+
+  height: 23px;
+
+  flex-shrink: 0;
+
+  margin-top: 2px;
+}
+
+.success-message strong {
+  display: block;
+
+  font-size: 15px;
+
+  margin-bottom: 5px;
+}
+
+.success-message p {
+  font-size: 14px;
+
+  line-height: 1.6;
+
+  color: #4b5563;
+}
+
+/* ============================================================
+   INFORMATION
+   ============================================================ */
+
+.instruction {
+  display: flex;
+
+  gap: 12px;
+
+  align-items: flex-start;
+
+  padding: 15px 16px;
+
+  margin-bottom: 25px;
+
+  background: #f8fafc;
+
+  border-radius: 10px;
+
+  color: #64748b;
+}
+
+.instruction > svg {
+  width: 20px;
+
+  height: 20px;
+
+  flex-shrink: 0;
+
+  margin-top: 2px;
+
+  color: #2563eb;
+}
+
+.instruction p {
+  font-size: 14px;
+
+  line-height: 1.7;
+}
+
+.instruction strong {
+  color: #374151;
+}
+
+/* ============================================================
+   BUTTON
+   ============================================================ */
+
+.submit-button {
+  width: 100%;
+
+  min-height: 48px;
+
+  display: flex;
+
+  align-items: center;
+
+  justify-content: center;
+
+  gap: 10px;
+
+  border: none;
+
+  border-radius: 9px;
+
+  background: #2563eb;
+
+  color: #ffffff;
+
+  text-decoration: none;
+
+  font-size: 15px;
+
+  font-weight: 600;
+
+  cursor: pointer;
+
+  transition:
+    background 0.2s ease,
+    transform 0.2s ease,
+    box-shadow 0.2s ease;
+}
+
+.submit-button:hover {
+  background: #1d4ed8;
+
+  transform: translateY(-1px);
+
+  box-shadow: 0 5px 15px rgba(37, 99, 235, 0.25);
+}
+
+.submit-button svg {
+  width: 19px;
+
+  height: 19px;
+}
+
+/* ============================================================
+   FOOTER
+   ============================================================ */
+
+.modal-footer {
+  margin-top: 25px;
+
+  padding-top: 20px;
+
+  border-top: 1px solid #eef0f4;
+
+  text-align: center;
+
+  font-size: 13px;
+
+  color: #9ca3af;
+
+  display: flex;
+
+  flex-direction: column;
+
+  gap: 5px;
+}
+
+.footer-note {
+  color: #9ca3af;
+}
+
+/* ============================================================
+   RESPONSIVE
+   ============================================================ */
+
+@media (max-width: 600px) {
+  .nav-container {
+    padding: 14px 18px;
+  }
+
+  .brand {
+    font-size: 19px;
+  }
+
+  .login-trigger {
+    padding: 8px 13px;
+
+    font-size: 14px;
+  }
+
+  .auth-page {
+    padding: 25px 15px;
+
+    align-items: flex-start;
+  }
+
+  .success-modal {
+    padding: 38px 22px 28px;
+
+    border-radius: 15px;
+  }
+
+  .modal-header h2 {
+    font-size: 23px;
+  }
+
+  .modal-header p {
+    font-size: 14px;
+  }
+
+  .success-message {
+    padding: 14px;
+  }
+
+  .instruction {
+    padding: 13px;
+  }
+}
