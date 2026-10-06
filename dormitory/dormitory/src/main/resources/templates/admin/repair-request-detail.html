@@ -16,48 +16,48 @@
     <!-- ============ Status stepper ============ -->
     <div class="card">
         <div class="stepper">
-            <!-- 1. SUBMITTED: done เสมอ ยกเว้นยังไม่ส่งจริง (ในทางปฏิบัติจะ done ตลอดเพราะมีคำร้องแล้วถึงเข้ามาหน้านี้) -->
-            <div class="step done">
-                <div class="dot">&#10003;</div>
-                <div class="label">SUBMITTED</div>
-                <div class="sub" th:text="${#temporals.format(request.startDateTime, 'd MMM yyyy')}">-</div>
-            </div>
+    <!-- 1. SUBMITTED: done เสมอ เพราะมีคำร้องแล้วถึงเข้ามาหน้านี้ -->
+    <div class="step done">
+        <div class="dot">&#10003;</div>
+        <div class="label">SUBMITTED</div>
+        <div class="sub" th:text="${#temporals.format(request.startDateTime, 'd MMM yyyy')}">-</div>
+    </div>
 
-            <!-- 2. PENDING: สถานะระหว่างรอแอดมินตัดสินใจ (คือตอนที่ status ในฐานข้อมูลยังเป็น SUBMITTED) -->
-            <div class="step"
-                 th:classappend="${request.status == 'SUBMITTED'} ? 'current' :
-                                  (${request.status == 'REJECTED' or request.status == 'CANCELLED'} ? 'rejected' :
-                                  'done')">
-                <div class="dot"></div>
-                <div class="label">PENDING</div>
-            </div>
+    <!-- 2. PENDING -->
+    <div class="step"
+         th:classappend="${request.status.name() == 'PENDING'} ? 'current' :
+                          (${request.status.name() == 'REJECTED' or request.status.name() == 'CANCELLED'} ? 'rejected' :
+                          'done')">
+        <div class="dot"></div>
+        <div class="label">PENDING</div>
+    </div>
 
-            <!-- 3. APPROVED -->
-            <div class="step"
-                 th:classappend="${request.status == 'APPROVED'} ? 'current' :
-                                  (${request.status == 'IN_PROGRESS' or request.status == 'COMPLETED'} ? 'done' : '')">
-                <div class="dot"></div>
-                <div class="label">APPROVED</div>
-            </div>
+    <!-- 3. APPROVED -->
+    <div class="step"
+         th:classappend="${request.status.name() == 'APPROVED'} ? 'current' :
+                          (${request.status.name() == 'IN_PROGRESS' or request.status.name() == 'COMPLETED'} ? 'done' : '')">
+        <div class="dot"></div>
+        <div class="label">APPROVED</div>
+    </div>
 
-            <!-- 4. IN-PROGRESS -->
-            <div class="step"
-                 th:classappend="${request.status == 'IN_PROGRESS'} ? 'current' :
-                                  (${request.status == 'COMPLETED'} ? 'done' : '')">
-                <div class="dot"></div>
-                <div class="label">IN-PROGRESS</div>
-            </div>
+    <!-- 4. IN-PROGRESS -->
+    <div class="step"
+         th:classappend="${request.status.name() == 'IN_PROGRESS'} ? 'current' :
+                          (${request.status.name() == 'COMPLETED'} ? 'done' : '')">
+        <div class="dot"></div>
+        <div class="label">IN-PROGRESS</div>
+    </div>
 
-            <!-- 5. COMPLETED -->
-            <div class="step" th:classappend="${request.status == 'COMPLETED'} ? 'done current' : ''">
-                <div class="dot"></div>
-                <div class="label">COMPLETED</div>
-            </div>
-        </div>
+    <!-- 5. COMPLETED -->
+    <div class="step" th:classappend="${request.status.name() == 'COMPLETED'} ? 'done current' : ''">
+        <div class="dot"></div>
+        <div class="label">COMPLETED</div>
+    </div>
+</div>
 
         <!-- ============ บอกสถานะปัจจุบันเป็นข้อความชัดเจน ============ -->
         <div class="current-status-line" th:switch="${request.status}">
-            <span th:case="'SUBMITTED'">สถานะปัจจุบัน: <b>รออนุมัติจากแอดมิน</b></span>
+            <span th:case="'PENDING'">สถานะปัจจุบัน: <b>รออนุมัติจากแอดมิน</b></span>
             <span th:case="'APPROVED'">สถานะปัจจุบัน: <b>อนุมัติแล้ว รอมอบหมายงานให้ช่าง</b></span>
             <span th:case="'REJECTED'">สถานะปัจจุบัน: <b style="color:var(--color-danger)">ถูกปฏิเสธคำร้อง</b></span>
             <span th:case="'IN_PROGRESS'">สถานะปัจจุบัน: <b>ช่างกำลังดำเนินการซ่อม</b></span>
@@ -75,11 +75,11 @@
                 <div class="req-title">คำร้องแจ้งซ่อม</div>
             </div>
             <span class="badge"
-                  th:classappend="${request.status == 'SUBMITTED'} ? 'pending' :
-                                   (${request.status == 'APPROVED'} ? 'approved' :
-                                   (${request.status == 'REJECTED' or request.status == 'CANCELLED'} ? 'rejected' :
-                                   (${request.status == 'IN_PROGRESS'} ? 'inprogress' : 'completed')))"
-                  th:text="${request.status == 'SUBMITTED'} ? 'รออนุมัติ / ปฏิเสธ' : ${request.status}">
+                  th:classappend="${request.status.name() == 'PENDING'} ? 'pending' :
+                                   (${request.status.name() == 'APPROVED'} ? 'approved' :
+                                   (${request.status.name() == 'REJECTED' or request.status.name() == 'CANCELLED'} ? 'rejected' :
+                                   (${request.status.name() == 'IN_PROGRESS'} ? 'inprogress' : 'completed')))"
+                  th:text="${request.status.name() == 'PENDING'} ? 'รออนุมัติ / ปฏิเสธ' : ${request.status}">
                 สถานะ
             </span>
         </div>
@@ -137,8 +137,8 @@
             <div class="value" th:text="${request.reporterNote}">-</div>
         </div>
 
-        <!-- ============ Actions: only when still pending ============ -->
-        <div th:if="${request.status == 'SUBMITTED'}">
+        <!-- ============ Actions: อนุมัติ/ปฏิเสธ เฉพาะตอน PENDING ============ -->
+        <div th:if="${request.status.name() == 'PENDING'}">
             <textarea class="remark-box" form="reject-form" name="remark" placeholder="เหตุผลที่ปฏิเสธ (ถ้ามี)"></textarea>
 
             <div class="actions">
@@ -150,10 +150,14 @@
                         <button type="submit" class="btn-reject">ปฏิเสธคำร้อง</button>
                     </form>
                 </div>
-                <a th:href="@{/admin/requests/{id}/assign(id=${request.repairRequestId})}" class="btn btn-outline">
-                    มอบหมายงานให้ช่าง &rarr;
-                </a>
             </div>
+        </div>
+
+        <!-- ============ Actions: มอบหมายงานให้ช่าง เฉพาะตอน APPROVED แล้ว ============ -->
+        <div class="actions" th:if="${request.status.name() == 'APPROVED'}">
+            <a th:href="@{/admin/requests/{id}/assign(id=${request.repairRequestId})}" class="btn btn-outline">
+                มอบหมายงานให้ช่าง &rarr;
+            </a>
         </div>
     </div>
 </main>
