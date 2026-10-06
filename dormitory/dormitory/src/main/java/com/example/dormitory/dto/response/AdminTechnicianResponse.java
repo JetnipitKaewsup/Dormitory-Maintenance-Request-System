@@ -1,34 +1,35 @@
-package com.example.dormitory.dto.adminReporter;
+package com.example.dormitory.dto.response;
 
 import java.util.UUID;
 
-public class AdminReporterResponse {
-    private UUID reporterId;
+public class AdminTechnicianResponse {
+    private UUID technicianId;
+    private String specialization;
     private UUID userId;
     private String firstName;
     private String lastName;
     private String phoneNo;
     private String username;
-    private String email;
-    private Integer roomNo;
 
-    public AdminReporterResponse() {
+    public AdminTechnicianResponse() {
     }
 
-    public AdminReporterResponse(UUID reporterId, UUID userId, String firstName, String lastName,
-                                  String phoneNo, String username, String email, Integer roomNo) {
-        this.reporterId = reporterId;
+    public AdminTechnicianResponse(UUID technicianId, String specialization, UUID userId,
+                                    String firstName, String lastName, String phoneNo, String username) {
+        this.technicianId = technicianId;
+        this.specialization = specialization;
         this.userId = userId;
         this.firstName = firstName;
         this.lastName = lastName;
         this.phoneNo = phoneNo;
         this.username = username;
-        this.email = email;
-        this.roomNo = roomNo;
     }
 
-    public UUID getReporterId() { return reporterId; }
-    public void setReporterId(UUID reporterId) { this.reporterId = reporterId; }
+    public UUID getTechnicianId() { return technicianId; }
+    public void setTechnicianId(UUID technicianId) { this.technicianId = technicianId; }
+
+    public String getSpecialization() { return specialization; }
+    public void setSpecialization(String specialization) { this.specialization = specialization; }
 
     public UUID getUserId() { return userId; }
     public void setUserId(UUID userId) { this.userId = userId; }
@@ -44,10 +45,4 @@ public class AdminReporterResponse {
 
     public String getUsername() { return username; }
     public void setUsername(String username) { this.username = username; }
-
-    public String getEmail() { return email; }
-    public void setEmail(String email) { this.email = email; }
-
-    public Integer getRoomNo() { return roomNo; }
-    public void setRoomNo(Integer roomNo) { this.roomNo = roomNo; }
 }

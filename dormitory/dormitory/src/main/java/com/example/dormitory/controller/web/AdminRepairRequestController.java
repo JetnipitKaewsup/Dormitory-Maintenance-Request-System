@@ -14,6 +14,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.util.List;
 import java.util.UUID;
@@ -60,6 +61,12 @@ public class AdminRepairRequestController {
         return "admin/repair-request-detail";
     }
 
+    @ExceptionHandler(IllegalStateException.class)
+public String handleNotLoggedIn(IllegalStateException ex, RedirectAttributes redirectAttributes) {
+    redirectAttributes.addFlashAttribute("error", "เซสชันหมดอายุ กรุณาเข้าสู่ระบบใหม่");
+    return "redirect:/login";
+    }
+    
     @PostMapping("/{id}/approve")
     public String approve(@PathVariable UUID id, HttpSession session) {
         UUID adminId = getCurrentAdminId(session);

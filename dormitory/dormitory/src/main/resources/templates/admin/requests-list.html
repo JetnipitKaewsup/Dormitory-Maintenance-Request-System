@@ -3,24 +3,27 @@
 <head>
     <meta charset="UTF-8">
     <title>รายการคำร้องแจ้งซ่อม</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" th:href="@{/css/adminCommon.css}">
     <link rel="stylesheet" th:href="@{/css/requests-list.css}">
 </head>
 <body>
 
 
-<div th:replace="~{admin/adminHeader :: homeHeader()}"></div>
+<div th:replace="~{admin/adminHeader :: adminHeader('requests')}"></div>
 
 <div class="welcome-banner">
     <div>
         <div class="welcome-title">ยินดีต้อนรับ, <span th:text="${session.userFullName} ?: 'แอดมิน'">แอดมิน</span></div>
         <div class="welcome-subtitle">ตรวจสอบและจัดการคำร้องแจ้งซ่อมได้ที่นี่</div>
     </div>
-    <div class="welcome-actions">
+    <!-- <div class="welcome-actions">
         <a class="btn-welcome" th:href="@{/admin/requests}">📋 คำร้อง</a>
         <a class="btn-welcome" th:href="@{/admin/assignments}">🛠️ มอบหมายงาน</a>
         <a class="btn-welcome" th:href="@{/admin/inspections}">✅ ตรวจงาน</a>
-    </div>
+    </div> -->
 </div>
 
 <main>
@@ -51,7 +54,7 @@
     <!-- ============ ตารางคำร้อง ============ -->
     <div class="card">
         <h2 class="table-title">รายการแจ้งซ่อมทั้งหมด (RepairRequest)</h2>
-        <p class="table-subtitle">ตรวจสอบและจัดการคำร้องที่เข้ามาในระบบ — อ้างอิง repairRequestId</p>
+       
 
         <!-- แถบ filter ตามสถานะ -->
         <div class="filter-row">

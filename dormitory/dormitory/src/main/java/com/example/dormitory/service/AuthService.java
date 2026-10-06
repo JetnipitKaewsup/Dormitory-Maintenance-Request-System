@@ -3,6 +3,7 @@ package com.example.dormitory.service;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
@@ -17,17 +18,22 @@ import tools.jackson.databind.ObjectMapper;
 public class AuthService {
 
     private final WebClient supabaseWebClient;
-    private final ObjectMapper objectMapper = new ObjectMapper();
+    private final ObjectMapper objectMapper;
 
-    public AuthService(WebClient supabaseWebClient) {
+    public AuthService(
+            WebClient supabaseWebClient,
+            ObjectMapper objectMapper) {
+
         this.supabaseWebClient = supabaseWebClient;
+        this.objectMapper = objectMapper;
     }
 
-    // ============================================================
+    // =========================================================
     // LOGIN
-    // ============================================================
+    // =========================================================
 
-    public SupabaseAuthResponse login(LoginRequest request) {
+    public SupabaseAuthResponse login(
+            LoginRequest request) {
 
         if (request == null) {
             throw new IllegalArgumentException(
@@ -44,6 +50,7 @@ public class AuthService {
         }
 
         if (!isValidEmail(request.getEmail())) {
+
             throw new IllegalArgumentException(
                     "Invalid email format"
             );
@@ -57,22 +64,30 @@ public class AuthService {
             );
         }
 
-        Map<String, String> body = Map.of(
-                "email", request.getEmail(),
-                "password", request.getPassword()
-        );
+        Map<String, String> body =
+                Map.of(
+                        "email",
+                        request.getEmail(),
+                        "password",
+                        request.getPassword()
+                );
 
         return supabaseWebClient
                 .post()
-                .uri("/auth/v1/token?grant_type=password")
-                .contentType(MediaType.APPLICATION_JSON)
+                .uri(
+                        "/auth/v1/token?grant_type=password"
+                )
+                .contentType(
+                        MediaType.APPLICATION_JSON
+                )
                 .bodyValue(body)
                 .exchangeToMono(response ->
                         response.bodyToMono(String.class)
                                 .defaultIfEmpty("")
                                 .map(responseBody -> {
 
-                                    if (response.statusCode().isError()) {
+                                    if (response.statusCode()
+                                            .isError()) {
 
                                         throw new RuntimeException(
                                                 "Supabase Auth Error: "
@@ -101,15 +116,12 @@ public class AuthService {
                 .block();
     }
 
-    // ============================================================
+    // =========================================================
     // REGISTER
-    // ============================================================
+    // =========================================================
 
-    public void register(RegisterRequest request) {
-
-        // ------------------------------------------------------------
-        // Validate request
-        // ------------------------------------------------------------
+    public void register(
+            RegisterRequest request) {
 
         if (request == null) {
 
@@ -118,10 +130,6 @@ public class AuthService {
             );
         }
 
-        // ------------------------------------------------------------
-        // Validate first name
-        // ------------------------------------------------------------
-
         if (request.getFirstName() == null
                 || request.getFirstName().isBlank()) {
 
@@ -129,10 +137,6 @@ public class AuthService {
                     "First Name is required"
             );
         }
-
-        // ------------------------------------------------------------
-        // Validate email
-        // ------------------------------------------------------------
 
         if (request.getEmail() == null
                 || request.getEmail().isBlank()) {
@@ -149,10 +153,6 @@ public class AuthService {
             );
         }
 
-        // ------------------------------------------------------------
-        // Validate password
-        // ------------------------------------------------------------
-
         if (request.getPassword() == null
                 || request.getPassword().isBlank()) {
 
@@ -160,10 +160,6 @@ public class AuthService {
                     "Password is required"
             );
         }
-
-        // ------------------------------------------------------------
-        // Validate confirm password
-        // ------------------------------------------------------------
 
         if (request.getConfirmPassword() == null
                 || request.getConfirmPassword().isBlank()) {
@@ -181,10 +177,6 @@ public class AuthService {
             );
         }
 
-        // ------------------------------------------------------------
-        // Validate terms and conditions
-        // ------------------------------------------------------------
-
         if (!request.isTerms()) {
 
             throw new IllegalArgumentException(
@@ -192,11 +184,8 @@ public class AuthService {
             );
         }
 
-        // ------------------------------------------------------------
-        // Prepare Supabase Auth request body
-        // ------------------------------------------------------------
-
-        Map<String, Object> body = new HashMap<>();
+        Map<String, Object> body =
+                new HashMap<>();
 
         body.put(
                 "email",
@@ -208,11 +197,8 @@ public class AuthService {
                 request.getPassword()
         );
 
-        // ------------------------------------------------------------
-        // User metadata
-        // ------------------------------------------------------------
-
-        Map<String, Object> metadata = new HashMap<>();
+        Map<String, Object> metadata =
+                new HashMap<>();
 
         metadata.put(
                 "email",
@@ -249,20 +235,20 @@ public class AuthService {
                 metadata
         );
 
-        // ------------------------------------------------------------
-        // Send request to Supabase Auth
-        // ------------------------------------------------------------
-
         supabaseWebClient
                 .post()
-                .uri(uriBuilder -> uriBuilder
-                        .path("/auth/v1/signup")
-                        .queryParam(
-                                "redirect_to",
-                                "http://localhost:8080/auth/verified"
-                        )
-                        .build())
-                .contentType(MediaType.APPLICATION_JSON)
+                .uri(uriBuilder ->
+                        uriBuilder
+                                .path("/auth/v1/signup")
+                                .queryParam(
+                                        "redirect_to",
+                                        "http://localhost:8080/auth/verified"
+                                )
+                                .build()
+                )
+                .contentType(
+                        MediaType.APPLICATION_JSON
+                )
                 .bodyValue(body)
                 .exchangeToMono(response ->
                         response.bodyToMono(String.class)
@@ -279,30 +265,23 @@ public class AuthService {
                                     System.out.println(
                                             "=============================================="
                                     );
-
                                     System.out.println(
                                             "HTTP STATUS : "
                                                     + response.statusCode()
                                     );
-
                                     System.out.println(
                                             "RESPONSE BODY:"
                                     );
-
                                     System.out.println(
                                             responseBody
                                     );
-
                                     System.out.println(
                                             "=============================================="
                                     );
                                     System.out.println();
 
-                                    // ------------------------------------------------
-                                    // Supabase error
-                                    // ------------------------------------------------
-
-                                    if (response.statusCode().isError()) {
+                                    if (response.statusCode()
+                                            .isError()) {
 
                                         throw new RuntimeException(
                                                 "Supabase Auth Error: "
@@ -318,24 +297,15 @@ public class AuthService {
                 .block();
     }
 
-    // ============================================================
-    // EMAIL VALIDATION
-    // ============================================================
-
-    private boolean isValidEmail(String email) {
-
-        return email.matches(
-                "^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,}$"
-        );
-    }
-
-    // ============================================================
+    // =========================================================
     // FORGOT PASSWORD
-    // ============================================================
+    // =========================================================
 
-    public void forgotPassword(String email) {
+    public void forgotPassword(
+            String email) {
 
-        if (email == null || email.isBlank()) {
+        if (email == null
+                || email.isBlank()) {
 
             throw new IllegalArgumentException(
                     "Email is required"
@@ -349,7 +319,8 @@ public class AuthService {
             );
         }
 
-        Map<String, String> body = new HashMap<>();
+        Map<String, String> body =
+                new HashMap<>();
 
         body.put(
                 "email",
@@ -358,15 +329,26 @@ public class AuthService {
 
         supabaseWebClient
                 .post()
-                .uri("/auth/v1/recover")
-                .contentType(MediaType.APPLICATION_JSON)
+                .uri(uriBuilder ->
+                        uriBuilder
+                                .path("/auth/v1/recover")
+                                .queryParam(
+                                        "redirect_to",
+                                        "http://localhost:8080/reset-password"
+                                )
+                                .build()
+                )
+                .contentType(
+                        MediaType.APPLICATION_JSON
+                )
                 .bodyValue(body)
                 .exchangeToMono(response ->
                         response.bodyToMono(String.class)
                                 .defaultIfEmpty("")
                                 .map(responseBody -> {
 
-                                    if (response.statusCode().isError()) {
+                                    if (response.statusCode()
+                                            .isError()) {
 
                                         throw new RuntimeException(
                                                 "Supabase Auth Error: "
@@ -380,5 +362,87 @@ public class AuthService {
                                 })
                 )
                 .block();
+    }
+
+    // =========================================================
+    // RESET PASSWORD
+    // =========================================================
+
+    public void resetPassword(
+            String accessToken,
+            String newPassword) {
+
+        if (accessToken == null
+                || accessToken.isBlank()) {
+
+            throw new IllegalArgumentException(
+                    "Reset token is required"
+            );
+        }
+
+        if (newPassword == null
+                || newPassword.isBlank()) {
+
+            throw new IllegalArgumentException(
+                    "Password is required"
+            );
+        }
+
+        if (newPassword.length() < 6) {
+
+            throw new IllegalArgumentException(
+                    "Password must be at least 6 characters"
+            );
+        }
+
+        Map<String, String> body =
+                Map.of(
+                        "password",
+                        newPassword
+                );
+
+        supabaseWebClient
+                .put()
+                .uri("/auth/v1/user")
+                .header(
+                        HttpHeaders.AUTHORIZATION,
+                        "Bearer " + accessToken
+                )
+                .contentType(
+                        MediaType.APPLICATION_JSON
+                )
+                .bodyValue(body)
+                .exchangeToMono(response ->
+                        response.bodyToMono(String.class)
+                                .defaultIfEmpty("")
+                                .map(responseBody -> {
+
+                                    if (response.statusCode()
+                                            .isError()) {
+
+                                        throw new RuntimeException(
+                                                "Supabase Password Reset Error: "
+                                                        + response.statusCode()
+                                                        + " - "
+                                                        + responseBody
+                                        );
+                                    }
+
+                                    return responseBody;
+                                })
+                )
+                .block();
+    }
+
+    // =========================================================
+    // EMAIL VALIDATION
+    // =========================================================
+
+    private boolean isValidEmail(
+            String email) {
+
+        return email.matches(
+                "^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,}$"
+        );
     }
 }
