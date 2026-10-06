@@ -36,13 +36,19 @@ public class AuthController {
 
     private final AuthService authService;
     private final SpringSecurityService springSecurityService;
+    private final UserRepository userRepository;
+    private final AdminRepository adminRepository;
 
     public AuthController(
             AuthService authService,
-            SpringSecurityService springSecurityService) {
+            SpringSecurityService springSecurityService,
+            UserRepository userRepository,
+            AdminRepository adminRepository) {
 
         this.authService = authService;
         this.springSecurityService = springSecurityService;
+        this.userRepository = userRepository;
+        this.adminRepository = adminRepository;
     }
 
     // =========================================================
@@ -119,6 +125,16 @@ public class AuthController {
                     authResponse.getUser().getId()
             );
 
+            // ---- set ชื่อ/role/adminId ลง session ----
+            User user = userRepository.findById(userId).orElse(null);
+
+            if (user != null) {
+                session.setAttribute(
+                        "userFullName",
+                        user.getFirstName() + " " + user.getLastName()
+                );
+            }
+
             String role =
                     authentication
                             .getAuthorities()
@@ -126,7 +142,17 @@ public class AuthController {
                             .next()
                             .getAuthority();
 
+            session.setAttribute("role", role.replace("ROLE_", ""));
+
             if (role.equals("ROLE_ADMIN")) {
+
+                if (user != null) {
+                    adminRepository.findByUser(user)
+                            .ifPresent(admin ->
+                                    session.setAttribute("adminId", admin.getAdminId())
+                            );
+                }
+
                 return "redirect:/admin/requests";
             }
 
