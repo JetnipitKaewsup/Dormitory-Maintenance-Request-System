@@ -26,9 +26,15 @@ public class SecurityConfig {
                         "/auth/verified",
                         "/css/**",
                         "/js/**",
+                        "/reset-password",
                         "/images/**",
                         "/swagger-ui/**",
                         "/v3/api-docs/**")
+                .permitAll()
+
+                 .requestMatchers(
+                        "/api/v1/auth/reset-password"
+                )
                 .permitAll()
 
                 // Admin
