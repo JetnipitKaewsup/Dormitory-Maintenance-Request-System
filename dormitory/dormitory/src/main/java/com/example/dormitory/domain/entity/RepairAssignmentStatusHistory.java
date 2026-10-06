@@ -10,7 +10,7 @@ import com.example.dormitory.domain.entity.RepairAssignment;
 import com.example.dormitory.domain.entity.User;
 
 @Entity
-@Table(name = "RepairAssignmentStatusHistory")
+@Table(name = "repair_assignment_status_history")
 public class RepairAssignmentStatusHistory {
 
     @Id

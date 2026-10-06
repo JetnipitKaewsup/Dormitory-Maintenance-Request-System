@@ -12,7 +12,7 @@ import com.example.dormitory.domain.entity.RepairRequest;
 import com.example.dormitory.domain.entity.Technician;
 
 @Entity
-@Table(name = "RepairAssignment")
+@Table(name = "repair_assignment")
 public class RepairAssignment {
 
     @Id
@@ -20,15 +20,15 @@ public class RepairAssignment {
     private UUID assignmentId;
 
     @ManyToOne(optional = false)
-    @JoinColumn(name = "repairRequestId", nullable = false)
+    @JoinColumn(name = "repair_request_id", nullable = false)
     private RepairRequest repairRequest;
 
     @ManyToOne(optional = false)
-    @JoinColumn(name = "technicianId", nullable = false)
+    @JoinColumn(name = "technician_id", nullable = false)
     private Technician technician;
 
     @ManyToOne(optional = false)
-    @JoinColumn(name = "adminId", nullable = false)
+    @JoinColumn(name = "admin_id", nullable = false)
     private Admin admin;
 
     @Enumerated(EnumType.STRING)
