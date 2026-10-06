@@ -26,6 +26,11 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 
+import com.example.dormitory.domain.entity.User;
+import com.example.dormitory.domain.entity.Admin;
+import com.example.dormitory.repository.UserRepository;
+import com.example.dormitory.repository.AdminRepository;
+
 @Controller
 public class AuthController {
 

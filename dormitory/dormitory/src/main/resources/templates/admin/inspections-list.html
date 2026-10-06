@@ -3,6 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <title>ตรวจงาน</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" th:href="@{/css/adminCommon.css}">
     <link rel="stylesheet" th:href="@{/css/admin-worklist.css}">
 </head>
@@ -10,22 +13,36 @@
 
 <div th:replace="~{admin/adminHeader :: adminHeader('inspections')}"></div>
 
-<div class="page">
-    <h2>รายการงานที่กำลังดำเนินการ</h2>
+<main class="work-page">
+    <div class="work-head">
+        <h1>รายการงานที่กำลังดำเนินการ</h1>
+        <span class="work-count" th:text="${#lists.size(requests)} + ' งาน'"></span>
+    </div>
 
     <div class="empty" th:if="${#lists.isEmpty(requests)}">
-        ไม่มีงานที่กำลังดำเนินการในขณะนี้
+        <div class="empty-icon">✓</div>
+        <p>ไม่มีงานที่กำลังดำเนินการในขณะนี้</p>
     </div>
 
-    <div class="work-item" th:each="r : ${requests}">
-        <div>
-            <strong th:text="${r.repairType}"></strong>
-            <span th:text="' - ' + ${r.description}"></span>
-            <div class="meta" th:text="'ห้อง ' + (${r.room != null ? r.room.roomNo : '-'})"></div>
+    <div class="work-list">
+        <div class="work-row" th:each="r : ${requests}">
+            <span class="work-status" aria-hidden="true"></span>
+
+            <div class="work-body">
+                <div class="work-title-line">
+                    <span class="work-type" th:text="${r.repairType}"></span>
+                    <span class="work-badge">กำลังดำเนินการ</span>
+                </div>
+                <p class="work-desc" th:text="${r.description}"></p>
+                <p class="work-meta" th:text="'ห้อง ' + (${r.room != null ? r.room.roomNo : '-'})"></p>
+            </div>
+
+            <a class="work-btn" th:href="@{/admin/requests/{id}/inspect(id=${r.repairRequestId})}">
+                ตรวจสอบงาน
+            </a>
         </div>
-        <a class="btn" th:href="@{/admin/requests/{id}/inspect(id=${r.repairRequestId})}">ตรวจสอบงาน</a>
     </div>
-</div>
+</main>
 
 </body>
 </html>
