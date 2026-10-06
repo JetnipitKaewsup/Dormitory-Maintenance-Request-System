@@ -1,7 +1,9 @@
 package com.example.dormitory.controller.web;
 
+import java.util.Map;
 import java.util.UUID;
 
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -11,6 +13,7 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import com.example.dormitory.dto.request.LoginRequest;
@@ -37,9 +40,9 @@ public class AuthController {
         this.springSecurityService = springSecurityService;
     }
 
-    // ============================================================
+    // =========================================================
     // LOGIN PAGE
-    // ============================================================
+    // =========================================================
 
     @GetMapping("/login")
     public String showLoginPage(Model model) {
@@ -52,9 +55,9 @@ public class AuthController {
         return "login";
     }
 
-    // ============================================================
+    // =========================================================
     // LOGIN PROCESS
-    // ============================================================
+    // =========================================================
 
     @PostMapping("/login")
     public String processLogin(
@@ -65,32 +68,16 @@ public class AuthController {
 
         try {
 
-            // ----------------------------------------------------
-            // Login กับ Supabase
-            // ----------------------------------------------------
-
             SupabaseAuthResponse authResponse =
                     authService.login(loginRequest);
-
-            // ----------------------------------------------------
-            // Get User ID
-            // ----------------------------------------------------
 
             UUID userId =
                     UUID.fromString(
                             authResponse.getUser().getId()
                     );
 
-            // ----------------------------------------------------
-            // Create Spring Security Authentication
-            // ----------------------------------------------------
-
             Authentication authentication =
                     springSecurityService.createAuthentication(userId);
-
-            // ----------------------------------------------------
-            // Create Security Context
-            // ----------------------------------------------------
 
             SecurityContext context =
                     SecurityContextHolder.createEmptyContext();
@@ -98,10 +85,6 @@ public class AuthController {
             context.setAuthentication(authentication);
 
             SecurityContextHolder.setContext(context);
-
-            // ----------------------------------------------------
-            // Save Security Context to Session
-            // ----------------------------------------------------
 
             HttpSession session =
                     request.getSession();
@@ -116,36 +99,20 @@ public class AuthController {
                     response
             );
 
-            // ----------------------------------------------------
-            // Save Supabase Access Token
-            // ----------------------------------------------------
-
             session.setAttribute(
                     "accessToken",
                     authResponse.getAccess_token()
             );
-
-            // ----------------------------------------------------
-            // Save Supabase Refresh Token
-            // ----------------------------------------------------
 
             session.setAttribute(
                     "refreshToken",
                     authResponse.getRefresh_token()
             );
 
-            // ----------------------------------------------------
-            // Save User ID
-            // ----------------------------------------------------
-
             session.setAttribute(
                     "userId",
                     authResponse.getUser().getId()
             );
-
-            // ----------------------------------------------------
-            // Redirect ตาม Role
-            // ----------------------------------------------------
 
             String role =
                     authentication
@@ -155,23 +122,16 @@ public class AuthController {
                             .getAuthority();
 
             if (role.equals("ROLE_ADMIN")) {
-
                 return "redirect:/admin/requests";
             }
 
             if (role.equals("ROLE_TECHNICIAN")) {
-
                 return "redirect:/technician/dailywork";
             }
 
             if (role.equals("ROLE_REPORTER")) {
-
                 return "redirect:/reporter/requests";
             }
-
-            // ----------------------------------------------------
-            // Default
-            // ----------------------------------------------------
 
             return "redirect:/reporter/requests";
 
@@ -188,9 +148,9 @@ public class AuthController {
         }
     }
 
-    // ============================================================
+    // =========================================================
     // REGISTER PAGE
-    // ============================================================
+    // =========================================================
 
     @GetMapping("/register")
     public String showRegisterPage(Model model) {
@@ -203,9 +163,9 @@ public class AuthController {
         return "register";
     }
 
-    // ============================================================
+    // =========================================================
     // REGISTER PROCESS
-    // ============================================================
+    // =========================================================
 
     @PostMapping("/register")
     public String processRegister(
@@ -257,15 +217,7 @@ public class AuthController {
 
         try {
 
-            // ----------------------------------------------------
-            // Register ผ่าน Supabase
-            // ----------------------------------------------------
-
             authService.register(registerRequest);
-
-            // ----------------------------------------------------
-            // แสดงหน้าแจ้งเตือนให้ User ไปยืนยัน Email
-            // ----------------------------------------------------
 
             model.addAttribute(
                     "message",
@@ -287,9 +239,9 @@ public class AuthController {
         }
     }
 
-    // ============================================================
+    // =========================================================
     // EMAIL VERIFIED PAGE
-    // ============================================================
+    // =========================================================
 
     @GetMapping("/auth/verified")
     public String emailVerified(Model model) {
@@ -302,9 +254,9 @@ public class AuthController {
         return "verified";
     }
 
-    // ============================================================
+    // =========================================================
     // DASHBOARD PAGE
-    // ============================================================
+    // =========================================================
 
     @GetMapping("/dashboard")
     public String showDashboard(
@@ -316,12 +268,7 @@ public class AuthController {
                         "accessToken"
                 );
 
-        // ----------------------------------------------------
-        // ถ้ายังไม่ได้ Login
-        // ----------------------------------------------------
-
         if (accessToken == null) {
-
             return "redirect:/login";
         }
 
@@ -333,9 +280,9 @@ public class AuthController {
         return "dashboard";
     }
 
-    // ============================================================
+    // =========================================================
     // FORGOT PASSWORD PAGE
-    // ============================================================
+    // =========================================================
 
     @GetMapping("/forgot")
     public String forgotPassword() {
@@ -343,9 +290,9 @@ public class AuthController {
         return "forgot";
     }
 
-    // ============================================================
+    // =========================================================
     // FORGOT PASSWORD PROCESS
-    // ============================================================
+    // =========================================================
 
     @PostMapping("/forgot")
     public String processForgotPassword(
@@ -365,6 +312,8 @@ public class AuthController {
 
         } catch (Exception e) {
 
+            e.printStackTrace();
+
             model.addAttribute(
                     "error",
                     e.getMessage()
@@ -372,5 +321,131 @@ public class AuthController {
 
             return "forgot";
         }
+    }
+
+    // =========================================================
+    // RESET PASSWORD PAGE
+    // =========================================================
+
+    @GetMapping("/reset-password")
+    public String resetPasswordPage() {
+
+        return "reset-password";
+    }
+
+    // =========================================================
+    // RESET PASSWORD API
+    // =========================================================
+
+    @PostMapping("/api/v1/auth/reset-password")
+    public ResponseEntity<?> resetPassword(
+            @RequestBody ResetPasswordRequest request) {
+
+        try {
+
+            if (request == null) {
+
+                return ResponseEntity
+                        .badRequest()
+                        .body(Map.of(
+                                "success",
+                                false,
+                                "message",
+                                "Request is required"
+                        ));
+            }
+
+            if (request.accessToken() == null
+                    || request.accessToken().isBlank()) {
+
+                return ResponseEntity
+                        .badRequest()
+                        .body(Map.of(
+                                "success",
+                                false,
+                                "message",
+                                "Reset token is required"
+                        ));
+            }
+
+            if (request.password() == null
+                    || request.password().isBlank()) {
+
+                return ResponseEntity
+                        .badRequest()
+                        .body(Map.of(
+                                "success",
+                                false,
+                                "message",
+                                "Password is required"
+                        ));
+            }
+
+            if (request.confirmPassword() == null
+                    || request.confirmPassword().isBlank()) {
+
+                return ResponseEntity
+                        .badRequest()
+                        .body(Map.of(
+                                "success",
+                                false,
+                                "message",
+                                "Password confirmation is required"
+                        ));
+            }
+
+            if (!request.password()
+                    .equals(request.confirmPassword())) {
+
+                return ResponseEntity
+                        .badRequest()
+                        .body(Map.of(
+                                "success",
+                                false,
+                                "message",
+                                "Passwords do not match"
+                        ));
+            }
+
+            authService.resetPassword(
+                    request.accessToken(),
+                    request.password()
+            );
+
+            return ResponseEntity.ok(
+                    Map.of(
+                            "success",
+                            true,
+                            "message",
+                            "Password reset successfully"
+                    )
+            );
+
+        } catch (Exception e) {
+
+            e.printStackTrace();
+
+            return ResponseEntity
+                    .badRequest()
+                    .body(Map.of(
+                            "success",
+                            false,
+                            "message",
+                            e.getMessage() != null
+                                    ? e.getMessage()
+                                    : "Unable to reset password"
+                    ));
+        }
+    }
+
+    // =========================================================
+    // RESET PASSWORD REQUEST
+    // =========================================================
+
+    public record ResetPasswordRequest(
+            String accessToken,
+            String password,
+            String confirmPassword
+    ) {
     }
 }
