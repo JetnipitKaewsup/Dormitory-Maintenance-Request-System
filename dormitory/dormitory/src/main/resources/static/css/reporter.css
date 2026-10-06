@@ -52,6 +52,8 @@ body {
   cursor: pointer;
   display: flex;
   align-items: center;
+  background: none;
+  border: none;
 }
 .notification-btn {
   background: none;
