@@ -1,111 +1,277 @@
-.stat-cards {
-    display: flex;
-    gap: 16px;
-    margin-bottom: 24px;
-    flex-wrap: wrap;
+/* ===== Tokens ===== */
+:root {
+    --rl-green: #2F9442;
+    --rl-green-dark: #1F6B30;
+    --rl-green-wash: #EAF6ED;
+    --rl-ink: #1B211D;
+    --rl-muted: #5B6058;
+    --rl-bg: #F6F5F1;
+    --rl-surface: #FFFFFF;
+    --rl-line: #E4E1D9;
+
+    --rl-pending: #B45309;
+    --rl-pending-wash: #FDF1DF;
+    --rl-approved: #1D4ED8;
+    --rl-approved-wash: #E8EFFD;
+    --rl-progress: #525860;
+    --rl-progress-wash: #ECEBE7;
+    --rl-completed: #1F6B30;
+    --rl-completed-wash: #EAF6ED;
+    --rl-rejected: #B42318;
+    --rl-rejected-wash: #FCEAE9;
 }
+
+body {
+    background: var(--rl-bg);
+    font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+    color: var(--rl-ink);
+}
+
+main {
+    max-width: 1180px;
+    margin: 0 auto;
+    padding: 0 24px 64px;
+}
+
+/* ===== Welcome banner ===== */
+.welcome-banner {
+    max-width: 1180px;
+    margin: 0 auto 24px;
+    margin-top: 20px;
+    padding: 28px 24px;
+    border-radius: 12px;
+    background: linear-gradient(135deg, var(--rl-green) 0%, var(--rl-green-dark) 100%);
+    color: #fff;
+}
+
+.welcome-title {
+    font-family: 'Space Grotesk', 'Segoe UI', sans-serif;
+    font-size: 22px;
+    font-weight: 600;
+    margin-bottom: 4px;
+}
+
+.welcome-subtitle {
+    font-size: 14px;
+    opacity: 0.9;
+}
+
+/* ===== Stat cards ===== */
+.stat-cards {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 14px;
+    margin-bottom: 24px;
+}
+
+@media (max-width: 900px) {
+    .stat-cards {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
 .stat-card {
-    flex: 1;
-    min-width: 150px;
+    background: var(--rl-surface);
+    border: 1px solid var(--rl-line);
+    border-left: 4px solid var(--rl-line);
     border-radius: 10px;
     padding: 18px 20px;
-    text-align: center;
 }
-.stat-label { font-weight: 700; font-size: 14px; margin-bottom: 8px; }
-.stat-value { font-size: 26px; font-weight: 700; }
 
-.stat-pending    { background: #f4dfa3; color: #6b5416; }
-.stat-approved   { background: #b7d8f2; color: #1c4c73; }
-.stat-progress   { background: #d9dbde; color: #40444a; }
-.stat-completed  { background: #b6ecc1; color: #1b6b32; }
-.stat-rejected   { background: #f3b3b3; color: #8a1f1f; }
+.stat-label {
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: 0.02em;
+    color: var(--rl-muted);
+    margin-bottom: 8px;
+}
 
-.table-title { font-size: 18px; font-weight: 700; margin-bottom: 4px; }
-.table-subtitle { color: var(--color-muted); font-size: 13px; margin-bottom: 18px; }
+.stat-value {
+    font-family: 'Space Grotesk', 'Segoe UI', sans-serif;
+    font-size: 30px;
+    font-weight: 700;
+    font-variant-numeric: tabular-nums;
+    color: var(--rl-ink);
+}
 
+.stat-pending {
+    border-left-color: var(--rl-pending);
+    background: var(--rl-pending-wash);
+}
+
+.stat-approved {
+    border-left-color: var(--rl-approved);
+    background: var(--rl-approved-wash);
+}
+
+.stat-progress {
+    border-left-color: var(--rl-progress);
+    background: var(--rl-progress-wash);
+}
+
+.stat-completed {
+    border-left-color: var(--rl-completed);
+    background: var(--rl-completed-wash);
+}
+
+.stat-rejected {
+    border-left-color: var(--rl-rejected);
+    background: var(--rl-rejected-wash);
+}
+
+/* ===== Main card / table container ===== */
+.card {
+    background: var(--rl-surface);
+    border: 1px solid var(--rl-line);
+    border-radius: 10px;
+    padding: 24px;
+}
+
+.table-title {
+    font-family: 'Space Grotesk', 'Segoe UI', sans-serif;
+    font-size: 17px;
+    font-weight: 600;
+    margin: 0 0 16px;
+}
+
+/* ===== Filter chips ===== */
 .filter-row {
     display: flex;
-    gap: 10px;
-    margin-bottom: 12px;
     flex-wrap: wrap;
+    gap: 8px;
+    margin-bottom: 12px;
 }
-.filter-row-secondary { margin-bottom: 20px; }
+
+.filter-row-secondary {
+    margin-bottom: 20px;
+    padding-bottom: 20px;
+    border-bottom: 1px solid var(--rl-line);
+}
 
 .filter-chip {
-    border: 1px solid var(--color-border);
-    background: #fff;
-    border-radius: 20px;
-    padding: 8px 16px;
+    padding: 7px 16px;
+    border-radius: 999px;
+    border: 1px solid var(--rl-line);
+    background: var(--rl-surface);
+    color: var(--rl-muted);
     font-size: 13px;
     font-weight: 600;
     cursor: pointer;
-    color: #444;
-    transition: background 0.15s ease, color 0.15s ease, border-color 0.15s ease;
-}
-.filter-chip:hover { border-color: var(--color-primary); }
-.filter-chip.active {
-    background: var(--color-primary);
-    border-color: var(--color-primary);
-    color: #fff;
-}
-.filter-chip-outline.active {
-    background: #eaf3ec;
-    border-color: var(--color-primary);
-    color: var(--color-primary);
+    transition: all .15s ease;
 }
 
+.filter-chip:hover {
+    border-color: var(--rl-green);
+    color: var(--rl-green-dark);
+}
+
+.filter-chip.active {
+    background: var(--rl-green);
+    border-color: var(--rl-green);
+    color: #fff;
+}
+
+.filter-chip-outline.active {
+    background: var(--rl-green-wash);
+    border-color: var(--rl-green);
+    color: var(--rl-green-dark);
+}
+
+/* ===== Table ===== */
 .requests-table {
     width: 100%;
     border-collapse: collapse;
-    font-size: 14px;
+    font-size: 13.5px;
 }
+
 .requests-table thead th {
     text-align: left;
-    color: var(--color-muted);
+    padding: 10px 12px;
+    font-size: 11.5px;
     font-weight: 600;
-    padding: 10px 8px;
-    border-bottom: 1px solid var(--color-border);
+    letter-spacing: 0.02em;
+    color: var(--rl-muted);
+    border-bottom: 1px solid var(--rl-line);
+    white-space: nowrap;
 }
+
 .requests-table tbody td {
-    padding: 14px 8px;
-    border-bottom: 1px solid #eef0f2;
+    padding: 14px 12px;
+    border-bottom: 1px solid var(--rl-line);
+    color: var(--rl-ink);
     vertical-align: middle;
 }
-.requests-table .empty-row {
-    text-align: center;
-    color: var(--color-muted);
-    padding: 30px 0;
-}
-.welcome-banner {
-    background: var(--color-primary);
-    color: #fff;
-    border-radius: 12px;
-    margin: 20px 28px 0;
-    padding: 22px 28px;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    flex-wrap: wrap;
-    gap: 16px;
-}
-.welcome-title { font-size: 20px; font-weight: 700; }
-.welcome-subtitle { font-size: 14px; color: rgba(255,255,255,0.85); margin-top: 4px; }
-.welcome-actions { display: flex; gap: 10px; flex-wrap: wrap; }
-.btn-welcome {
-    background: rgba(255,255,255,0.15);
-    border: 1px solid rgba(255,255,255,0.4);
-    color: #fff;
-    text-decoration: none;
-    padding: 10px 18px;
-    border-radius: 20px;
-    font-size: 14px;
-    font-weight: 600;
-    transition: background 0.15s ease;
-}
-.btn-welcome:hover { background: rgba(255,255,255,0.3); }
 
-/* badge class เพิ่มเติมให้ตรงกับ RepairRequestStatus.getCssClass() */
-.badge.progress    { background: #e3ecfb; color: #2b57a8; }
-.badge.complete     { background: #e4f5e8; color: var(--color-primary); }
-.badge.in_complete  { background: #fbe6e6; color: var(--color-danger); }
-.badge.cancelled    { background: #ececec; color: #555; }
+.requests-table tbody tr:hover {
+    background: var(--rl-bg);
+}
+
+.requests-table tbody tr:last-child td {
+    border-bottom: none;
+}
+
+.empty-row {
+    text-align: center;
+    color: var(--rl-muted);
+    padding: 40px 0;
+}
+
+/* ===== Status badge: colored by the row's actual status ===== */
+.badge {
+    display: inline-block;
+    padding: 4px 12px;
+    border-radius: 999px;
+    font-size: 12px;
+    font-weight: 600;
+    white-space: nowrap;
+    background: var(--rl-progress-wash);
+    color: var(--rl-progress);
+}
+
+tr[data-status="PENDING"] .badge {
+    background: var(--rl-pending-wash);
+    color: var(--rl-pending);
+}
+
+tr[data-status="APPROVED"] .badge {
+    background: var(--rl-approved-wash);
+    color: var(--rl-approved);
+}
+
+tr[data-status="IN_PROGRESS"] .badge {
+    background: var(--rl-progress-wash);
+    color: var(--rl-progress);
+}
+
+tr[data-status="COMPLETED"] .badge {
+    background: var(--rl-completed-wash);
+    color: var(--rl-completed);
+}
+
+tr[data-status="REJECTED"] .badge,
+tr[data-status="CANCELLED"] .badge {
+    background: var(--rl-rejected-wash);
+    color: var(--rl-rejected);
+}
+
+/* ===== Buttons ===== */
+.btn {
+    display: inline-block;
+    padding: 7px 16px;
+    border-radius: 7px;
+    font-size: 13px;
+    font-weight: 600;
+    text-decoration: none;
+    white-space: nowrap;
+}
+
+.btn-outline {
+    border: 1px solid var(--rl-green);
+    color: var(--rl-green-dark);
+    background: var(--rl-green-wash);
+}
+
+.btn-outline:hover {
+    background: var(--rl-green);
+    color: #fff;
+}
