@@ -42,7 +42,7 @@ public class AdminRepairRequestController {
         long inProgressCount = requests.stream().filter(r -> r.getStatus() == RepairRequestStatus.IN_PROGRESS).count();
         long completedCount = requests.stream().filter(r -> r.getStatus() == RepairRequestStatus.COMPLETED).count();
         long rejectedCount = requests.stream().filter(r ->
-                r.getStatus() == RepairRequestStatus.REJECTED || r.getStatus() == RepairRequestStatus.CANCELLED).count();
+                r.getStatus() == RepairRequestStatus.REJECTED).count();
 
         model.addAttribute("requests", requests);
         model.addAttribute("pendingCount", pendingCount);

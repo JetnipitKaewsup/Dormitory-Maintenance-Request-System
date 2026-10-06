@@ -78,22 +78,20 @@
     <i data-lucide="arrow-left"></i>
   </a>
 
-  <!-- ================= CANCEL ================= -->
+  <!-- ================= DELETE ================= -->
   <div th:if="${request.status.name() == 'PENDING'}">
-    <form th:action="@{'/reporter/requests/' + ${request.repairRequestId} + '/cancel'}"
-          method="post" id="cancelForm" style="margin: 0">
-          <input type="hidden"
-            th:name="${_csrf.parameterName}"
-            th:value="${_csrf.token}">
-      <button type="button" class="btn-outline-danger" id="openCancelModal">
-        ยกเลิกคำร้อง
+    <form th:action="@{'/reporter/requests/' + ${request.repairRequestId} + '/delete'}" method="post"
+      id="deleteForm" style="margin: 0">
+      <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">
+      <button type="button" class="btn-outline-danger" id="openDeleteModal">
+        ลบคำร้อง
       </button>
     </form>
   </div>
 </div>
   
     <!-- ================= STATUS ================= -->
-    <div class="stepper-container" th:if="${request.status.name() != 'CANCELLED'}">
+    <div class="stepper-container">
       <div class="stepper-title">ขั้นตอนการดำเนินการ</div>
 
       <div class="stepper">
@@ -174,12 +172,6 @@
       </div>
     </div>
 
-    <!-- ================= CANCELLED BANNER ================= -->
-    <div class="cancelled-banner" th:if="${request.status.name() == 'CANCELLED'}">
-      <i data-lucide="x-circle" style="width: 48px; height: 48px"></i>
-      <h3>คำร้องนี้ถูกยกเลิกแล้ว</h3>
-      <p>คำร้องแจ้งซ่อมนี้ได้ถูกยกเลิก ไม่สามารถดำเนินการต่อได้</p>
-    </div>
 
     <!-- ================= DETAIL ================= -->
     <div class="detail-card">
@@ -272,8 +264,8 @@
     </div>
 
     
-    <!-- ================= CANCEL MODAL ================= -->
-    <div id="cancelModal" class="modal-overlay">
+    <!-- ================= DELETE MODAL ================= -->
+    <div id="deleteModal" class="modal-overlay">
       <div class="modal-content">
         <h3 class="modal-title">คุณแน่ใจว่าต้องการ<br>ยกเลิกคำร้องแจ้งซ่อม</h3>
 
@@ -300,7 +292,7 @@
 
         <div class="modal-actions">
           <button type="button" class="btn-cancel" id="closeModalBtn">ย้อนกลับ</button>
-          <button type="button" class="btn-confirm" id="confirmCancelBtn">ยืนยันยกเลิกแจ้งซ่อม</button>
+          <button type="button" class="btn-confirm" id="confirmDeleteBtn">ยืนยันลบคำร้อง</button>
         </div>
       </div>
     </div>
@@ -310,11 +302,11 @@
     lucide.createIcons();
 
     document.addEventListener('DOMContentLoaded', () => {
-      const modal = document.getElementById('cancelModal');
-      const openBtn = document.getElementById('openCancelModal');
+      const modal = document.getElementById('deleteModal');
+      const openBtn = document.getElementById('openDeleteModal');
       const closeBtn = document.getElementById('closeModalBtn');
-      const confirmBtn = document.getElementById('confirmCancelBtn');
-      const cancelForm = document.getElementById('cancelForm');
+      const confirmBtn = document.getElementById('confirmDeleteBtn');
+      const deleteForm = document.getElementById('deleteForm');
 
       if (openBtn) {
         openBtn.addEventListener('click', () => modal.classList.add('show'));
@@ -325,7 +317,7 @@
       }
 
       if (confirmBtn) {
-        confirmBtn.addEventListener('click', () => cancelForm.submit());
+        confirmBtn.addEventListener('click', () => deleteForm.submit());
       }
 
       // ปิดเมื่อคลิกพื้นที่ด้านนอก
