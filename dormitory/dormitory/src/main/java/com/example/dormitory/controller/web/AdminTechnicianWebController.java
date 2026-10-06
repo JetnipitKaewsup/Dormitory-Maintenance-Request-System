@@ -1,6 +1,7 @@
 package com.example.dormitory.controller.web;
 
-import com.example.dormitory.dto.adminTechnician.*;
+import com.example.dormitory.dto.request.AdminTechnicianCreateRequest;
+import com.example.dormitory.dto.request.AdminTechnicianUpdateRequest;
 import com.example.dormitory.service.AdminTechnicianService;
 import jakarta.validation.Valid;
 import org.springframework.stereotype.Controller;

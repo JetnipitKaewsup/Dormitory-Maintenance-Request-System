@@ -1,6 +1,8 @@
 package com.example.dormitory.controller.api;
 
-import com.example.dormitory.dto.adminReporter.*;
+import com.example.dormitory.dto.request.AdminReporterUpdateRequest;
+import com.example.dormitory.dto.response.AdminReporterResponse;
+import com.example.dormitory.dto.response.RepairRequestHistoryResponse;
 import com.example.dormitory.service.AdminReporterService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -33,5 +35,10 @@ public class AdminReporterApiController {
             @PathVariable UUID reporterId,
             @RequestBody AdminReporterUpdateRequest request) {
         return ResponseEntity.ok(adminReporterService.updateReporter(reporterId, request));
+    }
+
+    @GetMapping("/{reporterId}/history")
+    public ResponseEntity<List<RepairRequestHistoryResponse>> getRepairHistory(@PathVariable UUID reporterId) {
+        return ResponseEntity.ok(adminReporterService.getRepairHistoryByReporterId(reporterId));
     }
 }

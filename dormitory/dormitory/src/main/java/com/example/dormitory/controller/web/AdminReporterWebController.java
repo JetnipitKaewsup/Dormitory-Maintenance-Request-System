@@ -1,6 +1,6 @@
 package com.example.dormitory.controller.web;
 
-import com.example.dormitory.dto.adminReporter.*;
+import com.example.dormitory.dto.request.AdminReporterUpdateRequest;
 import com.example.dormitory.service.AdminReporterService;
 import jakarta.validation.Valid;
 import org.springframework.stereotype.Controller;
@@ -43,5 +43,13 @@ public class AdminReporterWebController {
             redirectAttributes.addFlashAttribute("error", e.getMessage());
         }
         return "redirect:/admin/reporters";
+    }
+
+    // ดูประวัติคำร้องซ่อมของ reporter คนนี้
+    @GetMapping("/{reporterId}/history")
+    public String viewRepairHistory(@PathVariable UUID reporterId, Model model) {
+        model.addAttribute("reporter", adminReporterService.getReporterById(reporterId));
+        model.addAttribute("history", adminReporterService.getRepairHistoryByReporterId(reporterId));
+        return "admin/reporterHistory";
     }
 }

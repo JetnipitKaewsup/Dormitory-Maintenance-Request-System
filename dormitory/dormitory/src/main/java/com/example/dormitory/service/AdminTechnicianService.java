@@ -1,6 +1,8 @@
 package com.example.dormitory.service;
 
-import com.example.dormitory.dto.adminTechnician.*;
+import com.example.dormitory.dto.request.AdminTechnicianCreateRequest;
+import com.example.dormitory.dto.request.AdminTechnicianUpdateRequest;
+import com.example.dormitory.dto.response.AdminTechnicianResponse;
 
 import java.util.List;
 import java.util.UUID;

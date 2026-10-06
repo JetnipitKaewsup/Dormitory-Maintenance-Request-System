@@ -1,6 +1,7 @@
 package com.example.dormitory.controller.api;
 
-import com.example.dormitory.dto.adminTechnician.*;
+import com.example.dormitory.dto.request.*;
+import com.example.dormitory.dto.response.*;
 import com.example.dormitory.service.AdminTechnicianService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;

@@ -1,7 +1,9 @@
 package com.example.dormitory.service;
 
-import com.example.dormitory.dto.adminResident.*;
-import com.example.dormitory.model.Room;
+import com.example.dormitory.domain.entity.Room;
+import com.example.dormitory.dto.request.AdminResidentCreateRequest;
+import com.example.dormitory.dto.request.AdminResidentUpdateRequest;
+import com.example.dormitory.dto.response.AdminResidentResponse;
 
 import java.util.List;
 import java.util.UUID;

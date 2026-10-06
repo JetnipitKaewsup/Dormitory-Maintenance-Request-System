@@ -1,10 +1,13 @@
-package com.example.dormitory.service;
+package com.example.dormitory.service.impl;
 
-import com.example.dormitory.dto.adminTechnician.*;
-import com.example.dormitory.model.Technician;
-import com.example.dormitory.model.User;
+import com.example.dormitory.domain.entity.Technician;
+import com.example.dormitory.domain.entity.User;
+import com.example.dormitory.dto.request.AdminTechnicianCreateRequest;
+import com.example.dormitory.dto.request.AdminTechnicianUpdateRequest;
+import com.example.dormitory.dto.response.AdminTechnicianResponse;
 import com.example.dormitory.repository.AdminTechnicianRepository;
 import com.example.dormitory.repository.UserRepository;
+import com.example.dormitory.service.AdminTechnicianService;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;

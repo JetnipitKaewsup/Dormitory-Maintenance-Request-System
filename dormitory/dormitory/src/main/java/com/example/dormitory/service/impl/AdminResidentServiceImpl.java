@@ -1,13 +1,15 @@
-package com.example.dormitory.service;
+package com.example.dormitory.service.impl;
 
-import com.example.dormitory.dto.adminResident.*;
-import com.example.dormitory.model.Resident;
-import com.example.dormitory.model.Room;
+import com.example.dormitory.dto.request.AdminResidentCreateRequest;
+import com.example.dormitory.dto.request.AdminResidentUpdateRequest;
+import com.example.dormitory.dto.response.AdminResidentResponse;
+import com.example.dormitory.domain.entity.*;
 import com.example.dormitory.repository.AdminResidentRepository;
 import com.example.dormitory.repository.RoomRepository;
+import com.example.dormitory.service.AdminResidentService;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.data.domain.Sort;
 
 import java.util.List;
 import java.util.UUID;
