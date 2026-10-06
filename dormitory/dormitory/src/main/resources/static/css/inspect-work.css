@@ -1,0 +1,80 @@
+body {
+    font-family: 'Sarabun', sans-serif;
+    background: #f5f6fa;
+    margin: 0;
+}
+
+.container {
+    display: flex;
+    gap: 20px;
+    padding: 24px;
+}
+
+.main {
+    flex: 2;
+}
+
+.sidebar {
+    flex: 1;
+    background: #fff;
+    border-radius: 8px;
+    padding: 16px;
+    height: fit-content;
+}
+
+.card {
+    background: #fff;
+    border-radius: 8px;
+    padding: 16px;
+    margin-bottom: 16px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, .08);
+}
+
+.badge {
+    display: inline-block;
+    padding: 4px 12px;
+    border-radius: 12px;
+    font-size: 13px;
+    color: #fff;
+}
+
+.badge.completed {
+    background: #2e7d32;
+}
+
+.badge.in-progress {
+    background: #f9a825;
+}
+
+.badge.in-completed {
+    background: #c62828;
+}
+
+.badge.pending,
+.badge.approved {
+    background: #757575;
+}
+
+textarea {
+    width: 100%;
+    min-height: 80px;
+    padding: 8px;
+    border-radius: 6px;
+    border: 1px solid #ccc;
+    background: #fafafa;
+}
+
+button.confirm {
+    background: #1565c0;
+    color: #fff;
+    border: none;
+    padding: 10px 24px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 15px;
+}
+
+button.confirm:disabled {
+    background: #bdbdbd;
+    cursor: not-allowed;
+}

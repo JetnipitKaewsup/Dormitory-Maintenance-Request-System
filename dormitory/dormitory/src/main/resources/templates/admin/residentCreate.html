@@ -1,0 +1,285 @@
+```html
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8" />
+    <title>เพิ่มผู้พักอาศัย - Dormitory Repair System</title>
+
+    <link rel="stylesheet" th:href="@{/css/adminCommon.css}" />
+    <link rel="stylesheet" th:href="@{/css/adminTechnician.css}" />
+</head>
+
+<body>
+
+<div th:replace="~{admin/adminHeader :: adminHeader('residents')}"></div>
+
+<main>
+
+    <div class="page-head">
+        <div>
+            <h1 class="page-title">เพิ่มผู้พักอาศัย</h1>
+            <p class="page-sub">
+                เพิ่มข้อมูลผู้พักอาศัยในหอพัก (ไม่มีบัญชีผู้ใช้/การเข้าสู่ระบบ)
+            </p>
+        </div>
+
+        <a class="btn btn-outline"
+           th:href="@{/admin/residents}">
+            &larr; กลับหน้ารายชื่อ
+        </a>
+    </div>
+
+
+    <div class="alert alert-error"
+         th:if="${error}"
+         th:text="${error}">
+    </div>
+
+
+    <div class="card" style="max-width:640px;">
+
+        <form method="post"
+              th:action="@{/admin/residents/create}"
+              th:object="${createRequest}">
+
+
+            <!-- ชื่อ + นามสกุล -->
+            <div class="form-row">
+
+                <div class="form-group">
+                    <label>ชื่อ</label>
+
+                    <input type="text"
+                           th:field="*{firstName}" />
+
+                    <div class="form-hint"
+                         style="color:var(--color-danger);"
+                         th:if="${#fields.hasErrors('firstName')}"
+                         th:errors="*{firstName}">
+                    </div>
+                </div>
+
+
+                <div class="form-group">
+                    <label>นามสกุล</label>
+
+                    <input type="text"
+                           th:field="*{lastName}" />
+
+                    <div class="form-hint"
+                         style="color:var(--color-danger);"
+                         th:if="${#fields.hasErrors('lastName')}"
+                         th:errors="*{lastName}">
+                    </div>
+                </div>
+
+            </div>
+
+
+            <!-- เบอร์โทรศัพท์ -->
+            <div class="form-group">
+
+                <label>เบอร์โทรศัพท์</label>
+
+                <input type="tel"
+                       th:field="*{phoneNo}" />
+
+                <div class="form-hint"
+                     style="color:var(--color-danger);"
+                     th:if="${#fields.hasErrors('phoneNo')}"
+                     th:errors="*{phoneNo}">
+                </div>
+
+            </div>
+
+
+            <!-- ห้องพัก -->
+            <div class="form-group">
+
+                <label>ห้องพัก</label>
+
+                <!-- ช่องค้นหา -->
+                <input type="text"
+                       id="roomSearch"
+                       placeholder="พิมพ์เลขห้องหรือตึกเพื่อค้นหา..."
+                       autocomplete="off" />
+
+                <!-- Dropdown -->
+                <div id="roomDropdown"
+                     style="
+                        display:none;
+                        position:absolute;
+                        background:white;
+                        border:1px solid #ccc;
+                        max-height:220px;
+                        overflow-y:auto;
+                        z-index:1000;
+                        width:100%;
+                     ">
+
+                    <div th:each="room : ${rooms}"
+                         class="room-option"
+                         th:data-room-no="${room.roomNo}"
+                         th:data-search="${room.roomNo + ' ' + room.building.buildingName}"
+                         th:text="'ห้อง ' + ${room.roomNo} + ' (' + ${room.building.buildingName} + ')'"
+                         style="
+                            padding:10px;
+                            cursor:pointer;
+                         ">
+                    </div>
+
+                </div>
+
+
+                <!-- ค่า roomNo ที่ส่งไป Backend -->
+                <input type="hidden"
+                       id="roomNo"
+                       th:field="*{roomNo}" />
+
+
+                <div class="form-hint"
+                     style="color:var(--color-danger);"
+                     th:if="${#fields.hasErrors('roomNo')}"
+                     th:errors="*{roomNo}">
+                </div>
+
+                <div class="form-hint">
+                    พิมพ์เลขห้องหรือตึกเพื่อค้นหา
+                </div>
+
+            </div>
+
+
+            <!-- ปุ่ม -->
+            <div class="form-actions">
+
+                <a class="btn btn-outline"
+                   th:href="@{/admin/residents}">
+                    ยกเลิก
+                </a>
+
+                <button type="submit"
+                        class="btn btn-approve">
+                    เพิ่มผู้พักอาศัย
+                </button>
+
+            </div>
+
+        </form>
+
+    </div>
+
+</main>
+
+
+<script>
+
+    const roomSearch = document.getElementById("roomSearch");
+    const roomDropdown = document.getElementById("roomDropdown");
+    const roomNo = document.getElementById("roomNo");
+    const roomOptions = document.querySelectorAll(".room-option");
+
+
+    // เมื่อกดช่องค้นหา
+    roomSearch.addEventListener("focus", function () {
+
+        roomDropdown.style.display = "block";
+
+        filterRooms();
+
+    });
+
+
+    // เมื่อพิมพ์ค้นหา
+    roomSearch.addEventListener("input", function () {
+
+        filterRooms();
+
+    });
+
+
+    function filterRooms() {
+
+        const keyword =
+            roomSearch.value.toLowerCase().trim();
+
+        let found = false;
+
+
+        roomOptions.forEach(function (option) {
+
+            const searchText =
+                option.dataset.search.toLowerCase();
+
+
+            if (searchText.includes(keyword)) {
+
+                option.style.display = "block";
+
+                found = true;
+
+            } else {
+
+                option.style.display = "none";
+
+            }
+
+        });
+
+
+        roomDropdown.style.display =
+            found ? "block" : "none";
+
+    }
+
+
+    // เมื่อเลือกห้อง
+    roomOptions.forEach(function (option) {
+
+        option.addEventListener("click", function () {
+
+            const selectedRoomNo =
+                this.dataset.roomNo;
+
+            const selectedText =
+                this.textContent;
+
+
+            // แสดงชื่อห้องในช่องค้นหา
+            roomSearch.value =
+                selectedText;
+
+
+            // เก็บ roomNo เพื่อส่ง Backend
+            roomNo.value =
+                selectedRoomNo;
+
+
+            // ปิด dropdown
+            roomDropdown.style.display =
+                "none";
+
+        });
+
+    });
+
+
+    // ถ้าคลิกข้างนอก dropdown ให้ปิด
+    document.addEventListener("click", function (event) {
+
+        if (!event.target.closest("#roomSearch") &&
+            !event.target.closest("#roomDropdown")) {
+
+            roomDropdown.style.display =
+                "none";
+
+        }
+
+    });
+
+
+</script>
+
+</body>
+</html>
+```

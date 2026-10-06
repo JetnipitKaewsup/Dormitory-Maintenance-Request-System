@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8" />
+    <title>จัดการรายชื่อช่าง - Dormitory Repair System</title>
+    <link rel="stylesheet" th:href="@{/css/adminCommon.css}" />
+    <link rel="stylesheet" th:href="@{/css/adminTechnician.css}" />
+</head>
+<body>
+
+<div th:replace="~{admin/adminHeader :: adminHeader('technicians')}"></div>
+
+<main>
+    <div class="page-head">
+        <div>
+            <h1 class="page-title">จัดการรายชื่อช่าง</h1>
+            <p class="page-sub">ดูข้อมูลและแก้ไขข้อมูลส่วนตัวของช่างทั้งหมด</p>
+        </div>
+        <a class="btn btn-approve" th:href="@{/admin/technicians/create}">+ สร้าง Account ช่าง</a>
+    </div>
+
+    <div class="alert alert-success" th:if="${success}" th:text="${success}"></div>
+    <div class="alert alert-error" th:if="${error}" th:text="${error}"></div>
+
+    <div class="toolbar">
+        <input type="text" id="searchInput" placeholder="ค้นหาชื่อ, username หรือความเชี่ยวชาญ..." />
+        <select id="specFilter">
+            <option value="">ทุกความเชี่ยวชาญ</option>
+            <option value="ไฟฟ้า">ไฟฟ้า</option>
+            <option value="ประปา">ประปา</option>
+            <option value="แอร์">แอร์</option>
+            <option value="งานทั่วไป">งานทั่วไป</option>
+        </select>
+    </div>
+
+    <div class="tech-list" id="techList" th:if="${technicians != null and !technicians.isEmpty()}">
+        <div class="tech-card"
+             th:each="tech : ${technicians}"
+             th:attr="data-name=${tech.firstName + ' ' + tech.lastName},
+                      data-username=${tech.username},
+                      data-phone=${tech.phoneNo},
+                      data-spec=${tech.specialization}">
+            <div class="tech-main">
+                <div class="tech-avatar" th:text="${#strings.substring(tech.firstName,0,1)}">ก</div>
+                <div>
+                    <div class="tech-name"
+                         th:text="${tech.firstName + ' ' + tech.lastName}">ชื่อ นามสกุล</div>
+                    <div class="tech-meta"
+                         th:text="'@' + ${tech.username} + ' · ' + ${tech.phoneNo}">@username · เบอร์โทร</div>
+                    <span class="tech-spec-badge" th:text="${tech.specialization}">ความเชี่ยวชาญ</span>
+                </div>
+            </div>
+            <div class="tech-actions">
+                <button type="button" class="btn btn-outline edit-btn" title="แก้ไขข้อมูล"
+                        th:attr="data-id=${tech.technicianId},
+                                 data-firstname=${tech.firstName},
+                                 data-lastname=${tech.lastName},
+                                 data-phone=${tech.phoneNo},
+                                 data-spec=${tech.specialization}">
+                    แก้ไข
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <div class="empty-state" id="emptyState" th:if="${technicians == null or technicians.isEmpty()}">
+        ยังไม่มีข้อมูลช่างในระบบ
+    </div>
+
+    <div class="empty-state" id="noResultState" style="display:none;">
+        ไม่พบช่างที่ตรงกับคำค้นหา
+    </div>
+</main>
+
+<!-- ================= EDIT MODAL ================= -->
+<div class="modal-backdrop" id="editModalBackdrop">
+    <div class="modal">
+        <h3>แก้ไขข้อมูลช่าง</h3>
+        <p class="sub">แก้ไขข้อมูลส่วนตัวและความเชี่ยวชาญ</p>
+
+        <form method="post" th:action="@{/admin/technicians/update}">
+            <input type="hidden" name="technicianId" id="edit-technicianId" />
+
+            <div class="form-group">
+                <label>ชื่อ</label>
+                <input type="text" name="firstName" id="edit-firstName" required />
+            </div>
+            <div class="form-group">
+                <label>นามสกุล</label>
+                <input type="text" name="lastName" id="edit-lastName" required />
+            </div>
+            <div class="form-group">
+                <label>เบอร์โทรศัพท์</label>
+                <input type="text" name="phoneNo" id="edit-phoneNo" />
+            </div>
+            <div class="form-group">
+                <label>ความเชี่ยวชาญ</label>
+                <select name="specialization" id="edit-specialization">
+                    <option value="ไฟฟ้า">ไฟฟ้า</option>
+                    <option value="ประปา">ประปา</option>
+                    <option value="แอร์">แอร์</option>
+                    <option value="งานทั่วไป">งานทั่วไป</option>
+                </select>
+            </div>
+
+            <div class="modal-actions">
+                <button type="button" class="btn btn-outline" id="cancelEditBtn">ยกเลิก</button>
+                <button type="submit" class="btn btn-approve">บันทึก</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+    const editModalBackdrop = document.getElementById('editModalBackdrop');
+
+    document.querySelectorAll('.edit-btn').forEach(function (btn) {
+        btn.addEventListener('click', function () {
+            document.getElementById('edit-technicianId').value = btn.dataset.id;
+            document.getElementById('edit-firstName').value = btn.dataset.firstname;
+            document.getElementById('edit-lastName').value = btn.dataset.lastname;
+            document.getElementById('edit-phoneNo').value = btn.dataset.phone;
+            document.getElementById('edit-specialization').value = btn.dataset.spec;
+            editModalBackdrop.classList.add('open');
+        });
+    });
+
+    document.getElementById('cancelEditBtn').addEventListener('click', function () {
+        editModalBackdrop.classList.remove('open');
+    });
+
+    editModalBackdrop.addEventListener('click', function (e) {
+        if (e.target === editModalBackdrop) {
+            editModalBackdrop.classList.remove('open');
+        }
+    });
+
+    const searchInput = document.getElementById('searchInput');
+    const specFilter = document.getElementById('specFilter');
+    const techCards = document.querySelectorAll('.tech-card');
+    const noResultState = document.getElementById('noResultState');
+
+    function applyFilter() {
+        const keyword = searchInput.value.trim().toLowerCase();
+        const selectedSpec = specFilter.value;
+        let visibleCount = 0;
+
+        techCards.forEach(function (card) {
+            const name = (card.dataset.name || '').toLowerCase();
+            const username = (card.dataset.username || '').toLowerCase();
+            const phone = (card.dataset.phone || '').toLowerCase();
+            const spec = card.dataset.spec || '';
+
+            const matchKeyword = keyword === '' ||
+                name.includes(keyword) ||
+                username.includes(keyword) ||
+                phone.includes(keyword) ||
+                spec.toLowerCase().includes(keyword);
+
+            const matchSpec = selectedSpec === '' || spec === selectedSpec;
+
+            const visible = matchKeyword && matchSpec;
+            card.style.display = visible ? 'flex' : 'none';
+            if (visible) visibleCount++;
+        });
+
+        noResultState.style.display = (techCards.length > 0 && visibleCount === 0) ? 'block' : 'none';
+    }
+
+    if (searchInput && specFilter) {
+        searchInput.addEventListener('input', applyFilter);
+        specFilter.addEventListener('change', applyFilter);
+    }
+</script>
+
+</body>
+</html>
