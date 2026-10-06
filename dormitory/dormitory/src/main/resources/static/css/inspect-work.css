@@ -1,80 +1,278 @@
-body {
-    font-family: 'Sarabun', sans-serif;
-    background: #f5f6fa;
+.ins-page {
+    --ins-green: #2F9442;
+    --ins-green-dark: #1F6B30;
+    --ins-green-wash: #EAF6ED;
+    --ins-amber: #B45309;
+    --ins-amber-wash: #FDF1DF;
+    --ins-ink: #1b2430;
+    --ins-muted: #6b7280;
+    --ins-line: #e6e9ef;
+    --ins-surface: #ffffff;
+
+    max-width: 1180px;
+    margin: 0 auto;
+    padding: 24px 24px 56px;
+    color: var(--ins-ink);
+}
+
+.ins-back {
+    display: inline-block;
+    margin-bottom: 14px;
+    font-size: 14px;
+    color: var(--ins-muted);
+    text-decoration: none;
+}
+.ins-back:hover { color: var(--ins-green-dark); }
+
+/* หัวหน้า */
+.ins-head {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 16px;
+    margin-bottom: 20px;
+}
+.ins-head h1 {
+    margin: 0;
+    font-family: 'Space Grotesk', 'Noto Sans Thai', sans-serif;
+    font-size: 28px;
+    letter-spacing: -0.01em;
+}
+.ins-id {
+    margin: 4px 0 0;
+    font-size: 13px;
+    color: var(--ins-muted);
+    font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+    word-break: break-all;
+}
+.ins-type {
+    flex-shrink: 0;
+    padding: 6px 14px;
+    border-radius: 999px;
+    background: var(--ins-green-wash);
+    color: var(--ins-green-dark);
+    font-size: 13px;
+    font-weight: 700;
+    letter-spacing: .04em;
+}
+
+/* เลย์เอาต์ */
+.ins-grid {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 340px;
+    gap: 20px;
+    align-items: start;
+}
+.ins-main, .ins-side { display: flex; flex-direction: column; gap: 16px; }
+.ins-side { position: sticky; top: 16px; }
+
+/* การ์ด */
+.ins-card {
+    background: var(--ins-surface);
+    border: 1px solid var(--ins-line);
+    border-radius: 14px;
+    padding: 20px 22px;
+    box-shadow: 0 1px 2px rgba(16, 24, 40, .04);
+}
+.ins-card-title {
+    margin: 0 0 12px;
+    font-family: 'Space Grotesk', 'Noto Sans Thai', sans-serif;
+    font-size: 16px;
+    font-weight: 700;
+}
+.ins-optional { font-weight: 400; color: var(--ins-muted); font-size: 14px; }
+.ins-desc { margin: 0; line-height: 1.7; }
+.ins-muted { margin: 0; color: var(--ins-muted); }
+
+/* สถานะ */
+.ins-status-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 10px 0;
+}
+.ins-status-row + .ins-status-row { border-top: 1px dashed var(--ins-line); }
+.ins-status-label { color: var(--ins-muted); font-size: 14px; }
+.ins-badge {
+    padding: 4px 12px;
+    border-radius: 999px;
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: .03em;
+    background: #eef0f4;
+    color: #4b5563;
+}
+.ins-badge.is-completed { background: var(--ins-green-wash); color: var(--ins-green-dark); }
+.ins-badge.is-in-progress { background: var(--ins-amber-wash); color: var(--ins-amber); }
+.ins-badge.is-approved { background: #E6F0FB; color: #1d5fa8; }
+.ins-badge.is-rejected, .ins-badge.is-cancelled { background: #FDECEC; color: #b42318; }
+.ins-badge.is-none { background: #f3f4f6; color: var(--ins-muted); font-weight: 500; }
+
+/* หมายเหตุ */
+.ins-note {
+    margin: 0;
+    padding: 12px 14px;
+    border-radius: 10px;
+    background: #f7f8fa;
+    line-height: 1.6;
+    white-space: pre-wrap;
+}
+.ins-note.is-empty { color: var(--ins-muted); font-style: italic; }
+
+/* ฟอร์ม */
+.ins-form textarea {
+    width: 100%;
+    box-sizing: border-box;
+    padding: 12px 14px;
+    border: 1px solid var(--ins-line);
+    border-radius: 10px;
+    background: #fbfbfc;
+    font: inherit;
+    resize: vertical;
+}
+.ins-form textarea:focus {
+    outline: none;
+    border-color: var(--ins-green);
+    box-shadow: 0 0 0 3px rgba(47, 148, 66, .15);
+    background: #fff;
+}
+.ins-actions {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    margin-top: 16px;
+    flex-wrap: wrap;
+}
+.ins-hint {
+    margin: 0;
+    font-size: 14px;
+    color: var(--ins-amber);
+}
+.ins-hint.is-wait { color: var(--ins-muted); }
+.ins-confirm {
+    padding: 12px 26px;
+    border: 0;
+    border-radius: 10px;
+    background: var(--ins-green);
+    color: #fff;
+    font: inherit;
+    font-weight: 700;
+    cursor: pointer;
+    transition: background .15s, transform .15s;
+}
+.ins-confirm:hover:not(:disabled) { background: var(--ins-green-dark); transform: translateY(-1px); }
+.ins-confirm:disabled { background: #cfd5dc; color: #8a929c; cursor: not-allowed; }
+
+/* ผู้แจ้ง */
+.ins-dl {
+    display: grid;
+    grid-template-columns: 56px 1fr;
+    gap: 8px 12px;
     margin: 0;
 }
+.ins-dl dt { color: var(--ins-muted); font-size: 14px; }
+.ins-dl dd { margin: 0; font-weight: 600; }
 
-.container {
-    display: flex;
-    gap: 20px;
-    padding: 24px;
+.ins-contact {
+    margin-top: 16px;
+    padding-top: 16px;
+    border-top: 1px solid var(--ins-line);
 }
+.ins-contact-label { margin: 0 0 8px; font-size: 13px; color: var(--ins-muted); }
 
-.main {
-    flex: 2;
-}
-
-.sidebar {
-    flex: 1;
-    background: #fff;
-    border-radius: 8px;
-    padding: 16px;
-    height: fit-content;
-}
-
-.card {
-    background: #fff;
-    border-radius: 8px;
-    padding: 16px;
-    margin-bottom: 16px;
-    box-shadow: 0 1px 3px rgba(0, 0, 0, .08);
-}
-
-.badge {
-    display: inline-block;
-    padding: 4px 12px;
-    border-radius: 12px;
-    font-size: 13px;
-    color: #fff;
-}
-
-.badge.completed {
-    background: #2e7d32;
-}
-
-.badge.in-progress {
-    background: #f9a825;
-}
-
-.badge.in-completed {
-    background: #c62828;
-}
-
-.badge.pending,
-.badge.approved {
-    background: #757575;
-}
-
-textarea {
+.ins-call {
     width: 100%;
-    min-height: 80px;
-    padding: 8px;
-    border-radius: 6px;
-    border: 1px solid #ccc;
-    background: #fafafa;
-}
-
-button.confirm {
-    background: #1565c0;
-    color: #fff;
-    border: none;
-    padding: 10px 24px;
-    border-radius: 6px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 12px 12px 12px 18px;
+    border: 1px solid #cfe8d5;
+    border-radius: 14px;
+    background: var(--ins-green-wash);
+    color: var(--ins-green-dark);
+    font: inherit;
+    text-align: left;
     cursor: pointer;
-    font-size: 15px;
+    transition: background .18s, border-color .18s, color .18s, box-shadow .18s;
+}
+.ins-call:hover {
+    border-color: var(--ins-green);
+    box-shadow: 0 0 0 3px rgba(47, 148, 66, .12);
+}
+.ins-call:active { transform: scale(.99); }
+
+.ins-call-number {
+    /* font-family: 'Space Grotesk', sans-serif; */
+    font-size: 17px;
+    font-weight: 700;
+    letter-spacing: .03em;
+    font-variant-numeric: tabular-nums;
 }
 
-button.confirm:disabled {
-    background: #bdbdbd;
-    cursor: not-allowed;
+.ins-call-copy {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 7px 12px;
+    border-radius: 999px;
+    background: #fff;
+    border: 1px solid #cfe8d5;
+    color: var(--ins-green-dark);
+    font-size: 13px;
+    font-weight: 700;
+    white-space: nowrap;
+    transition: background .18s, color .18s, border-color .18s;
+}
+.ins-call:hover .ins-call-copy {
+    background: var(--ins-green);
+    border-color: var(--ins-green);
+    color: #fff;
+}
+
+.ins-call .i-check { display: none; }
+
+/* คัดลอกแล้ว */
+.ins-call.is-copied {
+    background: var(--ins-green);
+    border-color: var(--ins-green);
+    color: #fff;
+}
+.ins-call.is-copied .ins-call-copy {
+    background: rgba(255, 255, 255, .2);
+    border-color: transparent;
+    color: #fff;
+}
+.ins-call.is-copied .i-copy { display: none; }
+.ins-call.is-copied .i-check { display: inline; }
+
+.ins-nophone {
+    padding: 12px 14px;
+    border-radius: 12px;
+    background: var(--ins-amber-wash);
+    color: var(--ins-amber);
+    font-size: 14px;
+}
+
+/* ช่าง */
+.ins-tech { display: flex; align-items: center; gap: 12px; }
+.ins-avatar {
+    display: grid;
+    place-items: center;
+    width: 42px;
+    height: 42px;
+    border-radius: 50%;
+    background: var(--ins-green-wash);
+    color: var(--ins-green-dark);
+    font-weight: 700;
+}
+.ins-tech-name { margin: 0; font-weight: 700; }
+.ins-tech-spec { margin: 2px 0 0; font-size: 13px; color: var(--ins-muted); }
+
+/* มือถือ */
+@media (max-width: 900px) {
+    .ins-grid { grid-template-columns: 1fr; }
+    .ins-side { position: static; order: -1; }
+    .ins-page { padding: 16px 16px 40px; }
 }
