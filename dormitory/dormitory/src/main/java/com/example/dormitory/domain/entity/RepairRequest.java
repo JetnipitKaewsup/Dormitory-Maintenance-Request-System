@@ -2,6 +2,8 @@ package com.example.dormitory.domain.entity;
 
 import jakarta.persistence.*;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 
 import com.example.dormitory.domain.entity.Admin;
@@ -11,22 +13,46 @@ import com.example.dormitory.domain.enums.RepairRequestStatus;
 import com.example.dormitory.domain.enums.RepairType;
 
 @Entity
-@Table(name = "repair_request")
+@Table(name = "repair_request",
+    indexes = {
+        @Index(
+            name = "idx_repair_request_reporter",
+            columnList = "reporter_id"
+        ),
+        @Index(
+            name = "idx_repair_request_admin",
+            columnList = "admin_id"
+        ),
+        @Index(
+            name = "idx_repair_request_room",
+            columnList = "room_no"
+        ),
+        @Index(
+            name = "idx_repair_request_status",
+            columnList = "status"
+        ),
+        @Index(
+            name = "idx_repair_request_created_at",
+            columnList = "created_at"
+        )
+    }
+
+)
 public class RepairRequest {
 
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     private UUID repairRequestId;
 
-    @ManyToOne(optional = false)
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "reporter_id", nullable = false)
     private Reporter reporter;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "admin_id")
     private Admin admin;
 
-    @ManyToOne(optional = false)
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "room_no", nullable = false)
     private Room room;
 
@@ -50,6 +76,14 @@ public class RepairRequest {
 
     @Column(name = "created_at", nullable = false)
     private LocalDateTime createdAt;
+    
+    @OneToMany(
+        mappedBy = "repairRequest",
+        cascade = CascadeType.ALL,
+        orphanRemoval = true,
+        fetch = FetchType.LAZY
+    )
+    private List<RepairRequestStatusHistory> statusHistories = new ArrayList<>();
     
     public RepairRequest() {
     }
@@ -158,5 +192,28 @@ public class RepairRequest {
 
     public void setCreatedAt(LocalDateTime createdAt) {
     this.createdAt = createdAt;
+    }
+
+    public List<RepairRequestStatusHistory> getStatusHistories() {
+        return statusHistories;
+    }
+
+    public void setStatusHistories(
+            List<RepairRequestStatusHistory> statusHistories) {
+        this.statusHistories = statusHistories;
+    }
+
+    public void addStatusHistory(
+            RepairRequestStatusHistory history) {
+
+        statusHistories.add(history);
+        history.setRepairRequest(this);
+    }
+    
+    public void removeStatusHistory(
+        RepairRequestStatusHistory history) {
+
+    statusHistories.remove(history);
+    history.setRepairRequest(null);
     }
 }

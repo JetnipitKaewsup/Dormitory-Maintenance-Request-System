@@ -6,8 +6,7 @@ public enum RepairRequestStatus {
     REJECTED("ไม่อนุมัติ", "rejected"),
     IN_PROGRESS("กำลังดำเนินการ", "progress"),
     COMPLETED("ดำเนินการเสร็จสิ้น", "complete"),
-    IN_COMPLETED("ดำเนินการไม่สำเร็จ", "in_complete"),
-    CANCELLED("ยกเลิก", "cancelled");
+    IN_COMPLETED("ดำเนินการไม่สำเร็จ", "in_complete");
 
     private final String thaiName;
     private final String cssClass;

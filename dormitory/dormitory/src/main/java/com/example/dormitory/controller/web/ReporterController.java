@@ -195,7 +195,7 @@ public class ReporterController {
     }
 
     // ยกเลิกคำร้อง
-    @PostMapping("/requests/{id}/cancel")
+    @PostMapping("/requests/{id}/delete")
     public String cancelRequest(
             @PathVariable UUID id,
             @AuthenticationPrincipal User user) {
@@ -206,7 +206,7 @@ public class ReporterController {
             return "redirect:/login";
         }
 
-        repairRequestService.cancelRequest(userId, id);
+        repairRequestService.deleteRequest(userId, id);
 
         return "redirect:/reporter/requests";
     }
@@ -285,19 +285,4 @@ public class ReporterController {
         }
     }
 
-    // อ่าน User ID จาก Session
-    private UUID getUserId(HttpSession session) {
-
-        Object value = session.getAttribute("userId");
-
-        if (value == null) {
-            return null;
-        }
-
-        try {
-            return UUID.fromString(value.toString());
-        } catch (IllegalArgumentException e) {
-            return null;
-        }
-    }
 }

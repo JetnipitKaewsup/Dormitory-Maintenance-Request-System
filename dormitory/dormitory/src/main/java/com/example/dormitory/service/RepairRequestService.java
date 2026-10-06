@@ -34,7 +34,7 @@ public interface RepairRequestService {
             UUID userId,
             UUID repairRequestId);
 
-    void cancelRequest(
+    void deleteRequest(
             UUID userId,
             UUID repairRequestId);
 
