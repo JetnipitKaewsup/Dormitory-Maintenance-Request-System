@@ -15,8 +15,9 @@
                 </div>
             </div>
             <button class="icon-btn" type="button" title="การแจ้งเตือน">&#128276;</button>
-            <a class="icon-btn" th:href="@{/logout}" title="ออกจากระบบ">&#9211;</a>
-        </div>
+            <form th:action="@{/logout}" method="post" style="display:inline;">
+    <button class="icon-btn" type="submit" title="ออกจากระบบ">&#9211;</button>
+</form>
     </header>
 
     <nav class="tabs">
@@ -42,7 +43,9 @@
                 </div>
             </div>
             <button class="icon-btn" type="button" title="การแจ้งเตือน">&#128276;</button>
-            <a class="icon-btn" th:href="@{/logout}" title="ออกจากระบบ">&#9211;</a>
+           <form th:action="@{/logout}" method="post" style="display:inline;">
+    <button class="icon-btn" type="submit" title="ออกจากระบบ">&#9211;</button>
+</form>
         </div>
     </header>
 </div>
