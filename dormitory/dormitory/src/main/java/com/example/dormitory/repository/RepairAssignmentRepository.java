@@ -33,4 +33,6 @@ public interface RepairAssignmentRepository
     );
     Optional<RepairAssignment> findByRepairRequest_RepairRequestId(UUID repairRequestId);
     
+    // ตรวจสอบ RepairRequest ว่ามี assignment ผูกอยู่หรือไม่
+    boolean existsByRepairRequest_RepairRequestId(UUID repairRequestId);
 }

@@ -259,23 +259,19 @@
               <div class="action-btns">
 
 
-                <!-- ยกเลิกได้เฉพาะ PENDING -->
+                <!-- ลบคำร้อง -->
                 <form th:if="${request.status.name() == 'PENDING'}"
-                  th:action="@{/reporter/requests/{id}/cancel(id=${request.repairRequestId})}" method="post"
-                  class="cancel-form">
-                  <input type="hidden"
-                    th:name="${_csrf.parameterName}"
-                    th:value="${_csrf.token}">
-
-                  <button type="button" class="btn-outline-danger cancel-trigger"
-                    th:data-type="${request.repairType != null ? request.repairType.thaiName : 'ไม่ระบุ'}"
-                    th:data-desc="${request.description != null ? request.description : 'ไม่ระบุ'}"
-                    th:data-time="${#temporals.format(request.startDateTime, 'd MMMM HH:mm') + ' - ' + #temporals.format(request.endDateTime, 'HH:mm') + ' น.'}"
-                    th:data-note="${request.reporterNote != null ? request.reporterNote : '-'}"
-                    th:data-createdate="${#temporals.format(request.createdAt, 'd MMMM yyyy, HH:mm น.')}">
-                    ยกเลิกแจ้งซ่อม
-                  </button>
-
+                      th:action="@{/reporter/requests/{id}/delete(id=${request.repairRequestId})}"
+                      method="post" class="delete-form">
+                    <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">
+                    <button type="button" class="btn-outline-danger delete-trigger"
+                            th:data-type="${request.repairType != null ? request.repairType.thaiName : 'ไม่ระบุ'}"
+                            th:data-desc="${request.description != null ? request.description : 'ไม่ระบุ'}"
+                            th:data-time="${#temporals.format(request.startDateTime, 'd MMMM HH:mm') + ' - ' + #temporals.format(request.endDateTime, 'HH:mm') + ' น.'}"
+                            th:data-note="${request.reporterNote != null ? request.reporterNote : '-'}"
+                            th:data-createdate="${#temporals.format(request.createdAt, 'd MMMM yyyy, HH:mm น.')}">
+                        ลบคำร้อง
+                    </button>
                 </form>
 
 
@@ -298,15 +294,14 @@
     </div>
 
   </main>
-  <!-- ================= CANCEL MODAL ================= -->
-  <div id="cancelModal" class="modal-overlay">
+  <!-- ================= DELETE MODAL ================= -->
+  <div id="deleteModal" class="modal-overlay">
     <div class="modal-content">
-
-      <h3 class="modal-title">คุณแน่ใจว่าต้องการ<br>ยกเลิกคำร้องแจ้งซ่อม</h3>
+      <h3 class="modal-title">คุณแน่ใจว่าต้องการ<br>ลบคำร้องแจ้งซ่อม</h3>
 
       <div class="modal-subtitle">
         คำร้องแจ้งซ่อม<br>
-        <span id="modal-date">16 กันยายน 2569, 12:01 น.</span>
+        <span id="modal-date">-</span>
       </div>
 
       <div class="modal-body">
@@ -318,9 +313,8 @@
 
       <div class="modal-actions">
         <button type="button" class="btn-cancel" id="closeModalBtn">ย้อนกลับ</button>
-        <button type="button" class="btn-confirm" id="confirmCancelBtn">ยืนยันยกเลิกแจ้งซ่อม</button>
+        <button type="button" class="btn-confirm" id="confirmDeleteBtn">ยืนยันลบคำร้อง</button>
       </div>
-
     </div>
   </div>
 
@@ -330,15 +324,15 @@
     document.addEventListener('DOMContentLoaded', () => {
       lucide.createIcons();
 
-      const modal = document.getElementById('cancelModal');
+      const modal = document.getElementById('deleteModal');
       const closeBtn = document.getElementById('closeModalBtn');
-      const confirmBtn = document.getElementById('confirmCancelBtn');
-      const cancelTriggers = document.querySelectorAll('.cancel-trigger');
+      const confirmBtn = document.getElementById('confirmDeleteBtn');
+      const deleteTriggers = document.querySelectorAll('.delete-trigger');
 
       let currentForm = null; // เก็บฟอร์มที่กำลังจะถูก submit
 
       // เมื่อกดปุ่ม "ยกเลิกแจ้งซ่อม" ในตาราง
-      cancelTriggers.forEach(btn => {
+      deleteTriggers.forEach(btn => {
         btn.addEventListener('click', (e) => {
           e.preventDefault();
 

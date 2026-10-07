@@ -11,7 +11,7 @@ import com.example.dormitory.domain.entity.RepairRequest;
 import java.util.*;
 
 public interface RepairRequestRepository extends JpaRepository<RepairRequest, UUID> {
-    // ดึงคำร้องทั้งหมดของ Reporter คนนี้
+    // ดึงคำร้องทั้งหมดของ Reporter 
     List<RepairRequest> findByReporter_ReporterIdOrderByCreatedAtDesc(
             UUID reporterId);
 
@@ -24,6 +24,13 @@ public interface RepairRequestRepository extends JpaRepository<RepairRequest, UU
     Optional<RepairRequest> findFirstByReporter_ReporterIdOrderByCreatedAtDesc(
             UUID reporterId);
 
+    // ตรวจสอบคำร้องที่อยู่ในสถานะ PENDING
+    Optional<RepairRequest>
+    findByRepairRequestIdAndReporter_User_UserIdAndStatus(
+            UUID repairRequestId,
+            UUID userId,
+            RepairRequestStatus status);
+
     // สำหรับ pagination
     Page<RepairRequest> findByReporter_ReporterId(UUID reporterId, Pageable pageable);
 
@@ -31,4 +38,3 @@ public interface RepairRequestRepository extends JpaRepository<RepairRequest, UU
     Page<RepairRequest> findByReporter_ReporterIdAndStatus(
             UUID reporterId, RepairRequestStatus status, Pageable pageable);
 }
-//

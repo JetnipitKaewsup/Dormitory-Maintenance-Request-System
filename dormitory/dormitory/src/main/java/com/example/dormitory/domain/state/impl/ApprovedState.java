@@ -16,8 +16,7 @@ public class ApprovedState implements RepairRequestState {
     @Override 
     public Set<RepairRequestStatus> getAllowedNext() {
         return Set.of(
-            RepairRequestStatus.IN_PROGRESS,
-            RepairRequestStatus.CANCELLED
+            RepairRequestStatus.IN_PROGRESS
         );
     }
 }

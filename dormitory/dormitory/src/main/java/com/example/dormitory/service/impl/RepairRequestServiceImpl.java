@@ -12,6 +12,7 @@ import com.example.dormitory.dto.RepairRequestForm;
 import com.example.dormitory.exception.BusinessException;
 import com.example.dormitory.exception.ResourceNotFoundException;
 import com.example.dormitory.repository.AdminRepository;
+import com.example.dormitory.repository.RepairAssignmentRepository;
 import com.example.dormitory.repository.RepairRequestRepository;
 import com.example.dormitory.repository.RepairRequestStatusHistoryRepository;
 import com.example.dormitory.repository.ReporterRepository;
@@ -34,18 +35,21 @@ public class RepairRequestServiceImpl implements RepairRequestService {
         private final AdminRepository adminRepository;
         private final ReporterRepository reporterRepository;
         private final RepairRequestStateRegistry repairRequestStateRegistry;
+        private final RepairAssignmentRepository repairAssignmentRepository;
 
         @Autowired
         public RepairRequestServiceImpl(RepairRequestRepository repairRequestRepository,
                         RepairRequestStatusHistoryRepository historyRepository,
                         AdminRepository adminRepository,
                         ReporterRepository reporterRepository,
-                        RepairRequestStateRegistry repairRequestStateRegistry) {
+                        RepairRequestStateRegistry repairRequestStateRegistry,
+                        RepairAssignmentRepository repairAssignmentRepository) {
                 this.repairRequestRepository = repairRequestRepository;
                 this.historyRepository = historyRepository;
                 this.adminRepository = adminRepository;
                 this.reporterRepository = reporterRepository;
                 this.repairRequestStateRegistry = repairRequestStateRegistry;
+                 this.repairAssignmentRepository = repairAssignmentRepository;
         }
 
         @Override
@@ -273,7 +277,7 @@ public class RepairRequestServiceImpl implements RepairRequestService {
         // Reporter - Cancel
         @Override
         @Transactional
-        public void cancelRequest(
+        public void deleteRequest(
                         UUID userId,
                         UUID repairRequestId) {
 
@@ -281,27 +285,18 @@ public class RepairRequestServiceImpl implements RepairRequestService {
                 RepairRequestStatus current = request.getStatus();
                 
                 // ยกเลิกได้เฉพาะก่อน Admin ดำเนินการ (PENDING)
-                if (!repairRequestStateRegistry.canTransition(current, RepairRequestStatus.CANCELLED)) {
+                if (current != RepairRequestStatus.PENDING) {
                         throw new BusinessException(
-                                        "สามารถยกเลิกได้เฉพาะคำร้องสถานะ PENDING");
+                                        "ลบได้เฉพาะคำร้องที่อยู่ในสถานะ PENDING เท่านั้น");
                 }
 
-                RepairRequestStatus previousStatus = request.getStatus();
-
-                request.setStatus(RepairRequestStatus.CANCELLED);
-
-                repairRequestRepository.save(request);
-
-                Reporter reporter = request.getReporter();
-
-                RepairRequestStatusHistory history = new RepairRequestStatusHistory(
-                                request,
-                                reporter.getUser(),
-                                RepairRequestStatus.CANCELLED,
-                                previousStatus,
-                                LocalDateTime.now());
-
-                historyRepository.save(history);
+                if (repairAssignmentRepository
+                        .existsByRepairRequest_RepairRequestId(repairRequestId)) {
+                        throw new BusinessException(
+                                "ไม่สามารถลบได้ เนื่องจากคำร้องถูกมอบหมายให้ช่างแล้ว");
+                }
+                
+                repairRequestRepository.delete(request);
         }
 
         @Override

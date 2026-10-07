@@ -18,8 +18,7 @@ public class PendingState implements RepairRequestState {
     public Set<RepairRequestStatus> getAllowedNext() {
        return Set.of(
             RepairRequestStatus.APPROVED,
-            RepairRequestStatus.REJECTED,
-            RepairRequestStatus.CANCELLED
+            RepairRequestStatus.REJECTED
        );
     }
     
