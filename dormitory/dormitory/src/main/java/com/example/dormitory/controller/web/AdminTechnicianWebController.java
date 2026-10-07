@@ -31,7 +31,7 @@ public class AdminTechnicianWebController {
     @GetMapping("/create")
     public String showCreateForm(Model model) {
         model.addAttribute("createRequest", new AdminTechnicianCreateRequest());
-        return "admin/technicainCreate";
+        return "admin/technicianCreate";
     }
 
     @PostMapping("/create")
@@ -40,7 +40,7 @@ public class AdminTechnicianWebController {
                                         Model model,
                                         RedirectAttributes redirectAttributes) {
         if (bindingResult.hasErrors()) {
-            return "admin/technicainCreate";
+            return "admin/technicianCreate";
         }
         try {
             adminTechnicianService.createTechnician(request);
@@ -48,7 +48,7 @@ public class AdminTechnicianWebController {
             return "redirect:/admin/technicians";
         } catch (RuntimeException e) {
             model.addAttribute("error", e.getMessage());
-            return "admin/technicainCreate";
+            return "admin/technicianCreate";
         }
     }
 
