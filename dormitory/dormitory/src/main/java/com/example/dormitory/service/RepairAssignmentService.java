@@ -31,6 +31,7 @@ import org.springframework.transaction.annotation.Transactional;
 import com.example.dormitory.domain.entity.Admin;
 import com.example.dormitory.repository.AdminRepository;
 import com.example.dormitory.service.RepairRequestService;
+import com.example.dormitory.util.DateTimeUtil;
 import com.example.dormitory.event.RepairStatusSubject;
 import com.example.dormitory.event.RepairStatusChangedEvent;
 import com.example.dormitory.event.RepairAssignmentCreatedEvent;
@@ -482,7 +483,7 @@ public void updateJobStatus(
         history.setChangeBy(technician.getUser());
         history.setPreviousStatus(previousStatus);
         history.setNewStatus(newStatus);
-        history.setChangeDate(LocalDateTime.now());
+        history.setChangeDate(DateTimeUtil.now());
 
         historyRepository.save(history);
     }
@@ -650,7 +651,7 @@ public void updateJobStatus(
         assignment.setAdmin(admin);
         assignment.setJobStatus(RepairRequestStatus.IN_PROGRESS);
         assignment.setAdminNote(adminNote);
-        assignment.setAssignDate(LocalDateTime.now());
+        assignment.setAssignDate(DateTimeUtil.now());
 
         RepairAssignment saved = repairAssignmentRepository.save(assignment);
 
