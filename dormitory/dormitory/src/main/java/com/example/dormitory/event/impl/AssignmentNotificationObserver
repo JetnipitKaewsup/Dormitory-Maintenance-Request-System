@@ -1,0 +1,30 @@
+package com.example.dormitory.event.impl;
+
+import com.example.dormitory.event.RepairAssignmentCreatedEvent;
+import com.example.dormitory.event.RepairAssignmentObserver;
+import com.example.dormitory.service.NotificationService;
+import org.springframework.stereotype.Component;
+
+@Component
+public class AssignmentNotificationObserver
+        implements RepairAssignmentObserver {
+
+    private final NotificationService notificationService;
+
+    public AssignmentNotificationObserver(
+            NotificationService notificationService) {
+
+        this.notificationService = notificationService;
+    }
+
+    @Override
+    public void onAssignmentCreated(
+            RepairAssignmentCreatedEvent event) {
+
+        System.out.println(
+                ">>> AssignmentNotificationObserver: received event"
+        );
+
+        notificationService.notifyAssignmentCreated(event);
+    }
+}
