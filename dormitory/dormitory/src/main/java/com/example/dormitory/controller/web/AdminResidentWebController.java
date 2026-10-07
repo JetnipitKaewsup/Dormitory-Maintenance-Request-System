@@ -25,6 +25,7 @@ public class AdminResidentWebController {
     @GetMapping
     public String listResidentsPage(Model model) {
         model.addAttribute("residents", adminResidentService.getAllResidents());
+        model.addAttribute("rooms", adminResidentService.getAllRooms());
         return "admin/residentManage";
     }
 
@@ -34,6 +35,7 @@ public class AdminResidentWebController {
         model.addAttribute("rooms", adminResidentService.getAllRooms());
         return "admin/residentCreate";
     }
+
 
     @PostMapping("/create")
     public String createResidentPage(@Valid @ModelAttribute("createRequest") AdminResidentCreateRequest request,

@@ -1,11 +1,14 @@
 package com.example.dormitory.service.impl;
 
+import com.example.dormitory.domain.entity.RepairAssignment;
 import com.example.dormitory.domain.entity.Technician;
 import com.example.dormitory.domain.entity.User;
 import com.example.dormitory.dto.request.AdminTechnicianCreateRequest;
 import com.example.dormitory.dto.request.AdminTechnicianUpdateRequest;
 import com.example.dormitory.dto.response.AdminTechnicianResponse;
+import com.example.dormitory.dto.response.AdminTechnicianHistoryResponse;
 import com.example.dormitory.repository.AdminTechnicianRepository;
+import com.example.dormitory.repository.RepairAssignmentRepository;
 import com.example.dormitory.repository.UserRepository;
 import com.example.dormitory.service.AdminTechnicianService;
 import org.springframework.http.MediaType;
@@ -25,13 +28,16 @@ public class AdminTechnicianServiceImpl implements AdminTechnicianService {
     private final AdminTechnicianRepository technicianRepository;
     private final UserRepository userRepository;
     private final WebClient supabaseWebClient;
+    private final RepairAssignmentRepository repairAssignmentRepository;
 
     public AdminTechnicianServiceImpl(AdminTechnicianRepository technicianRepository,
                                        UserRepository userRepository,
-                                       WebClient supabaseWebClient) {
+                                       WebClient supabaseWebClient,
+                                       RepairAssignmentRepository repairAssignmentRepository) {
         this.technicianRepository = technicianRepository;
         this.userRepository = userRepository;
         this.supabaseWebClient = supabaseWebClient;
+        this.repairAssignmentRepository = repairAssignmentRepository;
     }
 
     @Override
@@ -114,6 +120,34 @@ public class AdminTechnicianServiceImpl implements AdminTechnicianService {
         Technician savedTechnician = technicianRepository.save(technician);
 
         return toResponse(savedTechnician);
+    }
+
+    @Override
+    public List<AdminTechnicianHistoryResponse> getRepairHistoryByTechnicianId(UUID technicianId) {
+        technicianRepository.findById(technicianId)
+                .orElseThrow(() -> new RuntimeException("ไม่พบข้อมูลช่าง"));
+
+        List<RepairAssignment> assignments =
+                repairAssignmentRepository.findByTechnician_TechnicianIdOrderByAssignDateDesc(technicianId);
+
+        return assignments.stream()
+                .map(this::toHistoryResponse)
+                .collect(Collectors.toList());
+    }
+
+    private AdminTechnicianHistoryResponse toHistoryResponse(RepairAssignment assignment) {
+        return new AdminTechnicianHistoryResponse(
+                assignment.getAssignmentId(),
+                assignment.getRepairRequest() != null ? assignment.getRepairRequest().getRepairRequestId() : null,
+                assignment.getRepairRequest() != null && assignment.getRepairRequest().getRepairType() != null
+                        ? assignment.getRepairRequest().getRepairType().name() : null,
+                assignment.getRepairRequest() != null ? assignment.getRepairRequest().getDescription() : null,
+                assignment.getJobStatus() != null ? assignment.getJobStatus().getThaiName() : null,
+                assignment.getJobStatus() != null ? assignment.getJobStatus().getCssClass() : null,
+                assignment.getAdminNote(),
+                assignment.getTechnicianNote(),
+                assignment.getAssignDate()
+        );
     }
 
     private AdminTechnicianResponse toResponse(Technician technician) {
