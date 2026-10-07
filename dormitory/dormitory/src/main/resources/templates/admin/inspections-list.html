@@ -35,7 +35,7 @@
 
             <div class="work-body">
                 <div class="work-title-line">
-                    <span class="work-type" th:text="${r.repairType}"></span>
+                    <span class="work-type" th:text="${r.repairType != null ? r.repairType.thaiName : '-'}">...</span>
                     <span class="work-badge work-badge-ready"
                           th:if="${readyIds.contains(r.repairRequestId)}">ช่างแจ้งเสร็จแล้ว รอตรวจสอบ</span>
                     <span class="work-badge"
