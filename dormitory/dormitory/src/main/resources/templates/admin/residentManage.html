@@ -2,72 +2,71 @@
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8" />
-    <title>จัดการผู้แจ้ง - Dormitory Repair System</title>
+    <title>จัดการผู้พักอาศัย - Dormitory Repair System</title>
     <link rel="stylesheet" th:href="@{/css/adminCommon.css}" />
     <link rel="stylesheet" th:href="@{/css/adminTechnician.css}" />
 </head>
 <body>
 
-<div th:replace="~{admin/adminHeader :: adminHeader('reporters')}"></div>
+<div th:replace="~{admin/adminHeader :: adminHeader('residents')}"></div>
 
 <main>
     <div class="page-head">
         <div>
-            <h1 class="page-title">จัดการผู้แจ้ง (Reporter)</h1>
-            <p class="page-sub">ดูข้อมูลและแก้ไขข้อมูลส่วนตัวของผู้แจ้งทั้งหมด</p>
+            <h1 class="page-title">จัดการผู้พักอาศัย</h1>
+            <p class="page-sub">ดูข้อมูลและแก้ไขข้อมูลผู้พักอาศัยในหอพัก</p>
         </div>
+        <a class="btn btn-approve" th:href="@{/admin/residents/create}">+ เพิ่มผู้พักอาศัย</a>
     </div>
 
     <div class="alert alert-success" th:if="${success}" th:text="${success}"></div>
     <div class="alert alert-error" th:if="${error}" th:text="${error}"></div>
 
     <div class="toolbar">
-        <input type="text" id="searchInput" placeholder="ค้นหาชื่อ, username หรือห้อง..." />
+        <input type="text" id="searchInput" placeholder="ค้นหาชื่อ หรือเลขห้อง..." />
     </div>
 
-    <div class="tech-list" id="reporterList" th:if="${reporters != null and !reporters.isEmpty()}">
+    <div class="tech-list" id="residentList" th:if="${residents != null and !residents.isEmpty()}">
         <div class="tech-card"
-             th:each="rep : ${reporters}"
-             th:attr="data-name=${rep.firstName + ' ' + rep.lastName},
-                      data-username=${rep.username},
-                      data-room=${rep.roomNo}">
+             th:each="res : ${residents}"
+             th:attr="data-name=${res.firstName + ' ' + res.lastName}, data-room=${res.roomNo}">
             <div class="tech-main">
-                <div class="tech-avatar" th:text="${#strings.substring(rep.firstName,0,1)}">ก</div>
+                <div class="tech-avatar" th:text="${#strings.substring(res.firstName,0,1)}">ก</div>
                 <div>
                     <div class="tech-name"
-                         th:text="${rep.firstName + ' ' + rep.lastName}">ชื่อ นามสกุล</div>
+                         th:text="${res.firstName + ' ' + res.lastName}">ชื่อ นามสกุล</div>
                     <div class="tech-meta"
-                         th:text="'@' + ${rep.username} + ' · ' + ${rep.phoneNo} + ' · ห้อง ' + ${rep.roomNo}">@username · เบอร์โทร · ห้อง</div>
+                         th:text="${res.phoneNo} + ' · ห้อง ' + ${res.roomNo}">เบอร์โทร · ห้อง</div>
                 </div>
             </div>
             <div class="tech-actions">
                 <button type="button" class="btn btn-outline edit-btn"
-                        th:attr="data-id=${rep.reporterId},
-                                 data-firstname=${rep.firstName},
-                                 data-lastname=${rep.lastName},
-                                 data-phone=${rep.phoneNo}">
+                        th:attr="data-id=${res.residentId},
+                                 data-firstname=${res.firstName},
+                                 data-lastname=${res.lastName},
+                                 data-phone=${res.phoneNo},
+                                 data-room=${res.roomNo}">
                     แก้ไข
                 </button>
             </div>
         </div>
     </div>
 
-    <div class="empty-state" th:if="${reporters == null or reporters.isEmpty()}">
-        ยังไม่มีข้อมูลผู้แจ้งในระบบ
+    <div class="empty-state" th:if="${residents == null or residents.isEmpty()}">
+        ยังไม่มีข้อมูลผู้พักอาศัยในระบบ
     </div>
     <div class="empty-state" id="noResultState" style="display:none;">
-        ไม่พบผู้แจ้งที่ตรงกับคำค้นหา
+        ไม่พบผู้พักอาศัยที่ตรงกับคำค้นหา
     </div>
 </main>
 
-<!-- EDIT MODAL -->
 <div class="modal-backdrop" id="editModalBackdrop">
     <div class="modal">
-        <h3>แก้ไขข้อมูลผู้แจ้ง</h3>
-        <p class="sub">แก้ไขข้อมูลส่วนตัว</p>
+        <h3>แก้ไขข้อมูลผู้พักอาศัย</h3>
+        <p class="sub">แก้ไขข้อมูลส่วนตัวและห้องพัก</p>
 
-        <form method="post" th:action="@{/admin/reporters/update}">
-            <input type="hidden" name="reporterId" id="edit-reporterId" />
+        <form method="post" th:action="@{/admin/residents/update}">
+            <input type="hidden" name="residentId" id="edit-residentId" />
 
             <div class="form-group">
                 <label>ชื่อ</label>
@@ -80,6 +79,16 @@
             <div class="form-group">
                 <label>เบอร์โทรศัพท์</label>
                 <input type="text" name="phoneNo" id="edit-phoneNo" />
+            </div>
+            <div class="form-group">
+                <label>เลขห้อง</label>
+                <input list="editRoomOptions" name="roomNo" id="edit-roomNo" placeholder="พิมพ์เลขห้องเพื่อค้นหา..." autocomplete="off" />
+                <datalist id="editRoomOptions">
+                    <option th:each="room : ${rooms}"
+                            th:value="${room.roomNo}"
+                            th:label="'ห้อง ' + ${room.roomNo} + ' (ตึก ' + ${room.building.buildingName} + ')'">
+                    </option>
+                </datalist>
             </div>
 
             <div class="modal-actions">
@@ -95,18 +104,23 @@
 
     document.querySelectorAll('.edit-btn').forEach(function (btn) {
         btn.addEventListener('click', function () {
-            document.getElementById('edit-reporterId').value = btn.dataset.id;
+            document.getElementById('edit-residentId').value = btn.dataset.id;
             document.getElementById('edit-firstName').value = btn.dataset.firstname;
             document.getElementById('edit-lastName').value = btn.dataset.lastname;
             document.getElementById('edit-phoneNo').value = btn.dataset.phone;
+            document.getElementById('edit-roomNo').value = btn.dataset.room;
             editModalBackdrop.classList.add('open');
         });
     });
+
     document.getElementById('cancelEditBtn').addEventListener('click', function () {
         editModalBackdrop.classList.remove('open');
     });
+
     editModalBackdrop.addEventListener('click', function (e) {
-        if (e.target === editModalBackdrop) editModalBackdrop.classList.remove('open');
+        if (e.target === editModalBackdrop) {
+            editModalBackdrop.classList.remove('open');
+        }
     });
 
     const searchInput = document.getElementById('searchInput');
@@ -119,9 +133,8 @@
             let visibleCount = 0;
             cards.forEach(function (card) {
                 const name = (card.dataset.name || '').toLowerCase();
-                const username = (card.dataset.username || '').toLowerCase();
                 const room = (card.dataset.room || '').toLowerCase();
-                const match = keyword === '' || name.includes(keyword) || username.includes(keyword) || room.includes(keyword);
+                const match = keyword === '' || name.includes(keyword) || room.includes(keyword);
                 card.style.display = match ? 'flex' : 'none';
                 if (match) visibleCount++;
             });
