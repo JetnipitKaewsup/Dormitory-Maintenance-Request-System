@@ -17,6 +17,7 @@ import com.example.dormitory.repository.RepairRequestRepository;
 import com.example.dormitory.repository.RepairRequestStatusHistoryRepository;
 import com.example.dormitory.repository.ReporterRepository;
 import com.example.dormitory.service.RepairRequestService;
+import com.example.dormitory.util.DateTimeUtil;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.*;
@@ -109,7 +110,7 @@ public class RepairRequestServiceImpl implements RepairRequestService {
 
                 User changeByUser = admin.getUser();
                 RepairRequestStatusHistory history = new RepairRequestStatusHistory(
-                                request, changeByUser, newStatus, previousStatus, LocalDateTime.now());
+                                request, changeByUser, newStatus, previousStatus, DateTimeUtil.now());
                 historyRepository.save(history);
         }
 
@@ -185,7 +186,7 @@ public class RepairRequestServiceImpl implements RepairRequestService {
                 request.setEndDateTime(endDateTime);
 
                 // บันทึกวันที่และเวลาที่สร้างคำร้อง
-                request.setCreatedAt(LocalDateTime.now());
+                request.setCreatedAt(DateTimeUtil.now());
 
                 // ข้อมูลจากระบบ
                 request.setReporter(reporter);
@@ -200,7 +201,7 @@ public class RepairRequestServiceImpl implements RepairRequestService {
                                 reporter.getUser(),
                                 RepairRequestStatus.PENDING,
                                 null,
-                                LocalDateTime.now());
+                                DateTimeUtil.now());
 
                 historyRepository.save(history);
 
@@ -332,7 +333,7 @@ public class RepairRequestServiceImpl implements RepairRequestService {
 
                 RepairRequestStatusHistory history = new RepairRequestStatusHistory(
                                 request, request.getReporter().getUser(),
-                                newStatus, previousStatus, LocalDateTime.now());
+                                newStatus, previousStatus,  DateTimeUtil.now());
                 historyRepository.save(history);
         }
 
