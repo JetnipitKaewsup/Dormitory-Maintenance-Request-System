@@ -53,13 +53,97 @@
         </a>
 
         <!-- Notification -->
-        <button class="icon-button"
-                type="button"
-                aria-label="การแจ้งเตือน">
+
+    <div class="notification-wrapper">
+
+        <button
+            class="icon-button notification-button"
+            type="button"
+            id="notificationButton"
+            aria-label="การแจ้งเตือน">
 
             <i data-lucide="bell"></i>
 
+            <!-- จำนวนที่ยังไม่อ่าน -->
+            <span
+                id="notificationBadge"
+                class="notification-badge"
+                style="display: none;">
+            </span>
+
         </button>
+
+
+        <!-- =================================================
+            NOTIFICATION POPUP
+        ================================================== -->
+
+        <div
+            id="notificationPopup"
+            class="notification-popup">
+
+            <!-- Header -->
+
+            <div class="notification-popup-header">
+
+                <h3>
+                    การแจ้งเตือน
+                </h3>
+
+            </div>
+
+
+            <!-- Tabs -->
+
+            <div class="notification-tabs">
+
+                <button
+                    type="button"
+                    class="notification-tab active"
+                    data-filter="all">
+
+                    ทั้งหมด
+
+                </button>
+
+
+                <button
+                    type="button"
+                    class="notification-tab"
+                    data-filter="unread">
+
+                    งานใหม่
+
+                </button>
+
+
+                <button
+                    type="button"
+                    class="notification-tab"
+                    data-filter="read">
+
+                    อนุมัติแล้ว
+
+                </button>
+
+            </div>
+
+
+            <!-- Notification List -->
+
+            <div
+                id="notificationList"
+                class="notification-list">
+
+                <div class="notification-empty">
+                    ไม่มีการแจ้งเตือน
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
 
         <!-- Logout -->
         <a class="icon-button"
@@ -221,6 +305,465 @@
     </section>
 
 </main>
+
+<!-- notification -->
+<script>
+
+    /* =====================================================
+    ELEMENTS
+    ===================================================== */
+
+    const notificationButton =
+        document.getElementById('notificationButton');
+
+    const notificationPopup =
+        document.getElementById('notificationPopup');
+
+    const notificationList =
+        document.getElementById('notificationList');
+
+    const notificationBadge =
+        document.getElementById('notificationBadge');
+
+
+    let notifications = [];
+
+    let currentFilter = 'all';
+
+
+    /* =====================================================
+    OPEN / CLOSE POPUP
+    ===================================================== */
+
+    notificationButton.addEventListener(
+        'click',
+        function (event) {
+
+            event.stopPropagation();
+
+            notificationPopup.classList.toggle('show');
+
+
+            if (
+                notificationPopup.classList.contains('show')
+            ) {
+
+                loadNotifications();
+
+            }
+
+        }
+    );
+
+
+    /* =====================================================
+    CLICK INSIDE POPUP
+    ===================================================== */
+
+    notificationPopup.addEventListener(
+        'click',
+        function (event) {
+
+            event.stopPropagation();
+
+        }
+    );
+
+
+    /* =====================================================
+    CLICK OUTSIDE
+    ===================================================== */
+
+    document.addEventListener(
+        'click',
+        function () {
+
+            notificationPopup.classList.remove('show');
+
+        }
+    );
+
+
+    /* =====================================================
+    LOAD NOTIFICATIONS
+    ===================================================== */
+
+    async function loadNotifications() {
+
+        try {
+
+            const response =
+                await fetch(
+                    '/technician/notifications/data'
+                );
+
+
+            if (!response.ok) {
+
+                throw new Error(
+                    'ไม่สามารถโหลดการแจ้งเตือนได้'
+                );
+
+            }
+
+
+            notifications =
+                await response.json();
+
+
+            renderNotifications();
+
+            updateBadge();
+
+
+        } catch (error) {
+
+            console.error(
+                'Notification Error:',
+                error
+            );
+
+        }
+
+    }
+
+
+    /* =====================================================
+    RENDER
+    ===================================================== */
+
+    function renderNotifications() {
+
+        notificationList.innerHTML = '';
+
+
+        let filteredNotifications =
+            notifications;
+
+
+        /* ALL */
+
+        if (
+            currentFilter === 'all'
+        ) {
+
+            filteredNotifications =
+                notifications;
+
+        }
+
+
+        /* UNREAD */
+
+        if (
+            currentFilter === 'unread'
+        ) {
+
+            filteredNotifications =
+                notifications.filter(
+                    notification =>
+                        !notification.read
+                );
+
+        }
+
+
+        /* READ */
+
+        if (
+            currentFilter === 'read'
+        ) {
+
+            filteredNotifications =
+                notifications.filter(
+                    notification =>
+                        notification.read
+                );
+
+        }
+
+
+        /* EMPTY */
+
+        if (
+            filteredNotifications.length === 0
+        ) {
+
+            notificationList.innerHTML = `
+                <div class="notification-empty">
+                    ไม่มีการแจ้งเตือน
+                </div>
+            `;
+
+            return;
+
+        }
+
+
+        /* ITEMS */
+
+        filteredNotifications.forEach(
+            function (notification) {
+
+                const item =
+                    document.createElement('div');
+
+
+                item.className =
+                    'notification-item ' +
+                    (
+                        notification.read
+                            ? 'read'
+                            : 'unread'
+                    );
+
+
+                item.innerHTML = `
+
+                    <div class="notification-icon">
+
+                        <i data-lucide="wrench"></i>
+
+                    </div>
+
+
+                    <div class="notification-content">
+
+                        <div class="notification-title">
+
+                            ${notification.title}
+
+                        </div>
+
+
+                        <div class="notification-message">
+
+                            ${notification.message}
+
+                        </div>
+
+
+                        <div class="notification-time">
+
+                            ${formatTime(
+                                notification.createdAt
+                            )}
+
+                        </div>
+
+                    </div>
+
+
+                    <div class="notification-arrow">
+
+                        →
+
+                    </div>
+
+                `;
+
+
+                item.addEventListener(
+                    'click',
+                    function () {
+
+                        openNotification(
+                            notification
+                        );
+
+                    }
+                );
+
+
+                notificationList.appendChild(item);
+
+            }
+        );
+
+
+        lucide.createIcons();
+
+    }
+
+
+    /* =====================================================
+    BADGE
+    ===================================================== */
+
+    function updateBadge() {
+
+        const unreadCount =
+            notifications.filter(
+                notification =>
+                    !notification.read
+            ).length;
+
+
+        if (
+            unreadCount === 0
+        ) {
+
+            notificationBadge.style.display =
+                'none';
+
+            return;
+
+        }
+
+
+        notificationBadge.style.display =
+            'flex';
+
+
+        notificationBadge.textContent =
+            unreadCount > 99
+                ? '99+'
+                : unreadCount;
+
+    }
+
+
+    /* =====================================================
+    OPEN NOTIFICATION
+    ===================================================== */
+
+    async function openNotification(
+        notification
+    ) {
+
+        if (
+            !notification.read
+        ) {
+
+            try {
+
+                const response =
+                    await fetch(
+                        '/technician/notifications/' +
+                        notification.notificationId +
+                        '/read',
+                        {
+                            method: 'POST'
+                        }
+                    );
+
+
+                if (!response.ok) {
+
+                    console.error(
+                        'ไม่สามารถอ่าน notification ได้'
+                    );
+
+                }
+
+            } catch (error) {
+
+                console.error(
+                    'Mark Read Error:',
+                    error
+                );
+
+            }
+
+
+            notification.read = true;
+
+            updateBadge();
+
+        }
+
+
+        renderNotifications();
+
+    }
+
+
+    /* =====================================================
+    FORMAT TIME
+    ===================================================== */
+
+    function formatTime(
+        dateString
+    ) {
+
+        const date =
+            new Date(dateString);
+
+
+        return date.toLocaleString(
+            'th-TH',
+            {
+                day: '2-digit',
+                month: '2-digit',
+                year: 'numeric',
+                hour: '2-digit',
+                minute: '2-digit'
+            }
+        );
+
+    }
+
+
+    /* =====================================================
+    TABS
+    ===================================================== */
+
+    document
+        .querySelectorAll(
+            '.notification-tab'
+        )
+        .forEach(
+            function (tab) {
+
+                tab.addEventListener(
+                    'click',
+                    function () {
+
+                        document
+                            .querySelectorAll(
+                                '.notification-tab'
+                            )
+                            .forEach(
+                                button =>
+                                    button.classList.remove(
+                                        'active'
+                                    )
+                            );
+
+
+                        tab.classList.add(
+                            'active'
+                        );
+
+
+                        currentFilter =
+                            tab.dataset.filter;
+
+
+                        renderNotifications();
+
+                    }
+                );
+
+            }
+        );
+
+
+    /* =====================================================
+    INITIAL LOAD
+    ===================================================== */
+
+    loadNotifications();
+
+
+    /* =====================================================
+    LUCIDE
+    ===================================================== */
+
+    lucide.createIcons();
+
+    </script>
+
 <script>
     lucide.createIcons();
 </script>

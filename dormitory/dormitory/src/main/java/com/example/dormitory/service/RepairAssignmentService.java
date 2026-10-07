@@ -15,6 +15,7 @@ import com.example.dormitory.domain.entity.Technician;
 import com.example.dormitory.repository.RepairAssignmentRepository;
 import com.example.dormitory.repository.RepairAssignmentStatusHistoryRepository;
 import com.example.dormitory.repository.TechnicianRepository;
+import com.example.dormitory.repository.RepairRequestRepository;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -25,11 +26,16 @@ import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.UUID;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.example.dormitory.domain.entity.Admin;
 import com.example.dormitory.repository.AdminRepository;
 import com.example.dormitory.service.RepairRequestService;
 import com.example.dormitory.util.DateTimeUtil;
+import com.example.dormitory.event.RepairStatusSubject;
+import com.example.dormitory.event.RepairStatusChangedEvent;
+import com.example.dormitory.event.RepairAssignmentCreatedEvent;
+import com.example.dormitory.event.RepairAssignmentSubject;
 
 @Service
 public class RepairAssignmentService {
@@ -39,7 +45,10 @@ public class RepairAssignmentService {
     private final RepairAssignmentStatusHistoryRepository historyRepository;
     private final List<RepairRequestState> repairRequestStates;
     private final AdminRepository adminRepository;  
-     private final RepairRequestService repairRequestService;  
+    private final RepairRequestService repairRequestService;
+    private final RepairRequestRepository repairRequestRepository;
+    private final RepairStatusSubject repairStatusSubject;  
+    private final RepairAssignmentSubject repairAssignmentSubject;
     private static final DateTimeFormatter TIME_FORMATTER =
             DateTimeFormatter.ofPattern("HH.mm");
 
@@ -54,7 +63,10 @@ public class RepairAssignmentService {
             RepairAssignmentStatusHistoryRepository historyRepository,
             List<RepairRequestState> repairRequestStates,
             AdminRepository adminRepository,                 
-            RepairRequestService repairRequestService   
+            RepairRequestService repairRequestService,
+            RepairRequestRepository repairRequestRepository,
+            RepairStatusSubject repairStatusSubject,
+            RepairAssignmentSubject repairAssignmentSubject   
     ) {
         this.repairAssignmentRepository = repairAssignmentRepository;
         this.technicianRepository = technicianRepository;
@@ -62,6 +74,9 @@ public class RepairAssignmentService {
         this.repairRequestStates = repairRequestStates;
         this.adminRepository = adminRepository;
         this.repairRequestService = repairRequestService;
+        this.repairStatusSubject=repairStatusSubject;
+        this.repairRequestRepository = repairRequestRepository;
+        this.repairAssignmentSubject = repairAssignmentSubject;
     }
 
 //methodสำหรับ state
@@ -393,16 +408,12 @@ public void updateJobStatus(
     RepairRequestStatus previousStatus =
             assignment.getJobStatus();
 
-    // ---------------------------------------------
     // หา State ปัจจุบัน
-    // ---------------------------------------------
 
     RepairRequestState currentState =
             getState(previousStatus);
 
-    // ---------------------------------------------
     // ตรวจสอบว่าสามารถเปลี่ยนสถานะได้หรือไม่
-    // ---------------------------------------------
 
     if (!currentState.getAllowedNext().contains(newStatus)) {
 
@@ -414,25 +425,46 @@ public void updateJobStatus(
         );
     }
 
-    // ---------------------------------------------
     // เปลี่ยนสถานะ
-    // ---------------------------------------------
 
     assignment.setJobStatus(newStatus);
     assignment.setTechnicianNote(technicianNote);
 
     repairAssignmentRepository.save(assignment);
 
-    // ---------------------------------------------
     // บันทึกประวัติ
-    // ---------------------------------------------
-
     saveStatusHistory(
             assignment,
             technician,
             previousStatus,
             newStatus
     );
+
+    //observer pattern
+        RepairStatusChangedEvent event =
+                new RepairStatusChangedEvent(
+                        assignment.getRepairRequest().getRepairRequestId(),
+                        assignment.getAssignmentId(),
+                        previousStatus,
+                        newStatus,
+                        technician.getUser().getUserId(),
+                        "TECHNICIAN",
+                        technicianNote
+                );
+
+                //เทส
+    System.out.println("========================================");
+    System.out.println(">>> SERVICE: notify status observer");
+    System.out.println(">>> Assignment ID : " + assignment.getAssignmentId());
+    System.out.println(">>> Request ID    : "
+            + assignment.getRepairRequest().getRepairRequestId());
+    System.out.println(">>> Previous      : " + previousStatus);
+    System.out.println(">>> New Status    : " + newStatus);
+    System.out.println(">>> Changed By    : "
+            + technician.getUser().getUserId());
+    System.out.println("========================================");
+    //เทส
+        repairStatusSubject.notifyObservers(event);
 }
     /**
      * บันทึกประวัติการเปลี่ยนสถานะ
@@ -455,6 +487,8 @@ public void updateJobStatus(
 
         historyRepository.save(history);
     }
+
+    
 
 
     // =====================================================
@@ -624,7 +658,21 @@ public void updateJobStatus(
         // คำร้องหลัก: APPROVED -> IN_PROGRESS (ผ่าน State pattern ใน RepairRequestService)
         repairRequestService.adminUpdateStatus(
                 repairRequestId, adminId, RepairRequestStatus.IN_PROGRESS, adminNote);
-
+        // Observer Pattern
+        RepairAssignmentCreatedEvent event =
+                new RepairAssignmentCreatedEvent(
+                        saved.getAssignmentId(),
+                        repairRequestId,
+                        technician.getUser().getUserId(),
+                        adminId
+                );
+                //เทส
+                System.out.println(
+        ">>> SERVICE: notify assignment observer"
+);
+                //เทส
+        repairAssignmentSubject.notifyObservers(event);
+        
         return saved;
     }
 

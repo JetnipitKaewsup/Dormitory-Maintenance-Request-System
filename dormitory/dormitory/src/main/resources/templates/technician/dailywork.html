@@ -49,14 +49,97 @@
 
         </a>
 
-        <!-- Notification -->
-        <button class="icon-button"
+<!-- =====================================================
+     NOTIFICATION
+===================================================== -->
+
+<div class="notification-wrapper">
+
+    <button
+        type="button"
+        id="notificationButton"
+        class="icon-button notification-button"
+        aria-label="การแจ้งเตือน">
+
+        <i data-lucide="bell"></i>
+
+        <span
+            id="notificationBadge"
+            class="notification-badge"
+            style="display: none;">
+        </span>
+
+    </button>
+
+
+    <!-- =================================================
+         NOTIFICATION POPUP
+    ================================================== -->
+
+    <div
+        id="notificationPopup"
+        class="notification-popup">
+
+        <!-- HEADER -->
+
+        <div class="notification-popup-header">
+
+            <h3>
+                การแจ้งเตือน
+            </h3>
+
+        </div>
+
+
+        <!-- TABS -->
+
+        <div class="notification-tabs">
+
+            <button
                 type="button"
-                aria-label="การแจ้งเตือน">
+                class="notification-tab active"
+                data-filter="all">
 
-            <i data-lucide="bell"></i>
+                ทั้งหมด
 
-        </button>
+            </button>
+
+            <button
+                type="button"
+                class="notification-tab"
+                data-filter="unread">
+
+                งานใหม่
+
+            </button>
+
+            <button
+                type="button"
+                class="notification-tab"
+                data-filter="read">
+
+                อนุมัติแล้ว
+
+            </button>
+
+        </div>
+
+
+        <!-- LIST -->
+
+        <div
+            id="notificationList"
+            class="notification-list">
+
+            <div class="notification-empty">
+                ไม่มีการแจ้งเตือน
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
 
         <!-- Logout -->
         <a class="icon-button"
@@ -891,6 +974,399 @@ function closeRepairModal() {
 
         }
     );
+
+</script>
+<!-- Notification script -->
+<script>
+
+    const notificationButton =
+        document.getElementById('notificationButton');
+
+    const notificationPopup =
+        document.getElementById('notificationPopup');
+
+    const notificationList =
+        document.getElementById('notificationList');
+
+    const notificationBadge =
+        document.getElementById('notificationBadge');
+
+
+    let notifications = [];
+
+    let currentFilter = 'all';
+
+
+    /* =====================================================
+       เปิด / ปิด Popup
+    ===================================================== */
+
+    notificationButton.addEventListener(
+        'click',
+        function (event) {
+
+            event.stopPropagation();
+
+            notificationPopup.classList.toggle('show');
+
+            if (notificationPopup.classList.contains('show')) {
+
+                loadNotifications();
+
+            }
+
+        }
+    );
+
+
+    /* =====================================================
+       ป้องกันการคลิกใน Popup แล้วปิด Popup
+    ===================================================== */
+
+    notificationPopup.addEventListener(
+        'click',
+        function (event) {
+
+            event.stopPropagation();
+
+        }
+    );
+
+
+    /* =====================================================
+       คลิกข้างนอก → ปิด Popup
+    ===================================================== */
+
+    document.addEventListener(
+        'click',
+        function () {
+
+            notificationPopup.classList.remove('show');
+
+        }
+    );
+
+
+    /* =====================================================
+       โหลด Notification
+    ===================================================== */
+
+    async function loadNotifications() {
+
+        try {
+
+            const response =
+                await fetch(
+                    '/technician/notifications/data'
+                );
+
+
+            if (!response.ok) {
+
+                throw new Error(
+                    'ไม่สามารถโหลดการแจ้งเตือนได้'
+                );
+
+            }
+
+
+            notifications =
+                await response.json();
+
+
+            renderNotifications();
+
+
+            updateBadge();
+
+
+        } catch (error) {
+
+            console.error(
+                'Notification Error:',
+                error
+            );
+
+        }
+
+    }
+
+
+    /* =====================================================
+       แสดง Notification
+    ===================================================== */
+
+    function renderNotifications() {
+
+        notificationList.innerHTML = '';
+
+
+        let filteredNotifications =
+            notifications;
+
+
+        if (currentFilter === 'unread') {
+
+            filteredNotifications =
+                notifications.filter(
+                    notification =>
+                        !notification.read
+                );
+
+        }
+
+
+        if (currentFilter === 'read') {
+
+            filteredNotifications =
+                notifications.filter(
+                    notification =>
+                        notification.read
+                );
+
+        }
+
+
+        if (
+            filteredNotifications.length === 0
+        ) {
+
+            notificationList.innerHTML = `
+                <div class="notification-empty">
+                    ไม่มีการแจ้งเตือน
+                </div>
+            `;
+
+            return;
+
+        }
+
+
+        filteredNotifications.forEach(
+            function (notification) {
+
+                const item =
+                    document.createElement('div');
+
+
+                item.className =
+                    'notification-item ' +
+                    (
+                        notification.read
+                            ? 'read'
+                            : 'unread'
+                    );
+
+
+                item.innerHTML = `
+
+                    <div class="notification-icon">
+
+                        <i data-lucide="wrench"></i>
+
+                    </div>
+
+
+                    <div class="notification-content">
+
+                        <div class="notification-title">
+                            ${notification.title}
+                        </div>
+
+                        <div class="notification-message">
+                            ${notification.message}
+                        </div>
+
+                        <div class="notification-time">
+                            ${formatTime(
+                                notification.createdAt
+                            )}
+                        </div>
+
+                    </div>
+
+
+                    <div class="notification-arrow">
+                        →
+                    </div>
+
+                `;
+
+
+                item.addEventListener(
+                    'click',
+                    function () {
+
+                        openNotification(
+                            notification
+                        );
+
+                    }
+                );
+
+
+                notificationList.appendChild(item);
+
+            }
+        );
+
+
+        lucide.createIcons();
+
+    }
+
+
+    /* =====================================================
+       จำนวน Notification ที่ยังไม่อ่าน
+    ===================================================== */
+
+    function updateBadge() {
+
+        const unreadCount =
+            notifications.filter(
+                notification =>
+                    !notification.read
+            ).length;
+
+
+        if (unreadCount === 0) {
+
+            notificationBadge.style.display =
+                'none';
+
+            return;
+
+        }
+
+
+        notificationBadge.style.display =
+            'flex';
+
+
+        notificationBadge.textContent =
+            unreadCount > 99
+                ? '99+'
+                : unreadCount;
+
+    }
+
+
+    /* =====================================================
+       กด Notification
+    ===================================================== */
+
+    async function openNotification(
+        notification
+    ) {
+
+        if (!notification.read) {
+
+            try {
+
+                await fetch(
+                    '/technician/notifications/' +
+                    notification.notificationId +
+                    '/read',
+                    {
+                        method: 'POST'
+                    }
+                );
+
+            } catch (error) {
+
+                console.error(error);
+
+            }
+
+
+            notification.read = true;
+
+            updateBadge();
+
+        }
+
+
+        /*
+         * ตอนนี้ยังไม่ redirect
+         * เพราะเรายังไม่ได้กำหนดหน้า
+         * รายละเอียดงานซ่อม
+         */
+
+        renderNotifications();
+
+    }
+
+
+    /* =====================================================
+       Format เวลา
+    ===================================================== */
+
+    function formatTime(dateString) {
+
+        const date =
+            new Date(dateString);
+
+
+        return date.toLocaleString(
+            'th-TH',
+            {
+                day: '2-digit',
+                month: '2-digit',
+                year: 'numeric',
+                hour: '2-digit',
+                minute: '2-digit'
+            }
+        );
+
+    }
+
+
+    /* =====================================================
+       TAB FILTER
+    ===================================================== */
+
+    document
+        .querySelectorAll('.notification-tab')
+        .forEach(
+            function (tab) {
+
+                tab.addEventListener(
+                    'click',
+                    function () {
+
+                        document
+                            .querySelectorAll(
+                                '.notification-tab'
+                            )
+                            .forEach(
+                                button =>
+                                    button.classList.remove(
+                                        'active'
+                                    )
+                            );
+
+
+                        tab.classList.add('active');
+
+
+                        currentFilter =
+                            tab.dataset.filter;
+
+
+                        renderNotifications();
+
+                    }
+                );
+
+            }
+        );
+
+
+    /* =====================================================
+       โหลด Badge ตอนเปิดหน้า
+    ===================================================== */
+
+    loadNotifications();
 
 </script>
 

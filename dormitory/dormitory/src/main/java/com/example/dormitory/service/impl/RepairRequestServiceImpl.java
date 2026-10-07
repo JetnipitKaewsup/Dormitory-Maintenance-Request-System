@@ -19,6 +19,10 @@ import com.example.dormitory.repository.ReporterRepository;
 import com.example.dormitory.service.RepairRequestService;
 import com.example.dormitory.util.DateTimeUtil;
 
+//observer
+import com.example.dormitory.event.RepairStatusChangedEvent;
+import com.example.dormitory.event.RepairStatusSubject;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.*;
 
@@ -38,19 +42,25 @@ public class RepairRequestServiceImpl implements RepairRequestService {
         private final RepairRequestStateRegistry repairRequestStateRegistry;
         private final RepairAssignmentRepository repairAssignmentRepository;
 
+
+        private final RepairStatusSubject repairStatusSubject;
+
         @Autowired
         public RepairRequestServiceImpl(RepairRequestRepository repairRequestRepository,
                         RepairRequestStatusHistoryRepository historyRepository,
                         AdminRepository adminRepository,
                         ReporterRepository reporterRepository,
                         RepairRequestStateRegistry repairRequestStateRegistry,
-                        RepairAssignmentRepository repairAssignmentRepository) {
+                        RepairAssignmentRepository repairAssignmentRepository,
+                        RepairStatusSubject repairStatusSubject) {
                 this.repairRequestRepository = repairRequestRepository;
                 this.historyRepository = historyRepository;
                 this.adminRepository = adminRepository;
                 this.reporterRepository = reporterRepository;
                 this.repairRequestStateRegistry = repairRequestStateRegistry;
                  this.repairAssignmentRepository = repairAssignmentRepository;
+                this.repairStatusSubject = repairStatusSubject;
+
         }
 
         @Override
@@ -112,6 +122,25 @@ public class RepairRequestServiceImpl implements RepairRequestService {
                 RepairRequestStatusHistory history = new RepairRequestStatusHistory(
                                 request, changeByUser, newStatus, previousStatus, DateTimeUtil.now());
                 historyRepository.save(history);
+
+                // Observer Pattern
+                RepairStatusChangedEvent event =
+                        new RepairStatusChangedEvent(
+                                request.getRepairRequestId(),
+                                null,
+                                previousStatus,
+                                newStatus,
+                                admin.getUser().getUserId(),
+                                "ADMIN",
+                                note
+                        );
+                        //เทส
+                        System.out.println(
+        ">>> SERVICE: notify status observer"
+                + " | " + previousStatus
+                + " -> " + newStatus
+); //เทส
+                repairStatusSubject.notifyObservers(event);
         }
 
         // Reporter - Create
@@ -204,6 +233,20 @@ public class RepairRequestServiceImpl implements RepairRequestService {
                                 DateTimeUtil.now());
 
                 historyRepository.save(history);
+
+                // Observer Pattern
+                RepairStatusChangedEvent event =
+                        new RepairStatusChangedEvent(
+                                savedRequest.getRepairRequestId(),
+                                null,
+                                null,
+                                RepairRequestStatus.PENDING,
+                                reporter.getUser().getUserId(),
+                                "REPORTER",
+                                null
+                        );
+
+                repairStatusSubject.notifyObservers(event);
 
                 return savedRequest;
         }
@@ -335,6 +378,23 @@ public class RepairRequestServiceImpl implements RepairRequestService {
                                 request, request.getReporter().getUser(),
                                 newStatus, previousStatus,  DateTimeUtil.now());
                 historyRepository.save(history);
+                //observer pattern
+                RepairStatusChangedEvent event = new RepairStatusChangedEvent(
+                        request.getRepairRequestId(),
+                        null,
+                        previousStatus,
+                        newStatus,
+                        request.getReporter().getUser().getUserId(),
+                        "REPORTER",
+                        note
+                );
+                                        //เทส
+                        System.out.println(
+        ">>> SERVICE: notify status observer"
+                + " | " + previousStatus
+                + " -> " + newStatus
+); //เทส
+                repairStatusSubject.notifyObservers(event);
         }
 
 }
