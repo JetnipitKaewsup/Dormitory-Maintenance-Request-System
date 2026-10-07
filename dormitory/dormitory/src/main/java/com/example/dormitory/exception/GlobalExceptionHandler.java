@@ -5,6 +5,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.validation.FieldError;
 import com.example.dormitory.exception.ErrorResponse;
+import com.example.dormitory.util.DateTimeUtil;
+
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
@@ -26,7 +28,7 @@ public class GlobalExceptionHandler {
                                 new ErrorResponse("VALIDATION_ERROR",
                                                 "ข้อมูลไม่ถูกต้อง",
                                                 400,
-                                                java.time.LocalDateTime.now(),
+                                                DateTimeUtil.now(),
                                                 details));
         }
 
