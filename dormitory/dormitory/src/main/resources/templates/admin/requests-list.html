@@ -19,85 +19,81 @@
         <div class="welcome-title">ยินดีต้อนรับ, <span th:text="${session.userFullName} ?: 'แอดมิน'">แอดมิน</span></div>
         <div class="welcome-subtitle">ตรวจสอบและจัดการคำร้องแจ้งซ่อมได้ที่นี่</div>
     </div>
-    <!-- <div class="welcome-actions">
-        <a class="btn-welcome" th:href="@{/admin/requests}">📋 คำร้อง</a>
-        <a class="btn-welcome" th:href="@{/admin/assignments}">🛠️ มอบหมายงาน</a>
-        <a class="btn-welcome" th:href="@{/admin/inspections}">✅ ตรวจงาน</a>
-    </div> -->
 </div>
 
 <main>
     <!-- ============ สรุปสถานะ (stat cards) ============ -->
     <div class="stat-cards">
         <div class="stat-card stat-pending">
-            <div class="stat-label">PENDING</div>
+            <div class="stat-label">รอดำเนินการ</div>
             <div class="stat-value" th:text="${pendingCount}">0</div>
         </div>
         <div class="stat-card stat-approved">
-            <div class="stat-label">APPROVED</div>
+            <div class="stat-label">อนุมัติ</div>
             <div class="stat-value" th:text="${approvedCount}">0</div>
         </div>
         <div class="stat-card stat-progress">
-            <div class="stat-label">IN-PROGRESS</div>
+            <div class="stat-label">กำลังดำเนินการ</div>
             <div class="stat-value" th:text="${inProgressCount}">0</div>
         </div>
         <div class="stat-card stat-completed">
-            <div class="stat-label">COMPLETED</div>
+            <div class="stat-label">เสร็จสิ้น</div>
             <div class="stat-value" th:text="${completedCount}">0</div>
         </div>
         <div class="stat-card stat-rejected">
-            <div class="stat-label">REJECTED</div>
+            <div class="stat-label">ไม่อนุมัติ</div>
             <div class="stat-value" th:text="${rejectedCount}">0</div>
         </div>
     </div>
 
     <!-- ============ ตารางคำร้อง ============ -->
     <div class="card">
-        <h2 class="table-title">รายการแจ้งซ่อมทั้งหมด (RepairRequest)</h2>
-       
+        <h2 class="table-title">รายการแจ้งซ่อมทั้งหมด</h2>
 
         <!-- แถบ filter ตามสถานะ -->
         <div class="filter-row">
             <button class="filter-chip active" data-filter-status="all"
                     th:text="'ทั้งหมด (' + ${#lists.size(requests)} + ')'">ทั้งหมด</button>
-            <button class="filter-chip" data-filter-status="PENDING">PENDING</button>
-            <button class="filter-chip" data-filter-status="APPROVED">APPROVED</button>
-            <button class="filter-chip" data-filter-status="IN_PROGRESS">IN-PROGRESS</button>
-            <button class="filter-chip" data-filter-status="COMPLETED">COMPLETE</button>
-            <button class="filter-chip" data-filter-status="REJECTED,CANCELLED">REJECTED / CANCLE</button>
+            <button class="filter-chip" data-filter-status="PENDING">รอดำเนินการ</button>
+            <button class="filter-chip" data-filter-status="APPROVED">อนุมัติ</button>
+            <button class="filter-chip" data-filter-status="IN_PROGRESS">กำลังดำเนินการ</button>
+            <button class="filter-chip" data-filter-status="COMPLETED">เสร็จสิ้น</button>
+            <button class="filter-chip" data-filter-status="IN_COMPLETED">ไม่สำเร็จ</button>
+            <button class="filter-chip" data-filter-status="REJECTED,CANCELLED">ไม่อนุมัติ / ยกเลิก</button>
         </div>
 
         <!-- แถบ filter ตามประเภทงาน -->
         <div class="filter-row filter-row-secondary">
             <button class="filter-chip filter-chip-outline" data-filter-type="all">ทั้งหมด</button>
-            <button class="filter-chip filter-chip-outline" data-filter-type="ELECTRICAL">งานไฟฟ้า (Electrical work)</button>
-            <button class="filter-chip filter-chip-outline" data-filter-type="CARPENTRY">งานช่างไม้ (Carpentry work)</button>
-            <button class="filter-chip filter-chip-outline" data-filter-type="PLUMBING">งานประปา (Plumbing work)</button>
-            <button class="filter-chip filter-chip-outline" data-filter-type="OTHER">อื่น ๆ (Other)</button>
+            <button class="filter-chip filter-chip-outline" data-filter-type="ELECTRICAL">งานไฟฟ้า</button>
+            <button class="filter-chip filter-chip-outline" data-filter-type="CARPENTRY">งานช่างไม้</button>
+            <button class="filter-chip filter-chip-outline" data-filter-type="PLUMBING">งานประปา</button>
+            <button class="filter-chip filter-chip-outline" data-filter-type="OTHER">อื่น ๆ</button>
         </div>
 
         <table class="requests-table">
             <thead>
                 <tr>
-                    <th>repairRequestId</th>
-                    <th>ผู้แจ้ง (Resident)</th>
+                    <th>รหัสคำร้อง</th>
+                    <th>ผู้แจ้ง</th>
                     <th>ห้องพัก</th>
-                    <th>repairType</th>
+                    <th>ประเภทงาน</th>
                     <th>สถานะ</th>
-                    <th>submissionDate</th>
+                    <th>วันที่แจ้ง</th>
                     <th></th>
                 </tr>
             </thead>
             <tbody>
+                <!-- data-status / data-type ต้องเป็นค่า enum เดิม ใช้กับตัวกรองและสีป้าย -->
                 <tr th:each="request : ${requests}"
                     th:attr="data-status=${request.status},data-type=${request.repairType}">
                     <td th:text="${request.repairRequestId}">-</td>
                     <td th:text="${request.reporter.user.firstName} + ' ' + ${request.reporter.user.lastName}">-</td>
                     <td th:text="${request.room.building.buildingName} + ' / ห้อง ' + ${request.room.roomNo}">-</td>
-                    <td th:text="${request.repairType}">-</td>
+                    <td th:text="${request.repairType != null ? request.repairType.thaiName : '-'}">-</td>
                     <td>
                         <span class="badge" th:classappend="${request.status.cssClass}"
-                              th:text="${#strings.replace(request.status.name(), '_', '-')}">STATUS</span>
+                              th:text="${request.status.thaiName}">สถานะ</span>
                     </td>
                     <td th:text="${T(com.example.dormitory.util.ThaiDateUtil).formatDate(request.startDateTime)}">-</td>
                     <td>
