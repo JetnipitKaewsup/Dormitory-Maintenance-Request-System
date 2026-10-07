@@ -165,5 +165,39 @@ header.topbar .brand {
     color: #fff;
     text-decoration: none;
 }
+
+.reporter-contact {
+    margin-top: 14px;
+    padding-top: 14px;
+    border-top: 1px solid #e6e9ef;
+}
+.reporter-contact-label {
+    font-size: 13px;
+    color: #6b7280;
+    margin-bottom: 8px;
+}
+.reporter-call {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 14px;
+    border-radius: 10px;
+    background: #EAF6ED;
+    color: #1F6B30;
+    font-weight: 700;
+    text-decoration: none;
+}
+.reporter-call small { margin-left: auto; font-weight: 400; opacity: .75; }
+.reporter-call:hover { background: #dcefe1; }
+.reporter-nophone {
+    padding: 10px 14px;
+    border-radius: 10px;
+    background: #FDF1DF;
+    color: #B45309;
+    font-size: 14px;
+}
+.confirm-hint { margin: 0 0 8px; font-size: 13px; color: #B45309; }
+
+
 header.topbar .brand:hover { opacity: 0.85; }
 textarea.remark-box:focus { outline: none; border-color: var(--color-primary); }

@@ -85,6 +85,7 @@ public class RepairRequestRestController {
 
     // ==================== UPDATE STATUS ====================
     @PatchMapping("/{id}/status")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<RepairRequestResponse> updateStatus(
             @PathVariable UUID id,
             @Valid @RequestBody UpdateStatusDto dto,
@@ -97,23 +98,17 @@ public class RepairRequestRestController {
         return ResponseEntity.ok(RepairRequestResponse.from(updated));
     }
 
-    // ==================== CANCEL ====================
+    // ==================== DELETE ====================
     @DeleteMapping("/{id}")
     @PreAuthorize("hasRole('REPORTER')")
-    public ResponseEntity<Void> cancel(
+    public ResponseEntity<Void> delete(
             @PathVariable UUID id, 
             @AuthenticationPrincipal User user) {
         UUID userId = user.getUserId();
-        repairRequestService.cancelRequest(userId, id);
+        repairRequestService.deleteRequest(userId, id);
         return ResponseEntity.noContent().build();
     }
 
-    // ==================== Helpers ====================
-    private UUID getUserId(HttpSession session) {
-        Object v = session.getAttribute("userId");
-        if (v == null) throw new ResourceNotFoundException("กรุณาเข้าสู่ระบบใหม่");
-        return UUID.fromString(v.toString());
-    }
 
     private Pageable buildPageable(int page, int size, String[] sort) {
         String field = sort.length > 0 ? sort[0] : "createdAt";
