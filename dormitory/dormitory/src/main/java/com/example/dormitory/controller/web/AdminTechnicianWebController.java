@@ -69,4 +69,12 @@ public class AdminTechnicianWebController {
         }
         return "redirect:/admin/technicians";
     }
+
+    @GetMapping("/{technicianId}/history")
+    public String viewRepairHistory(@PathVariable UUID technicianId, Model model) {
+            model.addAttribute("technician", adminTechnicianService.getTechnicianById(technicianId));
+            model.addAttribute("history", adminTechnicianService.getRepairHistoryByTechnicianId(technicianId));
+        return "admin/technicianHistory";
+}
+
 }
