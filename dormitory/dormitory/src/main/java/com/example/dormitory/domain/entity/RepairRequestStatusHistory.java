@@ -5,23 +5,42 @@ import jakarta.persistence.*;
 import java.time.LocalDateTime;
 import java.util.UUID;
 
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
+
 import com.example.dormitory.domain.entity.RepairRequest;
 import com.example.dormitory.domain.entity.User;
 import com.example.dormitory.domain.enums.RepairRequestStatus;
 
 @Entity
-@Table(name = "repair_request_status_history")
+@Table(name = "repair_request_status_history",
+       indexes = {
+        @Index(
+            name = "idx_status_history_request",
+            columnList = "repair_request_id"
+        ),
+        @Index(
+            name = "idx_status_history_change_by",
+            columnList = "change_by"
+        ),
+        @Index(
+            name = "idx_status_history_change_date",
+            columnList = "change_date"
+        )
+    }
+)
 public class RepairRequestStatusHistory {
 
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     private UUID requestHistoryId;
 
-    @ManyToOne(optional = false)
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "repair_request_id", nullable = false)
+    @OnDelete(action = OnDeleteAction.CASCADE)
     private RepairRequest repairRequest;
 
-    @ManyToOne(optional = false)
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "change_by", nullable = false)
     private User changeBy;
 

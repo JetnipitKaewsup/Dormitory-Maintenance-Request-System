@@ -16,7 +16,11 @@
 <main class="work-page">
     <div class="work-head">
         <h1>รายการงานที่กำลังดำเนินการ</h1>
-        <span class="work-count" th:text="${#lists.size(requests)} + ' งาน'"></span>
+        <div class="work-head-side">
+            <span class="work-ready-count" th:if="${readyCount > 0}"
+                  th:text="'รอตรวจสอบ ' + ${readyCount} + ' งาน'"></span>
+            <span class="work-count" th:text="${#lists.size(requests)} + ' งาน'"></span>
+        </div>
     </div>
 
     <div class="empty" th:if="${#lists.isEmpty(requests)}">
@@ -25,19 +29,25 @@
     </div>
 
     <div class="work-list">
-        <div class="work-row" th:each="r : ${requests}">
+        <div class="work-row" th:each="r : ${requests}"
+             th:classappend="${readyIds.contains(r.repairRequestId)} ? 'is-ready' : ''">
             <span class="work-status" aria-hidden="true"></span>
 
             <div class="work-body">
                 <div class="work-title-line">
                     <span class="work-type" th:text="${r.repairType}"></span>
-                    <span class="work-badge">กำลังดำเนินการ</span>
+                    <span class="work-badge work-badge-ready"
+                          th:if="${readyIds.contains(r.repairRequestId)}">ช่างแจ้งเสร็จแล้ว รอตรวจสอบ</span>
+                    <span class="work-badge"
+                          th:unless="${readyIds.contains(r.repairRequestId)}">กำลังดำเนินการ</span>
                 </div>
                 <p class="work-desc" th:text="${r.description}"></p>
                 <p class="work-meta" th:text="'ห้อง ' + (${r.room != null ? r.room.roomNo : '-'})"></p>
             </div>
 
-            <a class="work-btn" th:href="@{/admin/requests/{id}/inspect(id=${r.repairRequestId})}">
+            <a class="work-btn"
+               th:classappend="${readyIds.contains(r.repairRequestId)} ? '' : 'work-btn-quiet'"
+               th:href="@{/admin/requests/{id}/inspect(id=${r.repairRequestId})}">
                 ตรวจสอบงาน
             </a>
         </div>

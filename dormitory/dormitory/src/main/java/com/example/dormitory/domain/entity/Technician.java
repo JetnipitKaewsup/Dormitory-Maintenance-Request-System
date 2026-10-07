@@ -15,7 +15,7 @@ public class Technician {
     private String specialization;
 
     @OneToOne(optional = false)
-    @JoinColumn(name = "userId", nullable = false, unique = true)
+    @JoinColumn(name = "user_id", nullable = false, unique = true)
     private User user;
 
     public Technician() {
