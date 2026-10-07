@@ -2,6 +2,7 @@ package com.example.dormitory.domain.entity;
 
 import jakarta.persistence.*;
 import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
@@ -11,6 +12,7 @@ import com.example.dormitory.domain.entity.Reporter;
 import com.example.dormitory.domain.entity.Room;
 import com.example.dormitory.domain.enums.RepairRequestStatus;
 import com.example.dormitory.domain.enums.RepairType;
+import com.example.dormitory.util.DateTimeUtil;
 
 @Entity
 @Table(name = "repair_request",
@@ -102,7 +104,7 @@ public class RepairRequest {
         this.reporterNote = reporterNote;
         this.startDateTime = startDateTime;
         this.endDateTime = endDateTime;
-        this.createdAt = LocalDateTime.now();
+        this.createdAt = DateTimeUtil.now();
     }
     // Getter / Setter
 
