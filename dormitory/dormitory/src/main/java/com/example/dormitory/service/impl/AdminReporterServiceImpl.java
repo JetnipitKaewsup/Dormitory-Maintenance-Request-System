@@ -1,19 +1,26 @@
 package com.example.dormitory.service.impl;
 
+import com.example.dormitory.domain.entity.RepairAssignment;
+import com.example.dormitory.domain.entity.RepairAssignmentStatusHistory;
 import com.example.dormitory.domain.entity.RepairRequest;
 import com.example.dormitory.domain.entity.Reporter;
 import com.example.dormitory.domain.entity.Resident;
 import com.example.dormitory.domain.entity.User;
+import com.example.dormitory.domain.enums.RepairRequestStatus;
 import com.example.dormitory.dto.request.AdminReporterUpdateRequest;
 import com.example.dormitory.dto.response.AdminReporterResponse;
 import com.example.dormitory.dto.response.RepairRequestHistoryResponse;
 import com.example.dormitory.repository.AdminReporterRepository;
+import com.example.dormitory.repository.RepairAssignmentRepository;
+import com.example.dormitory.repository.RepairAssignmentStatusHistoryRepository;
 import com.example.dormitory.repository.RepairRequestRepository;
 import com.example.dormitory.service.AdminReporterService;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
@@ -22,11 +29,17 @@ public class AdminReporterServiceImpl implements AdminReporterService {
 
     private final AdminReporterRepository reporterRepository;
     private final RepairRequestRepository repairRequestRepository;
+    private final RepairAssignmentRepository repairAssignmentRepository;
+    private final RepairAssignmentStatusHistoryRepository statusHistoryRepository;
 
     public AdminReporterServiceImpl(AdminReporterRepository reporterRepository,
-                                     RepairRequestRepository repairRequestRepository) {
+                                     RepairRequestRepository repairRequestRepository,
+                                     RepairAssignmentRepository repairAssignmentRepository,
+                                     RepairAssignmentStatusHistoryRepository statusHistoryRepository) {
         this.reporterRepository = reporterRepository;
         this.repairRequestRepository = repairRequestRepository;
+        this.repairAssignmentRepository = repairAssignmentRepository;
+        this.statusHistoryRepository = statusHistoryRepository;
     }
 
     @Override
@@ -70,7 +83,6 @@ public class AdminReporterServiceImpl implements AdminReporterService {
 
     @Override
     public List<RepairRequestHistoryResponse> getRepairHistoryByReporterId(UUID reporterId) {
-        // เช็คก่อนว่า reporter นี้มีอยู่จริง (และ throw error เดียวกับ method อื่นถ้าไม่เจอ)
         reporterRepository.findById(reporterId)
                 .orElseThrow(() -> new RuntimeException("ไม่พบข้อมูลผู้แจ้ง"));
 
@@ -83,14 +95,35 @@ public class AdminReporterServiceImpl implements AdminReporterService {
     }
 
     private RepairRequestHistoryResponse toHistoryResponse(RepairRequest req) {
+        LocalDateTime assignDate = null; 
+        LocalDateTime completeDate = null;
+
+        Optional<RepairAssignment> assignmentOpt = repairAssignmentRepository
+                .findByRepairRequest_RepairRequestId(req.getRepairRequestId());
+
+        if (assignmentOpt.isPresent()) {
+            RepairAssignment assignment = assignmentOpt.get();
+            assignDate = assignment.getAssignDate();
+
+            if (req.getStatus() == RepairRequestStatus.COMPLETED
+                || req.getStatus() == RepairRequestStatus.IN_COMPLETED) {
+                completeDate = statusHistoryRepository
+                        .findFirstByAssignment_AssignmentIdAndNewStatusOrderByChangeDateDesc(
+                                assignment.getAssignmentId(),
+                                req.getStatus())
+                        .map(RepairAssignmentStatusHistory::getChangeDate)
+                        .orElse(null);
+            }
+        }
+
         return new RepairRequestHistoryResponse(
                 req.getRepairRequestId(),
                 req.getRepairType() != null ? req.getRepairType().name() : null,
                 req.getStatus() != null ? req.getStatus().name() : null,
                 req.getDescription(),
                 req.getCreatedAt(),
-                req.getStartDateTime(),
-                req.getEndDateTime()
+                assignDate,
+                completeDate
         );
     }
 

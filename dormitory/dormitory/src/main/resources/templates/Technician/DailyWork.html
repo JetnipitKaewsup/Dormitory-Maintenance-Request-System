@@ -1057,7 +1057,7 @@ function closeRepairModal() {
 
             const response =
                 await fetch(
-                    '/Technician/notifications/data'
+                    '/technician/notifications/data'
                 );
 
 
@@ -1264,7 +1264,7 @@ function closeRepairModal() {
             try {
 
                 await fetch(
-                    '/Technician/notifications/' +
+                    '/technician/notifications/' +
                     notification.notificationId +
                     '/read',
                     {

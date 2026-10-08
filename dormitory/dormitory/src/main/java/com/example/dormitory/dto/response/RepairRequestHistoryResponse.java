@@ -8,23 +8,25 @@ public class RepairRequestHistoryResponse {
     private String repairType;
     private String status;
     private String description;
-    private LocalDateTime createdAt;
-    private LocalDateTime startDateTime;
-    private LocalDateTime endDateTime;
+    private LocalDateTime createdAt;       // วันที่แจ้ง
+    private LocalDateTime assignDate;      // วันที่ admin มอบหมาย (จาก RepairAssignment)
+    private LocalDateTime completeDate;    // วันที่ tech กดเสร็จ (จาก StatusHistory)
 
     public RepairRequestHistoryResponse() {
     }
 
-    public RepairRequestHistoryResponse(UUID repairRequestId, String repairType, String status,
-                                         String description, LocalDateTime createdAt,
-                                         LocalDateTime startDateTime, LocalDateTime endDateTime) {
+    public RepairRequestHistoryResponse(UUID repairRequestId, String repairType,
+                                         String status, String description,
+                                         LocalDateTime createdAt,
+                                         LocalDateTime assignDate,
+                                         LocalDateTime completeDate) {
         this.repairRequestId = repairRequestId;
         this.repairType = repairType;
         this.status = status;
         this.description = description;
         this.createdAt = createdAt;
-        this.startDateTime = startDateTime;
-        this.endDateTime = endDateTime;
+        this.assignDate = assignDate;
+        this.completeDate = completeDate;
     }
 
     public UUID getRepairRequestId() { return repairRequestId; }
@@ -42,9 +44,9 @@ public class RepairRequestHistoryResponse {
     public LocalDateTime getCreatedAt() { return createdAt; }
     public void setCreatedAt(LocalDateTime createdAt) { this.createdAt = createdAt; }
 
-    public LocalDateTime getStartDateTime() { return startDateTime; }
-    public void setStartDateTime(LocalDateTime startDateTime) { this.startDateTime = startDateTime; }
+    public LocalDateTime getAssignDate() { return assignDate; }
+    public void setAssignDate(LocalDateTime assignDate) { this.assignDate = assignDate; }
 
-    public LocalDateTime getEndDateTime() { return endDateTime; }
-    public void setEndDateTime(LocalDateTime endDateTime) { this.endDateTime = endDateTime; }
+    public LocalDateTime getCompleteDate() { return completeDate; }
+    public void setCompleteDate(LocalDateTime completeDate) { this.completeDate = completeDate; }
 }

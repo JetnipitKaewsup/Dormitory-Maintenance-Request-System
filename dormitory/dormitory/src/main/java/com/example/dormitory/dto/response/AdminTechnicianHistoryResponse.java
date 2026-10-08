@@ -13,13 +13,18 @@ public class AdminTechnicianHistoryResponse {
     private String adminNote;
     private String technicianNote;
     private LocalDateTime assignDate;
+    private LocalDateTime reportDate;
+    private LocalDateTime completeDate;
 
     public AdminTechnicianHistoryResponse() {
     }
 
     public AdminTechnicianHistoryResponse(UUID assignmentId, UUID repairRequestId, String repairType,
                                            String description, String statusLabel, String statusCssClass,
-                                           String adminNote, String technicianNote, LocalDateTime assignDate) {
+                                           String adminNote, String technicianNote,
+                                           LocalDateTime assignDate,
+                                           LocalDateTime reportDate,
+                                           LocalDateTime completeDate) {
         this.assignmentId = assignmentId;
         this.repairRequestId = repairRequestId;
         this.repairType = repairType;
@@ -29,6 +34,8 @@ public class AdminTechnicianHistoryResponse {
         this.adminNote = adminNote;
         this.technicianNote = technicianNote;
         this.assignDate = assignDate;
+        this.reportDate = reportDate;
+        this.completeDate = completeDate;
     }
 
     public UUID getAssignmentId() { return assignmentId; }
@@ -57,4 +64,10 @@ public class AdminTechnicianHistoryResponse {
 
     public LocalDateTime getAssignDate() { return assignDate; }
     public void setAssignDate(LocalDateTime assignDate) { this.assignDate = assignDate; }
+
+    public LocalDateTime getReportDate() { return reportDate; }
+    public void setReportDate(LocalDateTime reportDate) { this.reportDate = reportDate; }
+
+    public LocalDateTime getCompleteDate() { return completeDate; }
+    public void setCompleteDate(LocalDateTime completeDate) { this.completeDate = completeDate; }
 }

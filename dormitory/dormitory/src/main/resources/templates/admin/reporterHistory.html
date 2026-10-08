@@ -26,6 +26,8 @@
 
     <div class="tech-list" th:if="${history != null and !history.isEmpty()}">
         <div class="tech-card" th:each="req : ${history}" style="flex-direction: column; align-items: flex-start;">
+
+            <!-- Header: ประเภท + สถานะ -->
             <div style="display:flex; justify-content: space-between; width:100%;">
                 <span class="tech-spec-badge" th:text="${req.repairType}">ประเภทงาน</span>
                 <span class="badge"
@@ -36,19 +38,45 @@
                                       (${req.status == 'COMPLETED'} ? ' completed' : ''))))"
                       th:text="${req.status}">สถานะ</span>
             </div>
+
+            <!-- Description -->
             <p style="margin-top:10px; font-size:14px;" th:text="${req.description}">รายละเอียด</p>
-            <div class="tech-meta" style="margin-top:8px;"
-                 th:text="'แจ้งเมื่อ: ' + ${#temporals.format(req.createdAt, 'dd/MM/yyyy HH:mm')}">
-                วันที่แจ้ง
+
+            <!-- Timeline -->
+            <div class="history-timeline" style="margin-top:10px; width:100%;">
+
+                <!-- 1. แจ้งเมื่อ -->
+                <div class="timeline-item" th:if="${req.createdAt != null}">
+                    <span class="dot reported"></span>
+                    <span class="tl-label">แจ้งเมื่อ:</span>
+                    <span class="tl-value"
+                          th:text="${#temporals.format(req.createdAt, 'dd/MM/yyyy HH:mm')}">
+                        07/10/2026 12:48
+                    </span>
+                </div>
+
+                <!-- 2. มอบหมายให้ช่าง -->
+                <div class="timeline-item" th:if="${req.assignDate != null}">
+                    <span class="dot started"></span>
+                    <span class="tl-label">เริ่มซ่อม:</span>
+                    <span class="tl-value"
+                          th:text="${#temporals.format(req.assignDate, 'dd/MM/yyyy HH:mm')}">
+                        07/10/2026 14:47
+                    </span>
+                </div>
+
+                <!-- 3. ซ่อมเสร็จ (เฉพาะ COMPLETED / IN_COMPLETED) -->
+                <div class="timeline-item" th:if="${req.completeDate != null}">
+                    <span class="dot finished"></span>
+                    <span class="tl-label">ซ่อมเสร็จ:</span>
+                    <span class="tl-value"
+                          th:text="${#temporals.format(req.completeDate, 'dd/MM/yyyy HH:mm')}">
+                        07/10/2026 16:47
+                    </span>
+                </div>
+
             </div>
-            <div class="tech-meta" th:if="${req.startDateTime != null}"
-                 th:text="'เริ่มซ่อม: ' + ${#temporals.format(req.startDateTime, 'dd/MM/yyyy HH:mm')}">
-                เริ่มซ่อม
-            </div>
-            <div class="tech-meta" th:if="${req.endDateTime != null}"
-                 th:text="'ซ่อมเสร็จ: ' + ${#temporals.format(req.endDateTime, 'dd/MM/yyyy HH:mm')}">
-                ซ่อมเสร็จ
-            </div>
+
         </div>
     </div>
 

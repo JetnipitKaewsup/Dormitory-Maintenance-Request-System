@@ -35,8 +35,18 @@
                 <div>
                     <div class="tech-name"
                          th:text="${res.firstName + ' ' + res.lastName}">ชื่อ นามสกุล</div>
-                    <div class="tech-meta"
-                         th:text="${res.phoneNo} + ' · ห้อง ' + ${res.roomNo}">เบอร์โทร · ห้อง</div>
+                    <div class="card-meta-row">
+                        <span class="meta-item">
+                            <!-- ✅ Lucide: Phone icon -->
+                            <i data-lucide="phone" class="meta-icon meta-icon-phone"></i>
+                            <strong th:text="${res.phoneNo}">0812345678</strong>
+                        </span>
+                        <span class="meta-item">
+                            <!-- ✅ Lucide: Home icon -->
+                            <i data-lucide="home" class="meta-icon meta-icon-room"></i>
+                            ห้อง <strong th:text="${res.roomNo}">A101</strong>
+                        </span>
+                    </div>
                 </div>
             </div>
             <div class="tech-actions">
@@ -80,15 +90,27 @@
                 <label>เบอร์โทรศัพท์</label>
                 <input type="text" name="phoneNo" id="edit-phoneNo" />
             </div>
+
             <div class="form-group">
                 <label>เลขห้อง</label>
-                <input list="editRoomOptions" name="roomNo" id="edit-roomNo" placeholder="พิมพ์เลขห้องเพื่อค้นหา..." autocomplete="off" />
-                <datalist id="editRoomOptions">
-                    <option th:each="room : ${rooms}"
-                            th:value="${room.roomNo}"
-                            th:label="'ห้อง ' + ${room.roomNo} + ' (ตึก ' + ${room.building.buildingName} + ')'">
-                    </option>
-                </datalist>
+                <div class="room-combobox">
+                    <input type="text"
+                           id="edit-roomSearch"
+                           placeholder="พิมพ์เลขห้อง..."
+                           autocomplete="off" />
+                    <div class="dropdown" id="edit-roomDropdown">
+                        <div th:each="room : ${rooms}"
+                             class="dropdown-item edit-room-option"
+                             th:data-room-no="${room.roomNo}"
+                             th:data-search="${room.roomNo + ' ' + room.building.buildingName}"
+                             th:text="'ห้อง ' + ${room.roomNo} + ' (' + ${room.building.buildingName} + ')'">
+                        </div>
+                        <div class="dropdown-empty edit-room-empty" style="display:none;">
+                            ไม่พบห้องที่ตรงกับคำค้นหา
+                        </div>
+                    </div>
+                </div>
+                <input type="hidden" name="roomNo" id="edit-roomNo" />
             </div>
 
             <div class="modal-actions">
@@ -99,8 +121,67 @@
     </div>
 </div>
 
+<!-- ✅ Lucide Icons Library -->
+<script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
+
 <script>
+(function () {
+    // ============================================
+    // ✅ Lucide: แทน <i data-lucide="..."> → SVG
+    // ============================================
+    if (typeof lucide !== 'undefined') {
+        lucide.createIcons();
+    }
+
+    // ============================================
+    // Modal logic
+    // ============================================
     const editModalBackdrop = document.getElementById('editModalBackdrop');
+    const editRoomSearch    = document.getElementById('edit-roomSearch');
+    const editRoomDropdown  = document.getElementById('edit-roomDropdown');
+    const editRoomNo        = document.getElementById('edit-roomNo');
+    const editRoomEmpty     = document.querySelector('.edit-room-empty');
+    const editRoomOptions   = Array.from(document.querySelectorAll('.edit-room-option'));
+
+    function openDropdown() {
+        editRoomDropdown.classList.add('open');
+    }
+
+    function closeDropdown() {
+        editRoomDropdown.classList.remove('open');
+    }
+
+    function filterRooms() {
+        const keyword = editRoomSearch.value.toLowerCase().trim();
+        let found = 0;
+
+        editRoomOptions.forEach(function (opt) {
+            const match = opt.dataset.search.toLowerCase().includes(keyword);
+            opt.style.display = match ? 'block' : 'none';
+            if (match) found++;
+        });
+
+        editRoomEmpty.style.display = (found === 0 && keyword !== '') ? 'block' : 'none';
+        openDropdown();
+    }
+
+    editRoomSearch.addEventListener('focus', filterRooms);
+    editRoomSearch.addEventListener('input', function () {
+        editRoomNo.value = '';
+        filterRooms();
+    });
+
+    editRoomOptions.forEach(function (opt) {
+        opt.addEventListener('click', function () {
+            editRoomSearch.value = opt.textContent.trim();
+            editRoomNo.value = opt.dataset.roomNo;
+            closeDropdown();
+        });
+    });
+
+    document.addEventListener('click', function (e) {
+        if (!e.target.closest('#editModalBackdrop .room-combobox')) closeDropdown();
+    });
 
     document.querySelectorAll('.edit-btn').forEach(function (btn) {
         btn.addEventListener('click', function () {
@@ -108,7 +189,15 @@
             document.getElementById('edit-firstName').value = btn.dataset.firstname;
             document.getElementById('edit-lastName').value = btn.dataset.lastname;
             document.getElementById('edit-phoneNo').value = btn.dataset.phone;
-            document.getElementById('edit-roomNo').value = btn.dataset.room;
+
+            const currentRoom = btn.dataset.room;
+            editRoomNo.value = currentRoom;
+
+            const matched = editRoomOptions.find(function (opt) {
+                return opt.dataset.roomNo === currentRoom;
+            });
+            editRoomSearch.value = matched ? matched.textContent.trim() : currentRoom;
+
             editModalBackdrop.classList.add('open');
         });
     });
@@ -141,6 +230,7 @@
             noResultState.style.display = (cards.length > 0 && visibleCount === 0) ? 'block' : 'none';
         });
     }
+})();
 </script>
 
 </body>

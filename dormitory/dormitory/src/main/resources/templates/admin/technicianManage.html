@@ -73,7 +73,6 @@
     </div>
 </main>
 
-<!-- ================= EDIT MODAL ================= -->
 <div class="modal-backdrop" id="editModalBackdrop">
     <div class="modal">
         <h3>แก้ไขข้อมูลช่าง</h3>
@@ -113,6 +112,7 @@
 </div>
 
 <script>
+(function () {
     const editModalBackdrop = document.getElementById('editModalBackdrop');
 
     document.querySelectorAll('.edit-btn').forEach(function (btn) {
@@ -172,6 +172,7 @@
         searchInput.addEventListener('input', applyFilter);
         specFilter.addEventListener('change', applyFilter);
     }
+})();
 </script>
 
 </body>

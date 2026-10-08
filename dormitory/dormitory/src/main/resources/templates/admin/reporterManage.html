@@ -37,10 +37,13 @@
                     <div class="tech-name"
                          th:text="${rep.firstName + ' ' + rep.lastName}">ชื่อ นามสกุล</div>
                     <div class="tech-meta"
-                         th:text="'@' + ${rep.username} + ' · ' + ${rep.phoneNo} + ' · ห้อง ' + ${rep.roomNo}">@username · เบอร์โทร · ห้อง</div>
+                         th:text="'@' + ${rep.username} + ' · ' + ${rep.phoneNo} + ' · ห้อง ' + ${rep.roomNo}">
+                        @username · เบอร์โทร · ห้อง
+                    </div>
                 </div>
             </div>
             <div class="tech-actions">
+                <a class="btn btn-outline" th:href="@{'/admin/reporters/' + ${rep.reporterId} + '/history'}">ดูประวัติ</a>
                 <button type="button" class="btn btn-outline edit-btn"
                         th:attr="data-id=${rep.reporterId},
                                  data-firstname=${rep.firstName},
@@ -48,7 +51,6 @@
                                  data-phone=${rep.phoneNo}">
                     แก้ไข
                 </button>
-                 <a class="btn btn-outline" th:href="@{'/admin/reporters/' + ${rep.reporterId} + '/history'}">ดูประวัติ</a>
             </div>
         </div>
     </div>
@@ -61,7 +63,6 @@
     </div>
 </main>
 
-<!-- EDIT MODAL -->
 <div class="modal-backdrop" id="editModalBackdrop">
     <div class="modal">
         <h3>แก้ไขข้อมูลผู้แจ้ง</h3>
@@ -92,6 +93,7 @@
 </div>
 
 <script>
+(function () {
     const editModalBackdrop = document.getElementById('editModalBackdrop');
 
     document.querySelectorAll('.edit-btn').forEach(function (btn) {
@@ -103,11 +105,15 @@
             editModalBackdrop.classList.add('open');
         });
     });
+
     document.getElementById('cancelEditBtn').addEventListener('click', function () {
         editModalBackdrop.classList.remove('open');
     });
+
     editModalBackdrop.addEventListener('click', function (e) {
-        if (e.target === editModalBackdrop) editModalBackdrop.classList.remove('open');
+        if (e.target === editModalBackdrop) {
+            editModalBackdrop.classList.remove('open');
+        }
     });
 
     const searchInput = document.getElementById('searchInput');
@@ -122,13 +128,17 @@
                 const name = (card.dataset.name || '').toLowerCase();
                 const username = (card.dataset.username || '').toLowerCase();
                 const room = (card.dataset.room || '').toLowerCase();
-                const match = keyword === '' || name.includes(keyword) || username.includes(keyword) || room.includes(keyword);
+                const match = keyword === '' ||
+                    name.includes(keyword) ||
+                    username.includes(keyword) ||
+                    room.includes(keyword);
                 card.style.display = match ? 'flex' : 'none';
                 if (match) visibleCount++;
             });
             noResultState.style.display = (cards.length > 0 && visibleCount === 0) ? 'block' : 'none';
         });
     }
+})();
 </script>
 
 </body>
