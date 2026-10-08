@@ -329,7 +329,7 @@
 
       let currentForm = null; // เก็บฟอร์มที่กำลังจะถูก submit
 
-      // เมื่อกดปุ่ม "ยกเลิกแจ้งซ่อม" ในตาราง
+      // เมื่อกดปุ่ม "ลบคำร้องแจ้งซ่อม" ในตาราง
       deleteTriggers.forEach(btn => {
         btn.addEventListener('click', (e) => {
           e.preventDefault();
@@ -355,7 +355,7 @@
         currentForm = null;
       });
 
-      // เมื่อกดปุ่ม "ยืนยันยกเลิกแจ้งซ่อม"
+      // เมื่อกดปุ่ม "ยืนยันลบคำร้องแจ้งซ่อม"
       confirmBtn.addEventListener('click', () => {
         if (currentForm) {
           currentForm.submit(); // ส่งฟอร์มไปยัง Backend
