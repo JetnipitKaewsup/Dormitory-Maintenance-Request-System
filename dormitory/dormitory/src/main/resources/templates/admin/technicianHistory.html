@@ -26,67 +26,24 @@
     </div>
 
     <div class="tech-list" th:if="${history != null and !history.isEmpty()}">
-        <div class="tech-card history-card" th:each="job : ${history}">
-
-            <div class="history-card-header">
-                <div class="left-meta">
-                    <span class="meta-label">ประเภท</span>
-                    <span class="tech-spec-badge" th:text="${job.repairType}">ELECTRICAL</span>
-                </div>
-                <span class="badge" th:classappend="${job.statusCssClass}"
-                      th:text="${job.statusLabel}">PENDING</span>
+        <div class="tech-card" th:each="job : ${history}" style="flex-direction: column; align-items: flex-start;">
+            <div style="display:flex; justify-content: space-between; width:100%;">
+                <span class="tech-spec-badge" th:text="${job.repairType}">ประเภทงาน</span>
+                <span class="badge" th:classappend="${job.statusCssClass}" th:text="${job.statusLabel}">สถานะ</span>
             </div>
-
-            <div class="history-title" th:text="${job.description}">ไฟดับบัง</div>
-
-            <div class="history-timeline">
-                <!-- 1. แจ้งเมื่อ -->
-                <div class="timeline-item" th:if="${job.reportDate != null}">
-                    <span class="dot reported"></span>
-                    <span class="tl-label">แจ้งเมื่อ:</span>
-                    <span class="tl-value"
-                          th:text="${#temporals.format(job.reportDate, 'dd/MM/yyyy HH:mm')}">
-                        07/10/2026 12:48
-                    </span>
-                </div>
-
-                <!-- 2. เริ่มซ่อม (assign) -->
-                <div class="timeline-item" th:if="${job.assignDate != null}">
-                    <span class="dot started"></span>
-                    <span class="tl-label">เริ่มซ่อม:</span>
-                    <span class="tl-value"
-                          th:text="${#temporals.format(job.assignDate, 'dd/MM/yyyy HH:mm')}">
-                        07/10/2026 14:47
-                    </span>
-                </div>
-
-                <!-- 3. ซ่อมเสร็จ -->
-                <div class="timeline-item" th:if="${job.completeDate != null}">
-                    <span class="dot finished"></span>
-                    <span class="tl-label">ซ่อมเสร็จ:</span>
-                    <span class="tl-value"
-                          th:text="${#temporals.format(job.completeDate, 'dd/MM/yyyy HH:mm')}">
-                        07/10/2026 16:47
-                    </span>
-                </div>
+            <p style="margin-top:10px; font-size:14px;" th:text="${job.description}">รายละเอียดงาน</p>
+            <div class="tech-meta" style="margin-top:8px;"
+                 th:text="'ได้รับมอบหมาย: ' + ${#temporals.format(job.assignDate, 'dd/MM/yyyy HH:mm')}">
+                วันที่มอบหมาย
             </div>
-
-            <div class="history-notes"
-                 th:if="${(job.adminNote != null and !job.adminNote.isEmpty()) or (job.technicianNote != null and !job.technicianNote.isEmpty())}">
-
-                <div class="note-block admin"
-                     th:if="${job.adminNote != null and !job.adminNote.isEmpty()}">
-                    <span class="note-label">แอดมิน:</span>
-                    <span class="note-text" th:text="${job.adminNote}">หมายเหตุ</span>
-                </div>
-
-                <div class="note-block technician"
-                     th:if="${job.technicianNote != null and !job.technicianNote.isEmpty()}">
-                    <span class="note-label">ช่าง:</span>
-                    <span class="note-text" th:text="${job.technicianNote}">หมายเหตุ</span>
-                </div>
+            <div class="tech-meta" th:if="${job.adminNote != null and !job.adminNote.isEmpty()}"
+                 th:text="'หมายเหตุแอดมิน: ' + ${job.adminNote}">
+                หมายเหตุแอดมิน
             </div>
-
+            <div class="tech-meta" th:if="${job.technicianNote != null and !job.technicianNote.isEmpty()}"
+                 th:text="'หมายเหตุช่าง: ' + ${job.technicianNote}">
+                หมายเหตุช่าง
+            </div>
         </div>
     </div>
 

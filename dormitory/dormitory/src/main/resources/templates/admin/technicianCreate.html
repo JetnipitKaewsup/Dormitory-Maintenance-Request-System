@@ -10,95 +10,55 @@
 
 <div th:replace="~{admin/adminHeader :: adminHeader('technicians')}"></div>
 
-<main class="form-page">
-
+<main>
     <div class="page-head">
         <div>
             <h1 class="page-title">สร้าง Account ช่าง</h1>
             <p class="page-sub">สร้างบัญชีสำหรับช่างใหม่ ช่างจะได้รับอีเมลยืนยันตัวตนก่อน login ครั้งแรก</p>
         </div>
-        <a class="btn btn-outline" th:href="@{/admin/technicians}">
-            <!-- Lucide: Arrow left -->
-            <i data-lucide="arrow-left" class="btn-icon"></i>
-            กลับหน้ารายชื่อ
-        </a>
+        <a class="btn btn-outline" th:href="@{/admin/technicians}">&larr; กลับหน้ารายชื่อ</a>
     </div>
 
     <div class="alert alert-error" th:if="${error}" th:text="${error}"></div>
 
-    <form method="post" th:action="@{/admin/technicians/create}" th:object="${createRequest}">
-
-        <div class="section-card">
-
-            <div class="section-header">
-                <!-- Lucide: User -->
-                <div class="section-icon">
-                    <i data-lucide="user"></i>
-                </div>
-                <div class="section-text">
-                    <div class="section-title">ข้อมูลส่วนตัว</div>
-                    <div class="section-sub">ชื่อ-นามสกุล เบอร์ติดต่อ และข้อมูลบัญชี</div>
-                </div>
-            </div>
+    <div class="card" style="max-width:640px;">
+        <form method="post" th:action="@{/admin/technicians/create}" th:object="${createRequest}">
 
             <div class="form-row">
                 <div class="form-group">
                     <label>ชื่อ</label>
                     <input type="text" th:field="*{firstName}" />
-                    <div class="form-hint error"
-                         th:if="${#fields.hasErrors('firstName')}"
-                         th:errors="*{firstName}"></div>
+                    <div class="form-hint" style="color:var(--color-danger);"
+                         th:if="${#fields.hasErrors('firstName')}" th:errors="*{firstName}"></div>
                 </div>
                 <div class="form-group">
                     <label>นามสกุล</label>
                     <input type="text" th:field="*{lastName}" />
-                    <div class="form-hint error"
-                         th:if="${#fields.hasErrors('lastName')}"
-                         th:errors="*{lastName}"></div>
+                    <div class="form-hint" style="color:var(--color-danger);"
+                         th:if="${#fields.hasErrors('lastName')}" th:errors="*{lastName}"></div>
                 </div>
             </div>
 
             <div class="form-group">
                 <label>Username</label>
-                <input type="text" th:field="*{username}" autocomplete="off" />
-                <div class="form-hint error"
-                     th:if="${#fields.hasErrors('username')}"
-                     th:errors="*{username}"></div>
+                <input type="text" th:field="*{username}" />
+                <div class="form-hint" style="color:var(--color-danger);"
+                     th:if="${#fields.hasErrors('username')}" th:errors="*{username}"></div>
             </div>
 
             <div class="form-row">
                 <div class="form-group">
                     <label>อีเมล</label>
-                    <input type="email" th:field="*{email}" autocomplete="off" />
-                    <div class="form-hint error"
-                         th:if="${#fields.hasErrors('email')}"
-                         th:errors="*{email}"></div>
+                    <input type="email" th:field="*{email}" />
+                    <div class="form-hint" style="color:var(--color-danger);"
+                         th:if="${#fields.hasErrors('email')}" th:errors="*{email}"></div>
+                    <div class="form-hint">ช่างต้องกดยืนยันลิงก์ในอีเมลนี้ก่อนถึงจะ login ได้</div>
                 </div>
                 <div class="form-group">
                     <label>เบอร์โทรศัพท์</label>
                     <input type="tel" th:field="*{phoneNo}" />
-                    <div class="form-hint error"
-                         th:if="${#fields.hasErrors('phoneNo')}"
-                         th:errors="*{phoneNo}"></div>
-                </div>
-            </div>
-
-            <div class="form-hint">
-                ช่างต้องกดยืนยันลิงก์ในอีเมลนี้ก่อนจึงจะ login ได้
-            </div>
-
-        </div>
-
-        <div class="section-card">
-
-            <div class="section-header">
-                <!-- Lucide: Wrench -->
-                <div class="section-icon">
-                    <i data-lucide="wrench"></i>
-                </div>
-                <div class="section-text">
-                    <div class="section-title">ข้อมูลช่าง</div>
-                    <div class="section-sub">ความเชี่ยวชาญและรหัสผ่านเริ่มต้น</div>
+                    <div class="form-hint" style="color:var(--color-danger);"
+                         th:if="${#fields.hasErrors('phoneNo')}" th:errors="*{phoneNo}"></div>
                 </div>
             </div>
 
@@ -111,47 +71,25 @@
                     <option value="aircon">แอร์</option>
                     <option value="general">งานทั่วไป</option>
                 </select>
-                <div class="form-hint error"
-                     th:if="${#fields.hasErrors('specialization')}"
-                     th:errors="*{specialization}"></div>
+                <div class="form-hint" style="color:var(--color-danger);"
+                     th:if="${#fields.hasErrors('specialization')}" th:errors="*{specialization}"></div>
             </div>
 
             <div class="form-group">
                 <label>รหัสผ่านเริ่มต้น</label>
-                <input type="password" th:field="*{password}" autocomplete="new-password" />
-                <div class="form-hint error"
-                     th:if="${#fields.hasErrors('password')}"
-                     th:errors="*{password}"></div>
+                <input type="password" th:field="*{password}" />
+                <div class="form-hint" style="color:var(--color-danger);"
+                     th:if="${#fields.hasErrors('password')}" th:errors="*{password}"></div>
                 <div class="form-hint">ช่างสามารถเปลี่ยนรหัสผ่านเองภายหลังได้</div>
             </div>
 
-        </div>
-
-        <div class="form-actions">
-            <a class="btn btn-outline" th:href="@{/admin/technicians}">
-                <i data-lucide="x" class="btn-icon"></i>
-                ยกเลิก
-            </a>
-            <button type="submit" class="btn btn-approve">
-                <i data-lucide="user-plus" class="btn-icon"></i>
-                สร้างบัญชี
-            </button>
-        </div>
-
-    </form>
-
+            <div class="form-actions">
+                <a class="btn btn-outline" th:href="@{/admin/technicians}">ยกเลิก</a>
+                <button type="submit" class="btn btn-approve">สร้างบัญชี</button>
+            </div>
+        </form>
+    </div>
 </main>
-
-<!-- Lucide Icons Library -->
-<script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
-
-<script>
-(function () {
-    if (typeof lucide !== 'undefined') {
-        lucide.createIcons();
-    }
-})();
-</script>
 
 </body>
 </html>

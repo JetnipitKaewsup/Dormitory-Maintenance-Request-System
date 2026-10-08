@@ -1,18 +1,14 @@
 package com.example.dormitory.service.impl;
 
 import com.example.dormitory.domain.entity.RepairAssignment;
-import com.example.dormitory.domain.entity.RepairAssignmentStatusHistory;
-import com.example.dormitory.domain.entity.RepairRequest;
 import com.example.dormitory.domain.entity.Technician;
 import com.example.dormitory.domain.entity.User;
-import com.example.dormitory.domain.enums.RepairRequestStatus;
 import com.example.dormitory.dto.request.AdminTechnicianCreateRequest;
 import com.example.dormitory.dto.request.AdminTechnicianUpdateRequest;
 import com.example.dormitory.dto.response.AdminTechnicianResponse;
 import com.example.dormitory.dto.response.AdminTechnicianHistoryResponse;
 import com.example.dormitory.repository.AdminTechnicianRepository;
 import com.example.dormitory.repository.RepairAssignmentRepository;
-import com.example.dormitory.repository.RepairAssignmentStatusHistoryRepository;
 import com.example.dormitory.repository.UserRepository;
 import com.example.dormitory.service.AdminTechnicianService;
 import org.springframework.http.MediaType;
@@ -20,9 +16,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.reactive.function.client.WebClient;
 
-import java.time.LocalDateTime;
-
-import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -36,18 +29,15 @@ public class AdminTechnicianServiceImpl implements AdminTechnicianService {
     private final UserRepository userRepository;
     private final WebClient supabaseWebClient;
     private final RepairAssignmentRepository repairAssignmentRepository;
-    private final RepairAssignmentStatusHistoryRepository statusHistoryRepository;
 
     public AdminTechnicianServiceImpl(AdminTechnicianRepository technicianRepository,
-                                      UserRepository userRepository,
-                                      WebClient supabaseWebClient,
-                                      RepairAssignmentRepository repairAssignmentRepository,
-                                      RepairAssignmentStatusHistoryRepository statusHistoryRepository) {
+                                       UserRepository userRepository,
+                                       WebClient supabaseWebClient,
+                                       RepairAssignmentRepository repairAssignmentRepository) {
         this.technicianRepository = technicianRepository;
         this.userRepository = userRepository;
         this.supabaseWebClient = supabaseWebClient;
         this.repairAssignmentRepository = repairAssignmentRepository;
-        this.statusHistoryRepository = statusHistoryRepository;
     }
 
     @Override
@@ -85,12 +75,10 @@ public class AdminTechnicianServiceImpl implements AdminTechnicianService {
     @Override
     @Transactional
     public AdminTechnicianResponse createTechnician(AdminTechnicianCreateRequest request) {
-        // 1. เช็ค username ซ้ำ
         if (userRepository.findByUsername(request.getUsername()).isPresent()) {
             throw new RuntimeException("username นี้ถูกใช้งานแล้ว");
         }
 
-        // 2. สร้าง body สำหรับ Supabase signup
         Map<String, Object> body = new HashMap<>();
         body.put("email", request.getEmail());
         body.put("password", request.getPassword());
@@ -101,10 +89,8 @@ public class AdminTechnicianServiceImpl implements AdminTechnicianService {
         metadata.put("username", request.getUsername());
         metadata.put("phone_no", request.getPhoneNo());
         metadata.put("role", "TECHNICIAN");
-        metadata.put("specialization", request.getSpecialization());
         body.put("data", metadata);
 
-        // 3. เรียก Supabase signup → trigger handle_new_user จะสร้าง users + technician ให้
         Map<String, Object> supabaseResponse = supabaseWebClient
                 .post()
                 .uri("/auth/v1/signup")
@@ -120,12 +106,20 @@ public class AdminTechnicianServiceImpl implements AdminTechnicianService {
         }
         UUID supabaseUserId = UUID.fromString(idObj.toString());
 
-        // 4. trigger สร้างข้อมูลให้แล้ว → แค่ query กลับมา
-        Technician technician = technicianRepository
-                .findByUser_UserId(supabaseUserId)
-                .orElseThrow(() -> new RuntimeException("ไม่พบข้อมูลช่างที่เพิ่งสร้าง"));
+        User user = new User();
+        user.setUserId(supabaseUserId);
+        user.setUsername(request.getUsername());
+        user.setFirstName(request.getFirstName());
+        user.setLastName(request.getLastName());
+        user.setPhoneNo(request.getPhoneNo());
+        user.setRole("TECHNICIAN");
 
-        return toResponse(technician);
+        User savedUser = userRepository.save(user);
+
+        Technician technician = new Technician(null, savedUser, request.getSpecialization());
+        Technician savedTechnician = technicianRepository.save(technician);
+
+        return toResponse(savedTechnician);
     }
 
     @Override
@@ -142,30 +136,17 @@ public class AdminTechnicianServiceImpl implements AdminTechnicianService {
     }
 
     private AdminTechnicianHistoryResponse toHistoryResponse(RepairAssignment assignment) {
-        RepairRequest req = assignment.getRepairRequest();
-
-        LocalDateTime completeDate = statusHistoryRepository
-                .findFirstByAssignment_AssignmentIdAndNewStatusOrderByChangeDateDesc(
-                        assignment.getAssignmentId(),
-                        RepairRequestStatus.COMPLETED)
-                .map(RepairAssignmentStatusHistory::getChangeDate)
-                .orElse(null);
-
         return new AdminTechnicianHistoryResponse(
                 assignment.getAssignmentId(),
-                req != null ? req.getRepairRequestId() : null,
-                req != null && req.getRepairType() != null
-                        ? req.getRepairType().name() : null,
-                req != null ? req.getDescription() : null,
+                assignment.getRepairRequest() != null ? assignment.getRepairRequest().getRepairRequestId() : null,
+                assignment.getRepairRequest() != null && assignment.getRepairRequest().getRepairType() != null
+                        ? assignment.getRepairRequest().getRepairType().name() : null,
+                assignment.getRepairRequest() != null ? assignment.getRepairRequest().getDescription() : null,
                 assignment.getJobStatus() != null ? assignment.getJobStatus().getThaiName() : null,
                 assignment.getJobStatus() != null ? assignment.getJobStatus().getCssClass() : null,
                 assignment.getAdminNote(),
                 assignment.getTechnicianNote(),
-                assignment.getAssignDate(),
-                // reportDate = วันที่แจ้ง
-                req != null ? req.getCreatedAt() : null,
-                // completeDate = วันที่ tech กดเสร็จจริง
-                completeDate
+                assignment.getAssignDate()
         );
     }
 
