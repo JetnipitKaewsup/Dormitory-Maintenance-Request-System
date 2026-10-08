@@ -30,7 +30,7 @@
 
             <div class="work-body">
                 <div class="work-title-line">
-                    <span class="work-type" th:text="${r.repairType}"></span>
+                    <span class="work-type" th:text="${r.repairType != null ? r.repairType.thaiName : '-'}">...</span>
                     <span class="work-badge">รอมอบหมายงาน</span>
                 </div>
                 <p class="work-desc" th:text="${r.description}"></p>
