@@ -51,6 +51,7 @@
                 </div>
             </div>
             <div class="tech-actions">
+                <a class="btn btn-outline" th:href="@{'/admin/technicians/' + ${tech.technicianId} + '/history'}">ดูประวัติ</a>
                 <button type="button" class="btn btn-outline edit-btn" title="แก้ไขข้อมูล"
                         th:attr="data-id=${tech.technicianId},
                                  data-firstname=${tech.firstName},

@@ -26,7 +26,15 @@ header.topbar {
     justify-content: space-between;
     padding: 14px 28px;
 }
-header.topbar .brand { font-size: 20px; font-weight: 600; }
+
+header.topbar .brand {
+    font-size: 20px;
+    font-weight: 600;
+    color: #fff;
+    text-decoration: none;
+}
+header.topbar .brand:hover { opacity: 0.85; }
+
 header.topbar .right { display: flex; align-items: center; gap: 16px; }
 
 /* ชื่อ+ตำแหน่ง ในกรอบ pill พร้อม avatar */
@@ -53,21 +61,44 @@ header.topbar .user-info {
 header.topbar .user-info .user-name { font-size: 14px; font-weight: 700; color: #fff; }
 header.topbar .user-info .user-role { font-size: 12px; color: rgba(255,255,255,0.85); }
 
+/* ---------- Icon buttons (Bell / Logout) ---------- */
 header.topbar .icon-btn {
     background: none;
     border: none;
-    color: #fff;
+    color: #fff;                           
     font-size: 18px;
     cursor: pointer;
-    width: 36px; height: 36px;
+    width: 40px;
+    height: 40px;
     border-radius: 50%;
     display: inline-flex;
     align-items: center;
     justify-content: center;
     text-decoration: none;
+    padding: 0;
     transition: background 0.15s ease;
 }
-header.topbar .icon-btn:hover { background: rgba(255,255,255,0.18); }
+
+header.topbar .icon-btn:hover {
+    background: rgba(255,255,255,0.18);
+}
+
+
+header.topbar .icon-btn svg,
+header.topbar .icon-btn i {
+    width: 20px;
+    height: 20px;
+    stroke-width: 2;
+    stroke: currentColor;                   
+    color: inherit;
+    display: block;
+}
+
+/* Logout button — hover แดงอ่อน */
+header.topbar .icon-btn[title="ออกจากระบบ"]:hover {
+    background: rgba(255, 255, 255, 0.25);
+    color: #fff;
+}
 
 /* ---------- Nav tabs ---------- */
 nav.tabs {
@@ -148,6 +179,7 @@ button:active, .btn:active { transform: translateY(1px); }
 }
 .btn-outline:hover { background: #f5f6f8; border-color: #b8bcc2; }
 
+/* ---------- Textarea ---------- */
 textarea.remark-box {
     width: 100%;
     border: 1px solid var(--color-border);
@@ -159,13 +191,9 @@ textarea.remark-box {
     margin-bottom: 12px;
     transition: border-color 0.15s ease;
 }
-header.topbar .brand {
-    font-size: 20px;
-    font-weight: 600;
-    color: #fff;
-    text-decoration: none;
-}
+textarea.remark-box:focus { outline: none; border-color: var(--color-primary); }
 
+/* ---------- Reporter Contact Block ---------- */
 .reporter-contact {
     margin-top: 14px;
     padding-top: 14px;
@@ -198,6 +226,55 @@ header.topbar .brand {
 }
 .confirm-hint { margin: 0 0 8px; font-size: 13px; color: #B45309; }
 
+/* ============================================
+   Lucide Icons — Buttons (btn-icon)
+   ============================================ */
 
-header.topbar .brand:hover { opacity: 0.85; }
-textarea.remark-box:focus { outline: none; border-color: var(--color-primary); }
+/* Icon ในปุ่ม — ใช้กับ <i data-lucide="..."> */
+.btn .btn-icon,
+.btn svg.btn-icon {
+    width: 16px;
+    height: 16px;
+    stroke-width: 2;
+    vertical-align: middle;
+    margin-right: 4px;
+    display: inline-block;
+    stroke: currentColor;
+    color: inherit;
+    flex-shrink: 0;
+}
+
+/* ปุ่มให้ align icon + text */
+.btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+}
+
+/* ============================================
+   Lucide Icons — Form Labels (label-icon)
+   ============================================ */
+
+.form-group label .label-icon,
+.form-group label svg.label-icon {
+    width: 16px;
+    height: 16px;
+    stroke-width: 2;
+    vertical-align: middle;
+    margin-right: 6px;
+    color: #6b7280;
+    display: inline-block;
+}
+
+/* ============================================
+   Lucide Icons — Section Icon
+   ============================================ */
+
+.section-icon svg,
+.section-icon i {
+    width: 24px;
+    height: 24px;
+    stroke-width: 2;
+    color: #4CAF50;
+    display: block;
+}

@@ -2,10 +2,13 @@
 <html xmlns:th="http://www.thymeleaf.org">
 <body>
 
-<!-- ใช้กับหน้าอื่นๆ ที่ต้องมี nav tabs -->
+<!-- ============================================
+     Fragment: adminHeader (มี nav tabs)
+     ============================================ -->
 <div th:fragment="adminHeader(activeTab)">
+
     <header class="topbar">
-        <a class="brand" th:href="@{/admin/requests}">Dormitory Repair System</a>
+        <a class="brand" th:href="@{/admin/requests}">ระบบจัดการแจ้งซ่อมหอพัก</a>
         <div class="right">
             <div class="user-chip">
                 <span class="avatar"></span>
@@ -14,10 +17,17 @@
                     <div class="user-role" th:text="${session.role} ?: '-'">ตำแหน่ง</div>
                 </div>
             </div>
-            <button class="icon-btn" type="button" title="การแจ้งเตือน">&#128276;</button>
+
+            <button class="icon-btn" type="button" title="การแจ้งเตือน">
+                <i data-lucide="bell"></i>
+            </button>
+
             <form th:action="@{/logout}" method="post" style="display:inline;">
-    <button class="icon-btn" type="submit" title="ออกจากระบบ">&#9211;</button>
-</form>
+                <button class="icon-btn" type="submit" title="ออกจากระบบ">
+                    <i data-lucide="log-out"></i>
+                </button>
+            </form>
+        </div>
     </header>
 
     <nav class="tabs">
@@ -28,10 +38,35 @@
         <a th:href="@{/admin/reporters}" th:classappend="${activeTab == 'reporters'} ? 'active' : ''">จัดการผู้แจ้ง</a>
         <a th:href="@{/admin/residents}" th:classappend="${activeTab == 'residents'} ? 'active' : ''">ผู้พักอาศัย</a>
     </nav>
+
+
+    <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
+    <script>
+        (function () {
+            function initLucide() {
+                if (typeof lucide !== 'undefined') {
+                    lucide.createIcons();
+                }
+            }
+            // ลองทันที
+            initLucide();
+            // ลองอีกทีหลัง DOM พร้อม
+            if (document.readyState === 'loading') {
+                document.addEventListener('DOMContentLoaded', initLucide);
+            } else {
+                initLucide();
+            }
+            // ลองครั้งสุดท้ายหลังทุกอย่างโหลดเสร็จ
+            window.addEventListener('load', initLucide);
+        })();
+    </script>
 </div>
 
-<!-- ใช้เฉพาะหน้า admin home: ไม่มี nav tabs -->
+<!-- ============================================
+     Fragment: homeHeader (ไม่มี nav tabs)
+     ============================================ -->
 <div th:fragment="homeHeader()">
+
     <header class="topbar">
         <a class="brand" th:href="@{/admin/requests}">Dormitory Repair System</a>
         <div class="right">
@@ -42,12 +77,36 @@
                     <div class="user-role" th:text="${session.role} ?: '-'">ตำแหน่ง</div>
                 </div>
             </div>
-            <button class="icon-btn" type="button" title="การแจ้งเตือน">&#128276;</button>
-           <form th:action="@{/logout}" method="post" style="display:inline;">
-    <button class="icon-btn" type="submit" title="ออกจากระบบ">&#9211;</button>
-</form>
+
+            <button class="icon-btn" type="button" title="การแจ้งเตือน">
+                <i data-lucide="bell"></i>
+            </button>
+
+            <form th:action="@{/logout}" method="post" style="display:inline;">
+                <button class="icon-btn" type="submit" title="ออกจากระบบ">
+                    <i data-lucide="log-out"></i>
+                </button>
+            </form>
         </div>
     </header>
+
+    <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
+    <script>
+        (function () {
+            function initLucide() {
+                if (typeof lucide !== 'undefined') {
+                    lucide.createIcons();
+                }
+            }
+            initLucide();
+            if (document.readyState === 'loading') {
+                document.addEventListener('DOMContentLoaded', initLucide);
+            } else {
+                initLucide();
+            }
+            window.addEventListener('load', initLucide);
+        })();
+    </script>
 </div>
 
 </body>
