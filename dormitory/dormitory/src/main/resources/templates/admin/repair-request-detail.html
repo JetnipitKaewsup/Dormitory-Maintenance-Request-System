@@ -32,7 +32,7 @@
     <!-- 1. SUBMITTED: done เสมอ เพราะมีคำร้องแล้วถึงเข้ามาหน้านี้ -->
     <div class="step done">
         <div class="dot">&#10003;</div>
-        <div class="label">SUBMITTED</div>
+        <div class="label">ส่งคำร้อง</div>
         <div class="sub" th:text="${#temporals.format(request.startDateTime, 'd MMM yyyy')}">-</div>
     </div>
 
@@ -42,7 +42,7 @@
                           (${request.status.name() == 'REJECTED' or request.status.name() == 'CANCELLED'} ? 'rejected' :
                           'done')">
         <div class="dot"></div>
-        <div class="label">PENDING</div>
+        <div class="label">รออนุมัติ</div>
     </div>
 
     <!-- 3. APPROVED -->
@@ -50,7 +50,7 @@
          th:classappend="${request.status.name() == 'APPROVED'} ? 'current' :
                           (${request.status.name() == 'IN_PROGRESS' or request.status.name() == 'COMPLETED'} ? 'done' : '')">
         <div class="dot"></div>
-        <div class="label">APPROVED</div>
+        <div class="label">อนุมัติแล้ว</div>
     </div>
 
     <!-- 4. IN-PROGRESS -->
@@ -58,25 +58,25 @@
          th:classappend="${request.status.name() == 'IN_PROGRESS'} ? 'current' :
                           (${request.status.name() == 'COMPLETED'} ? 'done' : '')">
         <div class="dot"></div>
-        <div class="label">IN-PROGRESS</div>
+        <div class="label">กำลังดำเนินการ</div>
     </div>
 
     <!-- 5. COMPLETED -->
     <div class="step" th:classappend="${request.status.name() == 'COMPLETED'} ? 'done current' : ''">
         <div class="dot"></div>
-        <div class="label">COMPLETED</div>
+        <div class="label">เสร็จสิ้น</div>
     </div>
 </div>
 
         <!-- ============ บอกสถานะปัจจุบันเป็นข้อความชัดเจน ============ -->
-        <div class="current-status-line" th:switch="${request.status}">
+        <div class="current-status-line" th:switch="${request.status.name()}">
             <span th:case="'PENDING'">สถานะปัจจุบัน: <b>รออนุมัติจากแอดมิน</b></span>
             <span th:case="'APPROVED'">สถานะปัจจุบัน: <b>อนุมัติแล้ว รอมอบหมายงานให้ช่าง</b></span>
             <span th:case="'REJECTED'">สถานะปัจจุบัน: <b style="color:var(--color-danger)">ถูกปฏิเสธคำร้อง</b></span>
             <span th:case="'IN_PROGRESS'">สถานะปัจจุบัน: <b>ช่างกำลังดำเนินการซ่อม</b></span>
             <span th:case="'COMPLETED'">สถานะปัจจุบัน: <b>ซ่อมเสร็จสิ้นแล้ว</b></span>
             <span th:case="'CANCELLED'">สถานะปัจจุบัน: <b style="color:var(--color-danger)">ยกเลิกคำร้อง</b></span>
-            <span th:case="*">สถานะปัจจุบัน: <b th:text="${request.status}">-</b></span>
+            <span th:case="*">สถานะปัจจุบัน: <b th:text="${request.status.thaiName}">-</b></span>
         </div>
     </div>
 
@@ -92,7 +92,7 @@
                                    (${request.status.name() == 'APPROVED'} ? 'approved' :
                                    (${request.status.name() == 'REJECTED' or request.status.name() == 'CANCELLED'} ? 'rejected' :
                                    (${request.status.name() == 'IN_PROGRESS'} ? 'inprogress' : 'completed')))"
-                  th:text="${request.status.name() == 'PENDING'} ? 'รออนุมัติ / ปฏิเสธ' : ${request.status}">
+                  th:text="${request.status.name() == 'PENDING'} ? 'รออนุมัติ / ปฏิเสธ' : ${request.status.thaiName}">
                 สถานะ
             </span>
         </div>
