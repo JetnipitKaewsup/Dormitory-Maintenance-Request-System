@@ -113,9 +113,9 @@ public class RepairRequestServiceImpl implements RepairRequestService {
 
                 request.setStatus(newStatus);
                 request.setAdmin(admin);
-                if (note != null && !note.isBlank()) {
-                        request.setReporterNote(note);
-                }
+                // if (note != null && !note.isBlank()) {
+                //         request.setReporterNote(note);
+                // }
                 repairRequestRepository.save(request);
 
                 User changeByUser = admin.getUser();

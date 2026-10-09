@@ -1,7 +1,9 @@
 package com.example.dormitory.controller.web;
 
+import com.example.dormitory.domain.entity.User;
 import com.example.dormitory.dto.response.NotificationResponse;
 import com.example.dormitory.service.NotificationService;
+
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -11,16 +13,19 @@ import java.util.List;
 import java.util.UUID;
 
 @Controller
-@RequestMapping("/technician/notifications")
-public class NotificationController {
+@RequestMapping("/admin/notifications")
+public class AdminNotificationController {
 
     private final NotificationService notificationService;
 
-    public NotificationController(
+    public AdminNotificationController(
             NotificationService notificationService) {
         this.notificationService = notificationService;
     }
 
+    /**
+     * หน้า Notification ของ Admin
+     */
     @GetMapping
     public String notifications(
             Authentication authentication,
@@ -44,9 +49,38 @@ public class NotificationController {
                 unreadCount
         );
 
-        return "technician/notification";
+        return "admin/admin-notification";
     }
 
+    /**
+     * โหลด Notification
+     */
+    @GetMapping("/data")
+    @ResponseBody
+    public List<NotificationResponse> getNotificationData(
+            Authentication authentication) {
+
+        UUID userId = getUserId(authentication);
+
+        return notificationService.getNotifications(userId);
+    }
+
+    /**
+     * จำนวน Notification ที่ยังไม่ได้อ่าน
+     */
+    @GetMapping("/unread-count")
+    @ResponseBody
+    public long getUnreadCount(
+            Authentication authentication) {
+
+        UUID userId = getUserId(authentication);
+
+        return notificationService.countUnread(userId);
+    }
+
+    /**
+     * Mark as read
+     */
     @PostMapping("/{notificationId}/read")
     @ResponseBody
     public void markAsRead(
@@ -61,33 +95,15 @@ public class NotificationController {
         );
     }
 
+    /**
+     * ดึง User ID จาก Spring Security
+     */
     private UUID getUserId(
             Authentication authentication) {
 
-        com.example.dormitory.domain.entity.User user =
-                (com.example.dormitory.domain.entity.User)
-                        authentication.getPrincipal();
+        User user =
+                (User) authentication.getPrincipal();
 
         return user.getUserId();
-    }
-
-    @GetMapping("/data")
-    @ResponseBody
-    public List<NotificationResponse> getNotificationData(
-            Authentication authentication) {
-
-        UUID userId = getUserId(authentication);
-
-        return notificationService.getNotifications(userId);
-    }
-
-    @GetMapping("/unread-count")
-    @ResponseBody
-    public long getUnreadCount(
-            Authentication authentication) {
-
-        UUID userId = getUserId(authentication);
-
-        return notificationService.countUnread(userId);
     }
 }
