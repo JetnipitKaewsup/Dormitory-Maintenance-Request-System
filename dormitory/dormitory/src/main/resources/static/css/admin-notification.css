@@ -1,0 +1,590 @@
+/* =====================================================
+   ADMIN NOTIFICATION
+   ===================================================== */
+
+
+/* =====================================================
+   NOTIFICATION BUTTON
+   ===================================================== */
+
+/* header .admin-notification-btn {
+    position: relative;
+
+    display: flex;
+
+    align-items: center;
+    justify-content: center;
+
+    width: 40px;
+    height: 40px;
+
+    border: none;
+
+    background: transparent;
+
+    cursor: pointer;
+
+    color: inherit;
+} */
+
+
+/* Lucide notification icon */
+
+/* .admin-notification-btn svg {
+    width: 24px;
+    height: 24px;
+
+    stroke-width: 2.2;
+} */
+
+
+/* =====================================================
+   BADGE
+   ===================================================== */
+
+.admin-notification-badge {
+
+    position: absolute;
+
+    top: -4px;
+    right: -5px;
+
+    min-width: 20px;
+    height: 20px;
+
+    padding: 0 5px;
+
+    display: flex;
+
+    align-items: center;
+    justify-content: center;
+
+    border-radius: 10px;
+
+    background: #e53935;
+
+    color: #ffffff;
+
+    font-size: 11px;
+    font-weight: 700;
+
+    line-height: 1;
+
+    border: none;
+
+    box-sizing: border-box;
+}
+
+
+/* =====================================================
+   POPUP
+   ===================================================== */
+
+.admin-notification-popup {
+
+    position: fixed;
+
+    /* ให้ตำแหน่งเหมือน Reporter */
+
+    top: 70px;
+    right: 30px;
+
+    width: 380px;
+
+    max-width: calc(100vw - 30px);
+
+    background: #ffffff;
+
+    border-radius: 12px;
+
+    box-shadow:
+        0 8px 30px rgba(0, 0, 0, 0.18);
+
+    overflow: hidden;
+
+    display: none;
+
+    z-index: 9999;
+}
+
+
+.admin-notification-popup.show {
+
+    display: block;
+
+}
+
+
+/* =====================================================
+   HEADER
+   ===================================================== */
+
+.admin-notification-header {
+
+    display: flex;
+
+    align-items: center;
+    justify-content: center;
+
+    width: 100%;
+
+    min-height: 56px;
+
+    padding: 14px 20px;
+
+    box-sizing: border-box;
+
+    background: #50c96a;
+
+    color: #ffffff;
+}
+
+
+.admin-notification-header h3 {
+
+    display: block !important;
+
+    margin: 0 !important;
+    padding: 0 !important;
+
+    font-family: inherit;
+
+    font-size: 20px !important;
+
+    font-weight: 600 !important;
+
+    line-height: 1.5;
+
+    color: #ffffff !important;
+
+    visibility: visible !important;
+
+    opacity: 1 !important;
+}
+
+
+/* =====================================================
+   TABS
+   ===================================================== */
+
+.admin-notification-tabs {
+
+    display: flex;
+
+    align-items: center;
+
+    gap: 6px;
+
+    padding: 10px 15px;
+
+    background: #ffffff;
+
+    border-bottom: 1px solid #eeeeee;
+}
+
+
+.admin-notification-tab {
+
+    border: 1px solid #ff4b4b;
+
+    background: #ffffff;
+
+    padding: 7px 12px;
+
+    border-radius: 20px;
+
+    font-size: 13px;
+
+    color: #222222;
+
+    cursor: pointer;
+
+    transition:
+        background 0.15s ease,
+        color 0.15s ease;
+}
+
+
+.admin-notification-tab:hover {
+
+    background: #fff1f1;
+
+}
+
+
+.admin-notification-tab.active {
+
+    background: #ffffff;
+
+    color: #222222;
+
+    font-weight: 600;
+
+}
+
+
+/* =====================================================
+   LIST
+   ===================================================== */
+
+.admin-notification-list {
+
+    max-height: 450px;
+
+    overflow-y: auto;
+
+    background: #ffffff;
+}
+
+
+/* =====================================================
+   EMPTY
+   ===================================================== */
+
+.admin-notification-empty {
+
+    padding: 35px 20px;
+
+    text-align: center;
+
+    color: #999999;
+
+    font-size: 14px;
+
+}
+
+
+/* =====================================================
+   ITEM
+   ===================================================== */
+
+.admin-notification-item {
+
+    position: relative;
+
+    display: flex;
+
+    align-items: flex-start;
+
+    gap: 12px;
+
+    margin: 8px 15px;
+
+    padding: 15px 18px;
+
+    border-radius: 18px;
+
+    cursor: pointer;
+
+    transition:
+        transform 0.15s ease,
+        box-shadow 0.15s ease;
+}
+
+
+.admin-notification-item:hover {
+
+    transform: translateY(-1px);
+
+    box-shadow:
+        0 3px 10px rgba(0, 0, 0, 0.08);
+
+}
+
+
+/* =====================================================
+   UNREAD
+   ===================================================== */
+
+.admin-notification-item.unread {
+
+    box-shadow: none;
+
+}
+
+
+/* =====================================================
+   READ
+   ===================================================== */
+
+.admin-notification-item.read {
+
+    background: #ffffff !important;
+
+    color: #222222 !important;
+
+}
+
+
+/* =====================================================
+   TYPE COLORS
+   ===================================================== */
+
+
+/* คำร้องใหม่ */
+
+.admin-notification-item.type-new-request {
+
+    background: #a9caff;
+
+}
+
+
+/* ช่างทำงานสำเร็จ */
+
+.admin-notification-item.type-completed {
+
+    background: #c4f5c4;
+
+}
+
+
+/* ช่างทำงานไม่สำเร็จ */
+
+.admin-notification-item.type-in-completed {
+
+    background: #ffe4d5;
+
+}
+
+
+/* =====================================================
+   ICON
+   ===================================================== */
+
+.admin-notification-icon {
+
+    flex-shrink: 0;
+
+    width: 34px;
+    height: 34px;
+
+    display: flex;
+
+    align-items: center;
+    justify-content: center;
+}
+
+
+.admin-notification-icon svg {
+
+    width: 24px;
+    height: 24px;
+
+    stroke-width: 2.2;
+}
+
+
+/* icon colors */
+
+.type-new-request .admin-notification-icon {
+
+    color: #1769e0 !important;
+
+}
+
+
+.type-completed .admin-notification-icon {
+
+    color: #168b35 !important;
+
+}
+
+
+.type-in-completed .admin-notification-icon {
+
+    color: #df6b28 !important;
+
+}
+
+
+/* =====================================================
+   CONTENT
+   ===================================================== */
+
+.admin-notification-content {
+
+    flex: 1;
+
+    min-width: 0;
+
+}
+
+
+/* =====================================================
+   TITLE
+   ===================================================== */
+
+.admin-notification-title {
+
+    margin-bottom: 5px;
+
+    color: #222222 !important;
+
+    font-size: 14px;
+
+    font-weight: 600;
+
+    line-height: 1.4;
+}
+
+
+/* =====================================================
+   MESSAGE
+   ===================================================== */
+
+.admin-notification-message {
+
+    color: #555555 !important;
+
+    font-size: 13px;
+
+    line-height: 1;
+}
+
+
+/* =====================================================
+   TIME
+   ===================================================== */
+
+.admin-notification-time {
+
+    margin-top: 6px;
+
+    color: #999999 !important;
+
+    font-size: 11px;
+}
+
+
+/* =====================================================
+   MOBILE
+   ===================================================== */
+
+@media (max-width: 600px) {
+
+    .admin-notification-popup {
+
+        top: 65px;
+
+        left: 15px;
+        right: 15px;
+
+        width: auto;
+
+        max-width: none;
+
+    }
+
+
+    .admin-notification-header h3 {
+
+        font-size: 19px !important;
+
+    }
+
+
+    .admin-notification-tabs {
+
+        padding: 10px 15px;
+
+        gap: 5px;
+
+    }
+
+
+    .admin-notification-tab {
+
+        flex: 1;
+
+        padding: 7px 8px;
+
+        font-size: 12px;
+
+    }
+
+
+    .admin-notification-item {
+
+        margin: 8px 15px;
+
+        padding: 14px;
+
+        border-radius: 16px;
+
+    }
+
+
+    .admin-notification-title {
+
+        font-size: 14px;
+
+    }
+
+
+    .admin-notification-message {
+
+        font-size: 13px;
+
+    }
+
+}
+
+/* =====================================================
+   ADMIN LOGOUT ICON
+   ===================================================== */
+
+.admin-logout-btn {
+    display: inline-flex !important;
+
+    align-items: center;
+    justify-content: center;
+
+    width: 36px !important;
+    height: 36px !important;
+
+    padding: 0 !important;
+
+    background: transparent !important;
+
+    border: none !important;
+
+    color: #ffffff !important;
+
+    cursor: pointer;
+}
+
+.admin-logout-btn svg {
+    width: 22px;
+    height: 22px;
+
+    color: #ffffff !important;
+
+    stroke: currentColor;
+
+    stroke-width: 2.2;
+}
+
+header.topbar .admin-notification-btn {
+    position: relative;
+    width: 40px;
+    height: 40px;
+    padding: 0;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border: none;
+    background: transparent;
+    color: #fff;
+    cursor: pointer;
+}
+
+header.topbar .admin-notification-btn svg {
+    width: 24px;
+    height: 24px;
+    min-width: 24px;
+    min-height: 24px;
+    flex-shrink: 0;
+    display: block;
+    stroke: currentColor;
+}

@@ -10,7 +10,12 @@
   <title>DormCare - ประวัติคำร้อง</title>
 
   <link rel="stylesheet" th:href="@{/css/reporter.css}" />
+<link rel="stylesheet" th:href="@{/css/reporter-notification.css}">
+<meta name="_csrf"
+      th:content="${_csrf.token}">
 
+<meta name="_csrf_header"
+      th:content="${_csrf.headerName}">
   <script src="https://unpkg.com/lucide@latest"></script>
 
 </head>
@@ -23,22 +28,22 @@
 
     <a th:href="@{/}" class="brand">
 
-      <i data-lucide="wrench"></i>
-
       <span>ระบบแจ้งซ่อมในหอพัก</span>
 
     </a>
 
     <div class="nav-actions">
 
-      <button class="notification-btn">
+      <!-- <button class="notification-btn">
 
         <i data-lucide="bell"></i>
 
         <span class="notification-dot"></span>
 
-      </button>
+      </button> -->
 
+      <!-- notification ตำแหน่งbell-->
+<div th:replace="~{reporter/reporter-notification :: notification}"></div>
       <div class="user-profile">
 
         <a th:href="@{/reporter/profile/edit}" class="user-profile-link">
@@ -331,7 +336,7 @@
 
       let currentForm = null; // เก็บฟอร์มที่กำลังจะถูก submit
 
-      // เมื่อกดปุ่ม "ยกเลิกแจ้งซ่อม" ในตาราง
+      // เมื่อกดปุ่ม "ลบคำร้องแจ้งซ่อม" ในตาราง
       deleteTriggers.forEach(btn => {
         btn.addEventListener('click', (e) => {
           e.preventDefault();
@@ -357,7 +362,7 @@
         currentForm = null;
       });
 
-      // เมื่อกดปุ่ม "ยืนยันยกเลิกแจ้งซ่อม"
+      // เมื่อกดปุ่ม "ยืนยันลบคำร้องแจ้งซ่อม"
       confirmBtn.addEventListener('click', () => {
         if (currentForm) {
           currentForm.submit(); // ส่งฟอร์มไปยัง Backend
@@ -374,6 +379,10 @@
     });
   </script>
 
+<script src="https://unpkg.com/lucide@latest"></script>
+
+    <!-- Reporter Notification JS -->
+    <script th:src="@{/js/reporter-notification.js}"></script>
 </body>
 
 </html>

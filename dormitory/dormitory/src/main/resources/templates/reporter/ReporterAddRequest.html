@@ -6,8 +6,13 @@
     <title>DormCare - แจ้งซ่อมใหม่</title>
 
     <link rel="stylesheet" th:href="@{/css/reporter.css}" />
-
+    <link rel="stylesheet" th:href="@{/css/reporter-notification.css}">
     <script src="https://unpkg.com/lucide@latest"></script>
+    <meta name="_csrf"
+      th:content="${_csrf.token}">
+
+<meta name="_csrf_header"
+      th:content="${_csrf.headerName}">
   </head>
 
   <body>
@@ -15,16 +20,17 @@
 
     <nav class="navbar">
       <a th:href="@{/}" class="brand">
-        <i data-lucide="wrench"></i>
         <span>ระบบแจ้งซ่อมในหอพัก</span>
       </a>
 
       <div class="nav-actions">
-        <button class="notification-btn" type="button">
+        <!-- <button class="notification-btn" type="button">
           <i data-lucide="bell"></i>
           <span class="notification-dot"></span>
-        </button>
-
+        </button> -->
+      <!-- bell -->
+       <div th:replace="~{reporter/reporter-notification :: notification}">
+</div>
         <div class="user-profile">
           <a th:href="@{/reporter/profile/edit}" class="user-profile-link">
             <div>
@@ -476,91 +482,18 @@
         // =====================================================
         // FORM SUBMIT
         // =====================================================
+        form.addEventListener("submit", function (e) {
 
-        form.addEventListener("submit", async function (e) {
-          e.preventDefault();
+            // Client-side validation
+            const validationError = validateForm();
 
-          // -----------------------------
-          // Client-side validation
-          // -----------------------------
-
-          const validationError = validateForm();
-
-          if (validationError) {
-            showError(validationError);
-
-            return;
-          }
-
-          // -----------------------------
-          // Submit to Spring Boot
-          // -----------------------------
-
-          try {
-            const response = await fetch(form.action, {
-              method: "POST",
-
-              body: new FormData(form),
-
-              credentials: "same-origin",
-
-              redirect: "follow",
-            });
-
-            // -----------------------------------------
-            // SUCCESS
-            // Backend redirects to /reporter/requests
-            // -----------------------------------------
-
-            if (response.redirected) {
-              const redirectedUrl = new URL(
-                response.url,
-                window.location.origin,
-              );
-
-              if (redirectedUrl.pathname === "/reporter/requests") {
-                showSuccess();
-
-                setTimeout(function () {
-                  window.location.href = "/reporter/requests";
-                }, 1500);
-
+            if (validationError) {
+                e.preventDefault();
+                showError(validationError);
                 return;
-              }
             }
-
-            // -----------------------------------------
-            // BACKEND VALIDATION ERROR
-            // -----------------------------------------
-
-            const responseHtml = await response.text();
-
-            const parser = new DOMParser();
-
-            const documentHtml = parser.parseFromString(
-              responseHtml,
-              "text/html",
-            );
-
-            const serverError = documentHtml.querySelector(".alert-danger");
-
-            const fieldError = documentHtml.querySelector(".field-error");
-
-            let message = "เกิดข้อผิดพลาด กรุณาตรวจสอบข้อมูลอีกครั้ง";
-
-            if (serverError && serverError.textContent.trim()) {
-              message = serverError.textContent.trim();
-            } else if (fieldError && fieldError.textContent.trim()) {
-              message = fieldError.textContent.trim();
-            }
-
-            showError(message);
-          } catch (error) {
-            console.error("Submit error:", error);
-
-            showError("ไม่สามารถเชื่อมต่อเซิร์ฟเวอร์ได้ กรุณาลองใหม่");
-          }
         });
+        
 
         // =====================================================
         // CLOSE ERROR MODAL
@@ -581,5 +514,8 @@
         });
       });
     </script>
+
+    <!-- Reporter Notification JS -->
+    <script th:src="@{/js/reporter-notification.js}"></script>
   </body>
 </html>
