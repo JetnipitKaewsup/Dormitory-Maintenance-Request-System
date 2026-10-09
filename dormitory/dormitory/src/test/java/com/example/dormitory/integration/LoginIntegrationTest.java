@@ -33,9 +33,12 @@ import com.example.dormitory.controller.web.AuthController;
 import com.example.dormitory.domain.entity.User;
 import com.example.dormitory.repository.AdminRepository;
 import com.example.dormitory.repository.UserRepository;
+import com.example.dormitory.service.AuthRequestValidator;
 import com.example.dormitory.service.AuthService;
 import com.example.dormitory.service.LoginSessionService;
 import com.example.dormitory.service.SpringSecurityService;
+import com.example.dormitory.service.SupabaseAuthGateway;
+import com.example.dormitory.service.impl.SupabaseAuthGatewayImpl;
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpServer;
 
@@ -61,17 +64,14 @@ class LoginIntegrationTest {
     private HttpSession session;
 
     private User user;
-
     private UUID userId;
 
     @BeforeEach
     void setUp() throws Exception {
 
-        /*
-         * ---------------------------------------------------------
-         * 1. Start Mock Supabase Server
-         * ---------------------------------------------------------
-         */
+        // ---------------------------------------------------------
+        // 1. Start Mock Supabase Server
+        // ---------------------------------------------------------
 
         mockSupabaseServer = HttpServer.create(
                 new InetSocketAddress(0),
@@ -87,11 +87,9 @@ class LoginIntegrationTest {
 
         int port = mockSupabaseServer.getAddress().getPort();
 
-        /*
-         * ---------------------------------------------------------
-         * 2. Create real WebClient
-         * ---------------------------------------------------------
-         */
+        // ---------------------------------------------------------
+        // 2. Create real WebClient
+        // ---------------------------------------------------------
 
         WebClient webClient = WebClient.builder()
                 .baseUrl("http://localhost:" + port)
@@ -99,22 +97,27 @@ class LoginIntegrationTest {
 
         ObjectMapper objectMapper = new ObjectMapper();
 
-        /*
-         * ---------------------------------------------------------
-         * 3. Create REAL AuthService
-         * ---------------------------------------------------------
-         */
+        // ---------------------------------------------------------
+        // 3. Create REAL SupabaseAuthGateway and AuthService
+        // ---------------------------------------------------------
+
+        SupabaseAuthGateway supabaseAuthGateway =
+                new SupabaseAuthGatewayImpl(
+                        webClient,
+                        objectMapper
+                );
+
+        AuthRequestValidator authRequestValidator =
+                new AuthRequestValidator();
 
         authService = new AuthService(
-                webClient,
-                objectMapper
+                supabaseAuthGateway,
+                authRequestValidator
         );
 
-        /*
-         * ---------------------------------------------------------
-         * 4. Create mocked dependencies
-         * ---------------------------------------------------------
-         */
+        // ---------------------------------------------------------
+        // 4. Create mocked dependencies
+        // ---------------------------------------------------------
 
         springSecurityService = mock(SpringSecurityService.class);
         userRepository = mock(UserRepository.class);
@@ -128,7 +131,7 @@ class LoginIntegrationTest {
 
         /*
          * จำลอง Session ที่ยังไม่มีอยู่ก่อน Login
-         * จากนั้น Spring Security จะสร้าง Session ใหม่
+         * จากนั้นระบบจะใช้ Session ที่จำลองไว้
          */
         when(request.getSession(false))
                 .thenReturn(null, session);
@@ -139,11 +142,9 @@ class LoginIntegrationTest {
         when(request.getSession())
                 .thenReturn(session);
 
-        /*
-         * ---------------------------------------------------------
-         * 5. Create LoginSessionService
-         * ---------------------------------------------------------
-         */
+        // ---------------------------------------------------------
+        // 5. Create LoginSessionService
+        // ---------------------------------------------------------
 
         loginSessionService = new LoginSessionService(
                 springSecurityService,
@@ -151,11 +152,9 @@ class LoginIntegrationTest {
                 adminRepository
         );
 
-        /*
-         * ---------------------------------------------------------
-         * 6. Create REAL AuthController
-         * ---------------------------------------------------------
-         */
+        // ---------------------------------------------------------
+        // 6. Create REAL AuthController
+        // ---------------------------------------------------------
 
         authController = new AuthController(
                 authService,
@@ -178,11 +177,9 @@ class LoginIntegrationTest {
         SecurityContextHolder.clearContext();
     }
 
-    /*
-     * =============================================================
-     * Mock Supabase
-     * =============================================================
-     */
+    // =============================================================
+    // Mock Supabase
+    // =============================================================
 
     private void handleSupabaseLogin(
             HttpExchange exchange) throws IOException {
@@ -237,11 +234,9 @@ class LoginIntegrationTest {
         }
     }
 
-    /*
-     * =============================================================
-     * Test Helpers
-     * =============================================================
-     */
+    // =============================================================
+    // Test Helpers
+    // =============================================================
 
     private com.example.dormitory.dto.request.LoginRequest
             createValidLoginRequest() {
@@ -283,13 +278,10 @@ class LoginIntegrationTest {
         return authentication;
     }
 
-    /*
-     * =============================================================
-     * TC-IT-02-01
-     *
-     * Login ด้วยข้อมูลที่ถูกต้อง
-     * =============================================================
-     */
+    // =============================================================
+    // TC-IT-02-01
+    // Login ด้วยข้อมูลที่ถูกต้อง
+    // =============================================================
 
     @Test
     void TC_IT_02_01_loginWithValidData_shouldSuccess()
@@ -342,13 +334,10 @@ class LoginIntegrationTest {
         );
     }
 
-    /*
-     * =============================================================
-     * TC-IT-02-02
-     *
-     * Email / Password ไม่ถูกต้อง
-     * =============================================================
-     */
+    // =============================================================
+    // TC-IT-02-02
+    // Email / Password ไม่ถูกต้อง
+    // =============================================================
 
     @Test
     void TC_IT_02_02_loginWithWrongPassword_shouldReturnLoginPage()
@@ -404,13 +393,10 @@ class LoginIntegrationTest {
         );
     }
 
-    /*
-     * =============================================================
-     * TC-IT-02-03
-     *
-     * ไม่กรอก Password
-     * =============================================================
-     */
+    // =============================================================
+    // TC-IT-02-03
+    // ไม่กรอก Password
+    // =============================================================
 
     @Test
     void TC_IT_02_03_loginWithoutPassword_shouldReturnLoginPage() {
@@ -448,13 +434,10 @@ class LoginIntegrationTest {
         );
     }
 
-    /*
-     * =============================================================
-     * TC-IT-02-04
-     *
-     * ไม่กรอก Email
-     * =============================================================
-     */
+    // =============================================================
+    // TC-IT-02-04
+    // ไม่กรอก Email
+    // =============================================================
 
     @Test
     void TC_IT_02_04_loginWithoutEmail_shouldReturnLoginPage() {
@@ -492,13 +475,10 @@ class LoginIntegrationTest {
         );
     }
 
-    /*
-     * =============================================================
-     * TC-IT-02-05
-     *
-     * ตรวจสอบการสร้าง Authentication
-     * =============================================================
-     */
+    // =============================================================
+    // TC-IT-02-05
+    // ตรวจสอบการสร้าง Authentication
+    // =============================================================
 
     @Test
     void TC_IT_02_05_loginSuccessfully_shouldCreateAuthentication()
@@ -539,13 +519,10 @@ class LoginIntegrationTest {
         );
     }
 
-    /*
-     * =============================================================
-     * TC-IT-02-06
-     *
-     * ตรวจสอบการจัดเก็บข้อมูล Login ลง Session
-     * =============================================================
-     */
+    // =============================================================
+    // TC-IT-02-06
+    // ตรวจสอบการจัดเก็บข้อมูล Login ลง Session
+    // =============================================================
 
     @Test
     void TC_IT_02_06_loginSuccessfully_shouldStoreLoginDataInSession()
