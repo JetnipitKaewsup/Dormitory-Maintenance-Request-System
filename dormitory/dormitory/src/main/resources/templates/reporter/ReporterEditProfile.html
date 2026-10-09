@@ -4,7 +4,7 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>DormCare - แก้ไขโปรไฟล์</title>
-
+    <link rel="stylesheet" th:href="@{/css/reporter-notification.css}">
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
@@ -13,7 +13,11 @@
     />
     <link rel="stylesheet" th:href="@{/css/reporter.css}" />
     <script src="https://unpkg.com/lucide@latest"></script>
+<meta name="_csrf"
+      th:content="${_csrf.token}">
 
+<meta name="_csrf_header"
+      th:content="${_csrf.headerName}">
     <style>
       :root {
         --bg: #f1f4f9;
@@ -437,10 +441,14 @@
       </a>
 
       <div class="nav-actions">
-        <button class="notification-btn" type="button">
+        <!-- <button class="notification-btn" type="button">
           <i data-lucide="bell"></i>
           <span class="notification-dot"></span>
-        </button>
+        </button> -->
+
+        <!-- bell -->
+         <div th:replace="~{reporter/reporter-notification :: notification}">
+</div>
 
         <div class="user-profile">
           <div>
@@ -733,5 +741,8 @@
         this.value = this.value.replace(/\D/g, "").slice(0, 10);
       });
     </script>
+
+    <!-- Reporter Notification JS -->
+    <script th:src="@{/js/reporter-notification.js}"></script>
   </body>
 </html>
