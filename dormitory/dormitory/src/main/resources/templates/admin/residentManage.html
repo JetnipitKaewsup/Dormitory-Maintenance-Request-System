@@ -5,6 +5,19 @@
     <title>จัดการผู้พักอาศัย - Dormitory Repair System</title>
     <link rel="stylesheet" th:href="@{/css/adminCommon.css}" />
     <link rel="stylesheet" th:href="@{/css/adminTechnician.css}" />
+            <meta name="_csrf"
+          th:content="${_csrf.token}">
+
+    <meta name="_csrf_header"
+          th:content="${_csrf.headerName}">
+
+    <link
+            rel="stylesheet"
+            th:href="@{/css/admin-notification.css}">
+
+    <script
+            src="https://unpkg.com/lucide@latest">
+    </script>
 </head>
 <body>
 
@@ -142,6 +155,8 @@
         });
     }
 </script>
-
+<script>
+    lucide.createIcons();
+</script>
 </body>
 </html>

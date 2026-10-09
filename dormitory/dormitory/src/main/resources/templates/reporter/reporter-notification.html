@@ -1,0 +1,86 @@
+<div th:fragment="notification"
+     class="reporter-notification-wrapper">
+
+    <!-- BUTTON -->
+
+    <button
+            type="button"
+            class="icon-btn reporter-notification-btn"
+            id="reporterNotificationButton"
+            title="การแจ้งเตือน">
+
+        <i data-lucide="bell"></i>
+
+        <span
+                id="reporterNotificationBadge"
+                class="reporter-notification-badge"
+                style="display:none;">
+        </span>
+
+    </button>
+
+
+    <!-- POPUP -->
+
+    <div
+            id="reporterNotificationPopup"
+            class="reporter-notification-popup">
+
+        <div class="reporter-notification-header">
+
+            <h3>
+                การแจ้งเตือน
+            </h3>
+
+        </div>
+
+
+        <div class="reporter-notification-tabs">
+
+            <button
+                    type="button"
+                    class="reporter-notification-tab active"
+                    data-filter="all">
+
+                ทั้งหมด
+
+            </button>
+
+
+            <button
+                    type="button"
+                    class="reporter-notification-tab"
+                    data-filter="read">
+
+                อ่านแล้ว
+
+            </button>
+
+
+            <button
+                    type="button"
+                    class="reporter-notification-tab"
+                    data-filter="unread">
+
+                ยังไม่อ่าน
+
+            </button>
+
+        </div>
+
+
+        <div
+                id="reporterNotificationList"
+                class="reporter-notification-list">
+
+            <div class="reporter-notification-empty">
+
+                ไม่มีการแจ้งเตือน
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
