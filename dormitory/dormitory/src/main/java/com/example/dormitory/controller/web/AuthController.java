@@ -1,13 +1,8 @@
 package com.example.dormitory.controller.web;
 
 import java.util.Map;
-import java.util.UUID;
 
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContext;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.web.context.HttpSessionSecurityContextRepository;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -19,17 +14,15 @@ import org.springframework.web.bind.annotation.RequestParam;
 import com.example.dormitory.dto.request.LoginRequest;
 import com.example.dormitory.dto.request.RegisterRequest;
 import com.example.dormitory.dto.response.SupabaseAuthResponse;
+import com.example.dormitory.repository.AdminRepository;
+import com.example.dormitory.repository.UserRepository;
 import com.example.dormitory.service.AuthService;
+import com.example.dormitory.service.LoginSessionService;
 import com.example.dormitory.service.SpringSecurityService;
 
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
-
-import com.example.dormitory.domain.entity.User;
-import com.example.dormitory.domain.entity.Admin;
-import com.example.dormitory.repository.UserRepository;
-import com.example.dormitory.repository.AdminRepository;
 
 @Controller
 public class AuthController {
@@ -38,18 +31,21 @@ public class AuthController {
     private final SpringSecurityService springSecurityService;
     private final UserRepository userRepository;
     private final AdminRepository adminRepository;
+    private final LoginSessionService loginSessionService;
 
     public AuthController(
-            AuthService authService,
-            SpringSecurityService springSecurityService,
-            UserRepository userRepository,
-            AdminRepository adminRepository) {
+                AuthService authService,
+                SpringSecurityService springSecurityService,
+                UserRepository userRepository,
+                AdminRepository adminRepository,
+                LoginSessionService loginSessionService) {
 
         this.authService = authService;
         this.springSecurityService = springSecurityService;
         this.userRepository = userRepository;
         this.adminRepository = adminRepository;
-    }
+        this.loginSessionService = loginSessionService;
+        }
 
     // =========================================================
     // LOGIN PAGE
@@ -71,113 +67,35 @@ public class AuthController {
     // =========================================================
 
     @PostMapping("/login")
-    public String processLogin(
-            @ModelAttribute LoginRequest loginRequest,
-            HttpServletRequest request,
-            HttpServletResponse response,
-            Model model) {
+        public String processLogin(
+                @ModelAttribute LoginRequest loginRequest,
+                HttpServletRequest request,
+                HttpServletResponse response,
+                Model model) {
 
         try {
+                SupabaseAuthResponse authResponse =
+                        authService.login(loginRequest);
 
-            SupabaseAuthResponse authResponse =
-                    authService.login(loginRequest);
+                String destination =
+                        loginSessionService.establishSession(
+                                authResponse,
+                                request,
+                                response
+                        );
 
-            UUID userId =
-                    UUID.fromString(
-                            authResponse.getUser().getId()
-                    );
-
-            Authentication authentication =
-                    springSecurityService.createAuthentication(userId);
-
-            SecurityContext context =
-                    SecurityContextHolder.createEmptyContext();
-
-            context.setAuthentication(authentication);
-
-            SecurityContextHolder.setContext(context);
-
-            HttpSession session =
-                    request.getSession();
-
-            HttpSessionSecurityContextRepository
-                    securityContextRepository =
-                    new HttpSessionSecurityContextRepository();
-
-            securityContextRepository.saveContext(
-                    context,
-                    request,
-                    response
-            );
-
-            session.setAttribute(
-                    "accessToken",
-                    authResponse.getAccess_token()
-            );
-
-            session.setAttribute(
-                    "refreshToken",
-                    authResponse.getRefresh_token()
-            );
-
-            session.setAttribute(
-                    "userId",
-                    authResponse.getUser().getId()
-            );
-
-            // ---- set ชื่อ/role/adminId ลง session ----
-            User user = userRepository.findById(userId).orElse(null);
-
-            if (user != null) {
-                session.setAttribute(
-                        "userFullName",
-                        user.getFirstName() + " " + user.getLastName()
-                );
-            }
-
-            String role =
-                    authentication
-                            .getAuthorities()
-                            .iterator()
-                            .next()
-                            .getAuthority();
-
-            session.setAttribute("role", role.replace("ROLE_", ""));
-
-            if (role.equals("ROLE_ADMIN")) {
-
-                if (user != null) {
-                    adminRepository.findByUser(user)
-                            .ifPresent(admin ->
-                                    session.setAttribute("adminId", admin.getAdminId())
-                            );
-                }
-
-                return "redirect:/admin/requests";
-            }
-
-            if (role.equals("ROLE_TECHNICIAN")) {
-                return "redirect:/technician/dailywork";
-            }
-
-            if (role.equals("ROLE_REPORTER")) {
-                return "redirect:/reporter/requests";
-            }
-
-            return "redirect:/reporter/requests";
+                return "redirect:" + destination;
 
         } catch (Exception e) {
+                // เปลี่ยนเป็น Logger ในขั้นตอนปรับปรุง Error Handling
+                model.addAttribute(
+                        "error",
+                        "Invalid email or password"
+                );
 
-            e.printStackTrace();
-
-            model.addAttribute(
-                    "error",
-                    "Invalid email or password"
-            );
-
-            return "login";
+                return "login";
         }
-    }
+        }
 
     // =========================================================
     // REGISTER PAGE
