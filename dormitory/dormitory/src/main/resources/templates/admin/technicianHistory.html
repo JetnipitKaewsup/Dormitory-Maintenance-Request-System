@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8" />
+    <title>ประวัติการซ่อม - Dormitory Repair System</title>
+    <link rel="stylesheet" th:href="@{/css/adminCommon.css}" />
+    <link rel="stylesheet" th:href="@{/css/adminTechnician.css}" />
+</head>
+<body>
+
+<div th:replace="~{admin/adminHeader :: adminHeader('technicians')}"></div>
+
+<main>
+    <div class="page-head">
+        <div>
+            <h1 class="page-title"
+                th:text="'ประวัติการซ่อม - ' + ${technician.firstName} + ' ' + ${technician.lastName}">
+                ประวัติการซ่อม
+            </h1>
+            <p class="page-sub"
+               th:text="'@' + ${technician.username} + ' · ความเชี่ยวชาญ: ' + ${technician.specialization}">
+                ข้อมูลช่าง
+            </p>
+        </div>
+        <a class="btn btn-outline" th:href="@{/admin/technicians}">&larr; กลับหน้ารายชื่อ</a>
+    </div>
+
+    <div class="tech-list" th:if="${history != null and !history.isEmpty()}">
+        <div class="tech-card" th:each="job : ${history}" style="flex-direction: column; align-items: flex-start;">
+            <div style="display:flex; justify-content: space-between; width:100%;">
+                <span class="tech-spec-badge" th:text="${job.repairType}">ประเภทงาน</span>
+                <span class="badge" th:classappend="${job.statusCssClass}" th:text="${job.statusLabel}">สถานะ</span>
+            </div>
+            <p style="margin-top:10px; font-size:14px;" th:text="${job.description}">รายละเอียดงาน</p>
+            <div class="tech-meta" style="margin-top:8px;"
+                 th:text="'ได้รับมอบหมาย: ' + ${#temporals.format(job.assignDate, 'dd/MM/yyyy HH:mm')}">
+                วันที่มอบหมาย
+            </div>
+            <div class="tech-meta" th:if="${job.adminNote != null and !job.adminNote.isEmpty()}"
+                 th:text="'หมายเหตุแอดมิน: ' + ${job.adminNote}">
+                หมายเหตุแอดมิน
+            </div>
+            <div class="tech-meta" th:if="${job.technicianNote != null and !job.technicianNote.isEmpty()}"
+                 th:text="'หมายเหตุช่าง: ' + ${job.technicianNote}">
+                หมายเหตุช่าง
+            </div>
+        </div>
+    </div>
+
+    <div class="empty-state" th:if="${history == null or history.isEmpty()}">
+        ช่างคนนี้ยังไม่เคยได้รับมอบหมายงานซ่อม
+    </div>
+</main>
+
+</body>
+</html>

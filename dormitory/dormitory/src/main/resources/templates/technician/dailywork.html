@@ -1,0 +1,810 @@
+<!-- DailyWork.html -->
+<!DOCTYPE html>
+<html lang="th" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>หน้าหลักช่าง | Dormitory Repair System</title>
+
+    <link rel="stylesheet"
+          th:href="@{/css/technician-dailywork.css}">
+
+    <link rel="stylesheet"
+          th:href="@{/css/technician-notification.css}">
+
+    <script src="https://unpkg.com/lucide@latest"></script>
+
+    <meta name="_csrf" th:content="${_csrf.token}">
+
+    <meta name="_csrf_header" th:content="${_csrf.headerName}">
+</head>
+
+<body>
+
+<!-- =====================================================
+     HEADER
+===================================================== -->
+<header class="topbar">
+
+    <div class="brand">
+        Dormitory Repair System
+    </div>
+
+    <div class="topbar-right">
+
+        <!-- Technician Profile -->
+        <a th:href="@{/technician/profile}"
+           class="technician-profile">
+
+            <div class="user-icon">
+                <i data-lucide="user-round"></i>
+            </div>
+
+            <div class="technician-info">
+
+                <div class="technician-name"
+                     th:text="${technician.user.firstName}">
+                    สมชาย ดีดี
+                </div>
+
+                <div class="technician-role">
+                    ช่างซ่อม
+                </div>
+
+            </div>
+
+        </a>
+
+
+        <!-- =================================================
+             NOTIFICATION COMPONENT
+        ================================================== -->
+        <div th:replace="~{Technician/technician-notification :: notification}"></div>
+
+
+        <!-- Logout -->
+        <a class="icon-button"
+           th:href="@{/login}"
+           title="ออกจากระบบ"
+           aria-label="ออกจากระบบ">
+
+            <i data-lucide="log-out"></i>
+
+        </a>
+
+    </div>
+
+</header>
+
+
+<!-- =====================================================
+     MAIN
+===================================================== -->
+<main class="main-container">
+
+    <!-- =================================================
+         WELCOME
+    ================================================== -->
+    <section class="welcome-section">
+
+        <div class="tools-icon">
+            <i data-lucide="wrench"></i>
+        </div>
+
+        <div class="welcome-text">
+
+            <h1>
+                สวัสดี
+                <span th:text="${technician.user.firstName}">
+                    ช่างสมชาย ดีดี
+                </span>
+            </h1>
+
+            <p>
+                ตรวจสอบงานวันนี้ได้ที่นี่
+            </p>
+
+        </div>
+
+    </section>
+
+
+    <!-- =================================================
+         SUMMARY CARDS
+    ================================================== -->
+    <section class="summary-section">
+
+        <div class="summary-card summary-all">
+
+            <div class="summary-title">
+                งานทั้งหมดวันนี้
+            </div>
+
+            <div class="summary-number"
+                 th:text="${summary.total}">
+                0
+            </div>
+
+        </div>
+
+
+        <div class="summary-card summary-completed">
+
+            <div class="summary-title">
+                สำเร็จ/รอยืนยัน
+            </div>
+
+            <div class="summary-number"
+                 th:text="${summary.completed}">
+                0
+            </div>
+
+        </div>
+
+
+        <div class="summary-card summary-progress">
+
+            <div class="summary-title">
+                กำลังดำเนินการ
+            </div>
+
+            <div class="summary-number"
+                 th:text="${summary.inProgress}">
+                0
+            </div>
+
+        </div>
+
+
+        <div class="summary-card summary-not-completed">
+
+            <div class="summary-title">
+                ดำเนินการไม่เสร็จสิ้น
+            </div>
+
+            <div class="summary-number"
+                 th:text="${summary.notCompleted}">
+                0
+            </div>
+
+        </div>
+
+    </section>
+
+
+    <!-- =================================================
+         FILTER
+    ================================================== -->
+    <section class="filter-section">
+
+        <a class="filter-button"
+           th:classappend="${filter == T(com.example.dormitory.domain.enums.RepairJobFilter).ALL}
+                ? ' active'"
+           th:href="@{?filter=ALL}">
+
+            งานทั้งหมดวันนี้
+
+        </a>
+
+
+        <a class="filter-button"
+           th:classappend="${filter == T(com.example.dormitory.domain.enums.RepairJobFilter).COMPLETED}
+                ? ' active'"
+           th:href="@{?filter=COMPLETED}">
+
+            สำเร็จ/รอยืนยัน
+
+        </a>
+
+
+        <a class="filter-button"
+           th:classappend="${filter == T(com.example.dormitory.domain.enums.RepairJobFilter).IN_PROGRESS}
+                ? ' active'"
+           th:href="@{?filter=IN_PROGRESS}">
+
+            กำลังดำเนินการ
+
+        </a>
+
+
+        <a class="filter-button"
+           th:classappend="${filter == T(com.example.dormitory.domain.enums.RepairJobFilter).IN_COMPLETED}
+                ? ' active'"
+           th:href="@{?filter=IN_COMPLETED}">
+
+            ดำเนินการไม่เสร็จสิ้น
+
+        </a>
+
+    </section>
+
+
+    <!-- =================================================
+         JOB TABLE
+    ================================================== -->
+    <section class="job-table-card">
+
+        <div class="table-wrapper">
+
+            <table class="job-table">
+
+                <thead>
+                <tr>
+                    <th>เวลา</th>
+                    <th>อาการ</th>
+                    <th>สถานที่</th>
+                    <th>เบอร์โทร</th>
+                    <th>หมายเหตุแอดมิน</th>
+                    <th>หมายเหตุผู้แจ้ง</th>
+                    <th>สถานะ</th>
+                </tr>
+                </thead>
+
+
+                <tbody>
+
+                <tr th:each="job : ${jobs}"
+                    class="job-row">
+
+                    <td th:text="${job.time}">
+                        10.00 - 11.00
+                    </td>
+
+
+                    <td th:text="${job.description}">
+                        ไฟเปิดไม่ติด
+                    </td>
+
+
+                    <td class="location-cell">
+
+                        <div th:text="${job.building}">
+                            ตึก A
+                        </div>
+
+                        <div th:text="${job.room}">
+                            ห้อง 1201
+                        </div>
+
+                    </td>
+
+
+                    <td th:text="${job.phone}">
+                        0953648757
+                    </td>
+
+
+                    <td th:text="${job.adminNote}">
+                        -
+                    </td>
+
+
+                    <td th:text="${job.reporterNote}">
+                        -
+                    </td>
+
+
+                    <td class="status-cell">
+
+                        <!-- IN PROGRESS -->
+                        <button
+                            type="button"
+                            class="status-button status-progress"
+
+                            th:if="${job.status == 'IN_PROGRESS'}"
+
+                            th:attr="
+                                data-assignment-id=${job.assignmentId},
+                                data-time=${job.time},
+                                data-description=${job.description},
+                                data-building=${job.building},
+                                data-room=${job.room},
+                                data-adminNote=${job.adminNote},
+                                data-reporter-note=${job.reporterNote},
+                                data-status=${job.status}
+                            "
+
+                            onclick="openRepairModal(this)">
+
+                            กำลังดำเนินการ
+
+                        </button>
+
+
+                        <!-- COMPLETED -->
+                        <span
+                            th:if="${job.status == 'COMPLETED'}"
+                            class="status-button status-completed">
+
+                            เสร็จสิ้น
+
+                        </span>
+
+
+                        <!-- IN COMPLETED -->
+                        <span
+                            th:if="${job.status == 'IN_COMPLETED'}"
+                            class="status-button status-unfinished">
+
+                            ดำเนินการไม่สำเร็จ
+
+                        </span>
+
+                    </td>
+
+                </tr>
+
+
+                <!-- EMPTY -->
+                <tr th:if="${#lists.isEmpty(jobs)}">
+
+                    <td colspan="7"
+                        class="empty-state">
+
+                        <i data-lucide="clipboard-x"></i>
+
+                        <span>
+                            ไม่มีงานสำหรับรายการที่เลือก
+                        </span>
+
+                    </td>
+
+                </tr>
+
+                </tbody>
+
+            </table>
+
+        </div>
+
+    </section>
+
+</main>
+
+
+<!-- =====================================================
+     REPAIR RESULT MODAL
+===================================================== -->
+
+<div id="repairModal"
+     class="modal-overlay"
+     aria-hidden="true">
+
+    <div class="repair-modal"
+         role="dialog"
+         aria-modal="true"
+         aria-labelledby="modalTitle">
+
+        <div class="modal-header">
+
+            <div class="modal-icon">
+                ✓
+            </div>
+
+            <div>
+                <h2 id="modalTitle">
+                    ยืนยันผลการซ่อม
+                </h2>
+
+                <p>
+                    กรุณาเลือกผลการดำเนินงาน
+                </p>
+            </div>
+
+            <button type="button"
+                    class="modal-close"
+                    onclick="closeRepairModal()">
+
+                ×
+
+            </button>
+
+        </div>
+
+
+        <div class="modal-body">
+
+            <div class="repair-info">
+
+                <div class="info-row">
+
+                    <span class="info-label">
+                        อาการ
+                    </span>
+
+                    <span id="modalDescription"
+                          class="info-value">
+                    </span>
+
+                </div>
+
+
+                <div class="info-row">
+
+                    <span class="info-label">
+                        สถานที่
+                    </span>
+
+                    <span id="modalLocation"
+                          class="info-value">
+                    </span>
+
+                </div>
+
+
+                <div class="info-row">
+
+                    <span class="info-label">
+                        เวลา
+                    </span>
+
+                    <span id="modalTime"
+                          class="info-value">
+                    </span>
+
+                </div>
+
+            </div>
+
+
+            <div class="result-section">
+
+                <div class="section-title">
+                    ผลการซ่อม
+                </div>
+
+
+                <div class="result-buttons">
+
+                    <button
+                        type="button"
+                        class="result-button completed-button"
+                        onclick="selectRepairStatus('COMPLETED')">
+
+                        <span class="result-icon">
+                            ✓
+                        </span>
+
+                        <span>
+                            ซ่อมเสร็จสิ้น
+                        </span>
+
+                    </button>
+
+
+                    <button
+                        type="button"
+                        class="result-button failed-button"
+                        onclick="selectRepairStatus('IN_COMPLETED')">
+
+                        <span class="result-icon">
+                            ×
+                        </span>
+
+                        <span>
+                            ดำเนินการไม่สำเร็จ
+                        </span>
+
+                    </button>
+
+                </div>
+
+            </div>
+
+
+            <div class="repair-note-section">
+
+                <label for="technicianNote">
+                    บันทึกการซ่อม
+                </label>
+
+                <textarea
+                    id="technicianNote"
+                    name="technicianNote"
+                    placeholder="ระบุรายละเอียดการซ่อม"
+                    maxlength="1000"></textarea>
+
+            </div>
+
+
+            <div class="modal-warning">
+
+                ⚠️
+                หลังจากยืนยันแล้ว
+                จะไม่สามารถย้อนกลับหรือเปลี่ยนสถานะได้
+
+            </div>
+
+        </div>
+
+
+        <div class="modal-footer">
+
+            <button
+                type="button"
+                class="cancel-button"
+                onclick="closeRepairModal()">
+
+                ยกเลิก
+
+            </button>
+
+
+            <button
+                type="button"
+                id="confirmStatusButton"
+                class="confirm-button"
+                onclick="confirmRepairStatus()"
+                disabled>
+
+                ยืนยัน
+
+            </button>
+
+        </div>
+
+    </div>
+
+</div>
+
+
+<!-- =====================================================
+     HIDDEN FORM
+===================================================== -->
+
+<form id="statusForm"
+      method="post"
+      style="display:none;">
+
+    <input type="hidden"
+           th:name="${_csrf.parameterName}"
+           th:value="${_csrf.token}">
+
+    <input type="hidden"
+           id="statusInput"
+           name="status">
+
+    <input type="hidden"
+           id="technicianNoteInput"
+           name="technicianNote">
+
+</form>
+
+
+<!-- =====================================================
+     TECHNICIAN ID
+===================================================== -->
+
+<script th:inline="javascript">
+
+    const technicianId =
+        /*[[${technicianId}]]*/ '';
+
+    let selectedAssignmentId = null;
+    let selectedStatus = null;
+
+
+    function openRepairModal(button) {
+
+        const status = button.dataset.status;
+
+        if (status !== 'IN_PROGRESS') {
+            return;
+        }
+
+        selectedAssignmentId =
+            button.dataset.assignmentId;
+
+        selectedStatus = null;
+
+        document.getElementById('modalDescription')
+            .textContent =
+            button.dataset.description || '-';
+
+        document.getElementById('modalLocation')
+            .textContent =
+            (button.dataset.building || '-') +
+            ' ' +
+            (button.dataset.room || '-');
+
+        document.getElementById('modalTime')
+            .textContent =
+            button.dataset.time || '-';
+
+        const note =
+            document.getElementById('technicianNote');
+
+        if (note) {
+            note.value = '';
+        }
+
+        resetResultButtons();
+
+        const modal =
+            document.getElementById('repairModal');
+
+        modal.classList.add('show');
+
+        modal.setAttribute(
+            'aria-hidden',
+            'false'
+        );
+
+        document.body.classList.add(
+            'modal-open'
+        );
+    }
+
+
+    function closeRepairModal() {
+
+        const modal =
+            document.getElementById('repairModal');
+
+        modal.classList.remove('show');
+
+        modal.setAttribute(
+            'aria-hidden',
+            'true'
+        );
+
+        document.body.classList.remove(
+            'modal-open'
+        );
+
+        selectedAssignmentId = null;
+        selectedStatus = null;
+    }
+
+
+    function selectRepairStatus(status) {
+
+        selectedStatus = status;
+
+        resetResultButtons();
+
+        if (status === 'COMPLETED') {
+
+            document
+                .querySelector('.completed-button')
+                .classList.add('selected');
+
+        }
+
+        if (status === 'IN_COMPLETED') {
+
+            document
+                .querySelector('.failed-button')
+                .classList.add('selected');
+
+        }
+
+        document
+            .getElementById('confirmStatusButton')
+            .disabled = false;
+    }
+
+
+    function resetResultButtons() {
+
+        document
+            .querySelector('.completed-button')
+            .classList.remove('selected');
+
+        document
+            .querySelector('.failed-button')
+            .classList.remove('selected');
+
+        document
+            .getElementById('confirmStatusButton')
+            .disabled = true;
+    }
+
+
+    function confirmRepairStatus() {
+
+        if (!selectedAssignmentId || !selectedStatus) {
+            return;
+        }
+
+        const note =
+            document
+                .getElementById('technicianNote')
+                .value
+                .trim();
+
+        if (
+            selectedStatus === 'IN_COMPLETED'
+            && note.length === 0
+        ) {
+
+            alert(
+                'กรุณาระบุสาเหตุที่ดำเนินการไม่สำเร็จ'
+            );
+
+            document
+                .getElementById('technicianNote')
+                .focus();
+
+            return;
+        }
+
+
+        const message =
+            selectedStatus === 'COMPLETED'
+                ? 'ยืนยันว่าซ่อมเสร็จสิ้นใช่หรือไม่?'
+                : 'ยืนยันว่าดำเนินการไม่สำเร็จใช่หรือไม่?';
+
+
+        if (!confirm(message)) {
+            return;
+        }
+
+
+        const form =
+            document.getElementById('statusForm');
+
+
+        form.action =
+            '/technician/repair/'
+            + selectedAssignmentId
+            + '/status';
+
+
+        document
+            .getElementById('statusInput')
+            .value = selectedStatus;
+
+
+        document
+            .getElementById('technicianNoteInput')
+            .value = note;
+
+
+        form.submit();
+    }
+
+
+    document
+        .getElementById('repairModal')
+        .addEventListener(
+            'click',
+            function(event) {
+
+                if (event.target === this) {
+                    closeRepairModal();
+                }
+
+            }
+        );
+
+
+    document.addEventListener(
+        'keydown',
+        function(event) {
+
+            if (event.key === 'Escape') {
+                closeRepairModal();
+            }
+
+        }
+    );
+
+</script>
+
+
+<!-- =====================================================
+     TECHNICIAN NOTIFICATION JS
+===================================================== -->
+
+<script th:src="@{/js/technician-notification.js}"></script>
+
+
+<script>
+    lucide.createIcons();
+</script>
+
+</body>
+</html>

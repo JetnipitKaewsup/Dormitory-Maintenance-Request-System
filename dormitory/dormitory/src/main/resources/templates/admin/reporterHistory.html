@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8" />
+    <title>ประวัติการแจ้งซ่อม - Dormitory Repair System</title>
+    <link rel="stylesheet" th:href="@{/css/adminCommon.css}" />
+    <link rel="stylesheet" th:href="@{/css/adminTechnician.css}" />
+            <meta name="_csrf"
+          th:content="${_csrf.token}">
+
+    <meta name="_csrf_header"
+          th:content="${_csrf.headerName}">
+
+    <link
+            rel="stylesheet"
+            th:href="@{/css/admin-notification.css}">
+
+    <script
+            src="https://unpkg.com/lucide@latest">
+    </script>
+</head>
+<body>
+
+<div th:replace="~{admin/adminHeader :: adminHeader('reporters')}"></div>
+
+<main>
+    <div class="page-head">
+        <div>
+            <h1 class="page-title"
+                th:text="'ประวัติการแจ้งซ่อม - ' + ${reporter.firstName} + ' ' + ${reporter.lastName}">
+                ประวัติการแจ้งซ่อม
+            </h1>
+            <p class="page-sub" th:text="'@' + ${reporter.username} + ' · ห้อง ' + ${reporter.roomNo}">
+                ข้อมูลผู้แจ้ง
+            </p>
+        </div>
+        <a class="btn btn-outline" th:href="@{/admin/reporters}">&larr; กลับหน้ารายชื่อ</a>
+    </div>
+
+    <div class="tech-list" th:if="${history != null and !history.isEmpty()}">
+        <div class="tech-card" th:each="req : ${history}" style="flex-direction: column; align-items: flex-start;">
+            <div style="display:flex; justify-content: space-between; width:100%;">
+                <span class="tech-spec-badge" th:text="${req.repairType}">ประเภทงาน</span>
+                <span class="badge"
+                      th:classappend="${req.status == 'PENDING'} ? ' pending' :
+                                      (${req.status == 'APPROVED'} ? ' approved' :
+                                      (${req.status == 'REJECTED'} ? ' rejected' :
+                                      (${req.status == 'IN_PROGRESS'} ? ' inprogress' :
+                                      (${req.status == 'COMPLETED'} ? ' completed' : ''))))"
+                      th:text="${req.status}">สถานะ</span>
+            </div>
+            <p style="margin-top:10px; font-size:14px;" th:text="${req.description}">รายละเอียด</p>
+            <div class="tech-meta" style="margin-top:8px;"
+                 th:text="'แจ้งเมื่อ: ' + ${#temporals.format(req.createdAt, 'dd/MM/yyyy HH:mm')}">
+                วันที่แจ้ง
+            </div>
+            <div class="tech-meta" th:if="${req.startDateTime != null}"
+                 th:text="'เริ่มซ่อม: ' + ${#temporals.format(req.startDateTime, 'dd/MM/yyyy HH:mm')}">
+                เริ่มซ่อม
+            </div>
+            <div class="tech-meta" th:if="${req.endDateTime != null}"
+                 th:text="'ซ่อมเสร็จ: ' + ${#temporals.format(req.endDateTime, 'dd/MM/yyyy HH:mm')}">
+                ซ่อมเสร็จ
+            </div>
+        </div>
+    </div>
+
+    <div class="empty-state" th:if="${history == null or history.isEmpty()}">
+        ผู้แจ้งคนนี้ยังไม่เคยส่งคำร้องซ่อม
+    </div>
+</main>
+<script>
+    lucide.createIcons();
+</script>
+</body>
+</html>

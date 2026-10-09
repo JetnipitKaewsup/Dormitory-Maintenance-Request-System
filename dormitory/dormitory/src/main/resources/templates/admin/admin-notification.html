@@ -1,0 +1,776 @@
+<!DOCTYPE html>
+<html lang="th"
+      xmlns:th="http://www.thymeleaf.org">
+
+<body>
+
+<!-- =====================================================
+     ADMIN NOTIFICATION
+     ===================================================== -->
+
+<div th:fragment="notification">
+
+    <!-- ================= NOTIFICATION BUTTON ================= -->
+
+    <button
+            type="button"
+            class="icon-btn admin-notification-btn"
+            id="adminNotificationButton"
+            title="การแจ้งเตือน">
+
+        <i data-lucide="bell"></i>
+
+        <span
+                id="adminNotificationBadge"
+                class="admin-notification-badge"
+                style="display: none;">
+            0
+        </span>
+
+    </button>
+
+
+    <!-- ================= NOTIFICATION POPUP ================= -->
+
+    <div
+            id="adminNotificationPopup"
+            class="admin-notification-popup">
+
+        <!-- ================= HEADER ================= -->
+
+        <div class="admin-notification-header">
+
+            <h3>
+                การแจ้งเตือน
+            </h3>
+
+        </div>
+
+
+        <!-- ================= TABS ================= -->
+
+        <div class="admin-notification-tabs">
+
+            <button
+                    type="button"
+                    class="admin-notification-tab active"
+                    data-filter="all">
+
+                ทั้งหมด
+
+            </button>
+
+            <button
+                    type="button"
+                    class="admin-notification-tab"
+                    data-filter="read">
+
+                อ่านแล้ว
+
+            </button>
+
+            <button
+                    type="button"
+                    class="admin-notification-tab"
+                    data-filter="unread">
+
+                ยังไม่อ่าน
+
+            </button>
+
+        </div>
+
+
+        <!-- ================= LIST ================= -->
+
+        <div
+                id="adminNotificationList"
+                class="admin-notification-list">
+
+            <div class="admin-notification-empty">
+
+                ไม่มีการแจ้งเตือน
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <!-- =====================================================
+         JAVASCRIPT
+         ===================================================== -->
+
+    <script th:inline="javascript">
+
+        (function () {
+
+            'use strict';
+
+
+            /* =================================================
+               ELEMENTS
+            ================================================= */
+
+            const notificationButton =
+                document.getElementById(
+                    'adminNotificationButton'
+                );
+
+            const notificationPopup =
+                document.getElementById(
+                    'adminNotificationPopup'
+                );
+
+            const notificationList =
+                document.getElementById(
+                    'adminNotificationList'
+                );
+
+            const notificationBadge =
+                document.getElementById(
+                    'adminNotificationBadge'
+                );
+
+
+            /*
+             * ป้องกันกรณี fragment ไม่ได้ถูกใช้
+             */
+            if (
+                !notificationButton ||
+                !notificationPopup ||
+                !notificationList ||
+                !notificationBadge
+            ) {
+                return;
+            }
+
+
+            let notifications = [];
+
+            let currentFilter = 'all';
+
+
+            /* =================================================
+               OPEN / CLOSE
+            ================================================= */
+
+            notificationButton.addEventListener(
+                'click',
+                function (event) {
+
+                    event.stopPropagation();
+
+                    notificationPopup.classList.toggle(
+                        'show'
+                    );
+
+
+                    if (
+                        notificationPopup.classList.contains(
+                            'show'
+                        )
+                    ) {
+
+                        loadNotifications();
+
+                    }
+
+                }
+            );
+
+
+            /*
+             * คลิกภายใน Popup
+             * ไม่ให้ event ไปถึง document
+             */
+            notificationPopup.addEventListener(
+                'click',
+                function (event) {
+
+                    event.stopPropagation();
+
+                }
+            );
+
+
+            /*
+             * คลิกด้านนอก Popup → ปิด
+             */
+            document.addEventListener(
+                'click',
+                function () {
+
+                    notificationPopup.classList.remove(
+                        'show'
+                    );
+
+                }
+            );
+
+
+            /* =================================================
+               LOAD NOTIFICATIONS
+            ================================================= */
+
+            async function loadNotifications() {
+
+                try {
+
+                    const response =
+                        await fetch(
+                            '/admin/notifications/data'
+                        );
+
+
+                    if (!response.ok) {
+
+                        throw new Error(
+                            'ไม่สามารถโหลดการแจ้งเตือนได้'
+                        );
+
+                    }
+
+
+                    notifications =
+                        await response.json();
+
+
+                    renderNotifications();
+
+                    updateBadge();
+
+
+                } catch (error) {
+
+                    console.error(
+                        'Admin Notification Error:',
+                        error
+                    );
+
+                }
+
+            }
+
+
+            /* =================================================
+               RENDER
+            ================================================= */
+
+            function renderNotifications() {
+
+                notificationList.innerHTML = '';
+
+
+                let filteredNotifications =
+                    notifications;
+
+
+                /*
+                 * Filter: unread
+                 */
+                if (
+                    currentFilter === 'unread'
+                ) {
+
+                    filteredNotifications =
+                        notifications.filter(
+                            notification =>
+                                !notification.read
+                        );
+
+                }
+
+
+                /*
+                 * Filter: read
+                 */
+                if (
+                    currentFilter === 'read'
+                ) {
+
+                    filteredNotifications =
+                        notifications.filter(
+                            notification =>
+                                notification.read
+                        );
+
+                }
+
+
+                /*
+                 * ไม่มี Notification
+                 */
+                if (
+                    filteredNotifications.length === 0
+                ) {
+
+                    notificationList.innerHTML = `
+
+                        <div class="admin-notification-empty">
+
+                            ไม่มีการแจ้งเตือน
+
+                        </div>
+
+                    `;
+
+                    return;
+
+                }
+
+
+                /*
+                 * สร้างแต่ละ Notification
+                 */
+                filteredNotifications.forEach(
+                    function (notification) {
+
+                        const item =
+                            document.createElement(
+                                'div'
+                            );
+
+
+                        const typeClass =
+                            getTypeClass(
+                                notification.type
+                            );
+
+
+                        item.className =
+                            'admin-notification-item ' +
+                            typeClass +
+                            ' ' +
+                            (
+                                notification.read
+                                    ? 'read'
+                                    : 'unread'
+                            );
+
+
+                        const icon =
+                            getIcon(
+                                notification.type
+                            );
+
+
+                        item.innerHTML = `
+
+                            <div class="admin-notification-icon">
+
+                                <i data-lucide="${icon}"></i>
+
+                            </div>
+
+
+                            <div class="admin-notification-content">
+
+                                <div class="admin-notification-title">
+
+                                    ${escapeHtml(
+                                        notification.title
+                                    )}
+
+                                </div>
+
+
+                                <div class="admin-notification-message">
+
+                                    ${formatMessage(
+                                        notification.message
+                                    )}
+
+                                </div>
+
+
+                                <div class="admin-notification-time">
+
+                                    ${formatTime(
+                                        notification.createdAt
+                                    )}
+
+                                </div>
+
+                            </div>
+
+                        `;
+
+
+                        /*
+                         * กด Notification
+                         */
+                        item.addEventListener(
+                            'click',
+                            function () {
+
+                                markAsRead(
+                                    notification
+                                );
+
+                            }
+                        );
+
+
+                        notificationList.appendChild(
+                            item
+                        );
+
+                    }
+                );
+
+
+                /*
+                 * Render Lucide
+                 */
+                if (
+                    typeof lucide !== 'undefined'
+                ) {
+
+                    lucide.createIcons();
+
+                }
+
+            }
+
+
+            /* =================================================
+               TYPE CLASS
+            ================================================= */
+
+            function getTypeClass(type) {
+
+                switch (type) {
+
+                    case 'NEW_REQUEST':
+                        return 'type-new-request';
+
+                    case 'STATUS_COMPLETED':
+                        return 'type-completed';
+
+                    case 'STATUS_IN_COMPLETED':
+                        return 'type-in-completed';
+
+                    default:
+                        return '';
+
+                }
+
+            }
+
+
+            /* =================================================
+               ICON
+            ================================================= */
+
+            function getIcon(type) {
+
+                switch (type) {
+
+                    case 'NEW_REQUEST':
+                        return 'file-plus';
+
+                    case 'STATUS_COMPLETED':
+                        return 'circle-check';
+
+                    case 'STATUS_IN_COMPLETED':
+                        return 'circle-x';
+
+                    default:
+                        return 'bell';
+
+                }
+
+            }
+
+
+            /* =================================================
+               BADGE
+            ================================================= */
+
+            function updateBadge() {
+
+                const unreadCount =
+                    notifications.filter(
+                        notification =>
+                            !notification.read
+                    ).length;
+
+
+                if (
+                    unreadCount === 0
+                ) {
+
+                    notificationBadge.style.display =
+                        'none';
+
+                    return;
+
+                }
+
+
+                notificationBadge.style.display =
+                    'flex';
+
+
+                notificationBadge.textContent =
+                    unreadCount > 99
+                        ? '99+'
+                        : unreadCount;
+
+            }
+
+
+            /* =================================================
+               MARK AS READ
+            ================================================= */
+
+            async function markAsRead(
+                notification
+            ) {
+
+                /*
+                 * อ่านแล้ว ไม่ต้องยิง API ซ้ำ
+                 */
+                if (
+                    notification.read
+                ) {
+
+                    return;
+
+                }
+
+
+                try {
+
+                    const csrfTokenElement =
+                        document.querySelector(
+                            'meta[name="_csrf"]'
+                        );
+
+                    const csrfHeaderElement =
+                        document.querySelector(
+                            'meta[name="_csrf_header"]'
+                        );
+
+
+                    const headers = {};
+
+
+                    /*
+                     * CSRF
+                     */
+                    if (
+                        csrfTokenElement &&
+                        csrfHeaderElement
+                    ) {
+
+                        headers[
+                            csrfHeaderElement.content
+                        ] =
+                            csrfTokenElement.content;
+
+                    }
+
+
+                    const response =
+                        await fetch(
+                            '/admin/notifications/' +
+                            notification.notificationId +
+                            '/read',
+                            {
+                                method: 'POST',
+                                headers: headers
+                            }
+                        );
+
+
+                    if (!response.ok) {
+
+                        throw new Error(
+                            'ไม่สามารถอ่าน Notification ได้'
+                        );
+
+                    }
+
+
+                    /*
+                     * Backend สำเร็จ
+                     */
+                    notification.read = true;
+
+
+                    updateBadge();
+
+                    renderNotifications();
+
+
+                } catch (error) {
+
+                    console.error(
+                        'Mark notification error:',
+                        error
+                    );
+
+                }
+
+            }
+
+
+            /* =================================================
+               FILTER
+            ================================================= */
+
+            document
+                .querySelectorAll(
+                    '.admin-notification-tab'
+                )
+                .forEach(
+                    function (tab) {
+
+                        tab.addEventListener(
+                            'click',
+                            function (event) {
+
+                                event.stopPropagation();
+
+
+                                /*
+                                 * ลบ active จากทุก tab
+                                 */
+                                document
+                                    .querySelectorAll(
+                                        '.admin-notification-tab'
+                                    )
+                                    .forEach(
+                                        function (button) {
+
+                                            button.classList.remove(
+                                                'active'
+                                            );
+
+                                        }
+                                    );
+
+
+                                /*
+                                 * เพิ่ม active
+                                 */
+                                tab.classList.add(
+                                    'active'
+                                );
+
+
+                                /*
+                                 * เปลี่ยน filter
+                                 */
+                                currentFilter =
+                                    tab.dataset.filter;
+
+
+                                renderNotifications();
+
+                            }
+                        );
+
+                    }
+                );
+
+
+            /* =================================================
+               FORMAT TIME
+            ================================================= */
+
+            function formatTime(
+                dateString
+            ) {
+
+                if (!dateString) {
+
+                    return '';
+
+                }
+
+
+                const date =
+                    new Date(dateString);
+
+
+                return date.toLocaleString(
+                    'th-TH',
+                    {
+                        day: '2-digit',
+                        month: '2-digit',
+                        year: 'numeric',
+                        hour: '2-digit',
+                        minute: '2-digit'
+                    }
+                );
+
+            }
+
+
+            /* =================================================
+               ESCAPE HTML
+            ================================================= */
+
+            function escapeHtml(
+                value
+            ) {
+
+                if (!value) {
+
+                    return '';
+
+                }
+
+
+                return String(value)
+                    .replace(
+                        /&/g,
+                        '&amp;'
+                    )
+                    .replace(
+                        /</g,
+                        '&lt;'
+                    )
+                    .replace(
+                        />/g,
+                        '&gt;'
+                    )
+                    .replace(
+                        /"/g,
+                        '&quot;'
+                    )
+                    .replace(
+                        /'/g,
+                        '&#039;'
+                    );
+
+            }
+            
+            function formatMessage(message) {
+
+                return escapeHtml(message)
+                    .replace(/\n/g, '<br>');
+
+            }
+
+            /* =================================================
+               INITIAL LOAD
+            ================================================= */
+
+            if (typeof lucide !== 'undefined') {
+                lucide.createIcons();
+            }
+
+
+        })();
+
+    </script>
+
+</div>
+
+</body>
+</html>

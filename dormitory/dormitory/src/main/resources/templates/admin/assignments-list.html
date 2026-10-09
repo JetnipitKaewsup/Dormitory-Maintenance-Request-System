@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="th" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>มอบหมายงาน</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" th:href="@{/css/adminCommon.css}">
+    <link rel="stylesheet" th:href="@{/css/admin-worklist.css}">
+        <meta name="_csrf"
+          th:content="${_csrf.token}">
+
+    <meta name="_csrf_header"
+          th:content="${_csrf.headerName}">
+
+    <link
+            rel="stylesheet"
+            th:href="@{/css/admin-notification.css}">
+
+    <script
+            src="https://unpkg.com/lucide@latest">
+    </script>
+</head>
+<body>
+
+<div th:replace="~{admin/adminHeader :: adminHeader('assignments')}"></div>
+
+<main class="work-page">
+    <div class="work-head">
+        <h1>รายการคำร้องที่รอมอบหมายงาน</h1>
+        <span class="work-count" th:text="${#lists.size(requests)} + ' คำร้อง'"></span>
+    </div>
+
+    <div class="empty" th:if="${#lists.isEmpty(requests)}">
+        <div class="empty-icon">✓</div>
+        <p>ไม่มีคำร้องที่รอมอบหมายงานในขณะนี้</p>
+    </div>
+
+    <div class="work-list">
+        <div class="work-row" th:each="r : ${requests}">
+            <span class="work-status" aria-hidden="true"></span>
+
+            <div class="work-body">
+                <div class="work-title-line">
+                    <span class="work-type" th:text="${r.repairType != null ? r.repairType.thaiName : '-'}">...</span>
+                    <span class="work-badge">รอมอบหมายงาน</span>
+                </div>
+                <p class="work-desc" th:text="${r.description}"></p>
+                <p class="work-meta" th:text="'ห้อง ' + (${r.room != null ? r.room.roomNo : '-'})"></p>
+            </div>
+
+            <a class="work-btn" th:href="@{/admin/requests/{id}/assign(id=${r.repairRequestId})}">
+                มอบหมายงาน
+            </a>
+        </div>
+    </div>
+</main>
+
+</body>
+<script>
+    lucide.createIcons();
+</script>
+</html>

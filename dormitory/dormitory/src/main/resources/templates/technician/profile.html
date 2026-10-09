@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html lang="th"
+      xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Profile</title>
+
+    <link rel="stylesheet"
+          th:href="@{/css/technician-dailywork.css}">
+
+    <link rel="stylesheet"
+          th:href="@{/css/technician-profile.css}">
+
+
+    <script src="https://unpkg.com/lucide@latest"></script>
+        <link rel="stylesheet"
+          th:href="@{/css/technician-notification.css}">
+
+    <meta name="_csrf" th:content="${_csrf.token}">
+
+    <meta name="_csrf_header" th:content="${_csrf.headerName}">
+</head>
+
+<body>
+
+<!-- =====================================================
+     HEADER
+===================================================== -->
+<header class="topbar">
+
+    <div class="brand">
+        Dormitory Repair System
+    </div>
+
+    <div class="topbar-right">
+
+        <!-- Technician Profile -->
+        <a th:href="@{/technician/profile}"
+           class="technician-profile">
+
+            <div class="user-icon">
+                <i data-lucide="user-round"></i>
+            </div>
+
+            <div class="technician-info">
+
+                <div class="technician-name"
+                     th:text="${technician.user.firstName}">
+                    สมชาย ดีดี
+                </div>
+
+                <div class="technician-role">
+                    ช่างซ่อม
+                </div>
+
+            </div>
+
+        </a>
+
+
+        <!-- =================================================
+             NOTIFICATION COMPONENT
+        ================================================== -->
+        <div th:replace="~{Technician/technician-notification :: notification}"></div>
+
+
+        <!-- Logout -->
+        <a class="icon-button"
+           th:href="@{/login}"
+           title="ออกจากระบบ"
+           aria-label="ออกจากระบบ">
+
+            <i data-lucide="log-out"></i>
+
+        </a>
+    </div>
+
+</header>
+
+
+
+<main class="profile-page">
+
+    <div class="back-section">
+
+        <a th:href="@{/technician/dailywork}"
+           class="back-button">
+
+            ←
+
+        </a>
+
+        <span>กลับ</span>
+
+    </div>
+
+
+    <section class="profile-card">
+
+        <div class="profile-header">
+            Profile
+        </div>
+
+
+        <div class="profile-content">
+
+            <div class="profile-icon">
+                🛠
+            </div>
+
+
+            <!-- ข้อมูลช่าง -->
+
+        <div class="profile-info">
+
+            <div class="info-row">
+                <span class="info-label">ชื่อ:</span>
+                <span class="info-value"
+                    th:text="${technician.user.firstName
+                            + ' '
+                            + technician.user.lastName}">
+                    สมชาย ดีดี
+                </span>
+            </div>
+
+            <div class="info-row">
+                <span class="info-label">งาน:</span>
+                <span class="info-value"
+                    th:text="${technician.specialization}">
+                    งานไม้
+                </span>
+            </div>
+
+            <div class="info-row">
+                <span class="info-label">เบอร์:</span>
+                <span class="info-value"
+                    th:text="${technician.user.phoneNo}">
+                    08x-xxx-xxxx
+                </span>
+            </div>
+
+        </div>
+
+
+            <hr>
+
+
+            <h3>จัดการรหัสผ่าน</h3>
+
+
+            <!-- message -->
+
+            <div class="success-message"
+                 th:if="${success}"
+                 th:text="${success}">
+            </div>
+
+            <div class="error-message"
+                 th:if="${error}"
+                 th:text="${error}">
+            </div>
+
+
+            <!-- เปลี่ยนรหัสผ่าน -->
+
+            <form th:action="@{/technician/profile/password}"
+                  method="post">
+
+                <label>
+                    รหัสผ่านปัจจุบัน
+                </label>
+
+                <input
+                    type="password"
+                    name="currentPassword"
+                    required>
+
+
+                <label>
+                    รหัสผ่านใหม่
+                </label>
+
+                <input
+                    type="password"
+                    name="newPassword"
+                    required>
+
+
+                <label>
+                    ยืนยันรหัสผ่านใหม่อีกครั้ง
+                </label>
+
+                <input
+                    type="password"
+                    name="confirmPassword"
+                    required>
+
+
+                <div class="password-link">
+                    ลืมรหัสผ่าน?
+                </div>
+
+
+                <div class="button-group">
+
+                    <a th:href="@{/technician/dailywork}"
+                       class="cancel-button">
+                        ยกเลิก
+                    </a>
+
+                    <button
+                        type="submit"
+                        class="save-button">
+                        บันทึก
+                    </button>
+
+                </div>
+
+            </form>
+
+        </div>
+
+    </section>
+
+</main>
+
+<!-- =====================================================
+     TECHNICIAN NOTIFICATION JS
+===================================================== -->
+
+<script th:src="@{/js/technician-notification.js}"></script>
+
+
+<script>
+    lucide.createIcons();
+</script>
+</body>
+</html>

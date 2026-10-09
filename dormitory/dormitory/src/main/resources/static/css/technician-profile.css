@@ -1,0 +1,414 @@
+/* =========================
+   Global
+========================= */
+
+* {
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+    font-family: Arial, sans-serif;
+    background: #f4f5fa;
+    color: #111;
+}
+
+
+/* =========================
+   Top Bar
+========================= */
+
+.top-bar {
+    height: 66px;
+    background: #ff7518;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 68px;
+    color: white;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.25);
+}
+
+.system-name {
+    font-size: 23px;
+    font-weight: bold;
+}
+
+/* .technician-info {
+    min-width: 143px;
+    height: 48px;
+    border: 1px solid white;
+    border-radius: 17px;
+
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+
+    line-height: 1.2;
+}
+
+.technician-info span {
+    font-size: 16px;
+}
+
+.technician-info small {
+    font-size: 13px;
+} */
+
+
+/* =========================
+   Profile Page
+========================= */
+
+.profile-page {
+    position: relative;
+    min-height: calc(100vh - 66px);
+
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+
+    padding-top: 47px;
+}
+
+
+/* =========================
+   Back Button
+========================= */
+
+.back-section {
+    position: absolute;
+    left: 34px;
+    top: 38px;
+
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+
+    font-size: 14px;
+    font-weight: bold;
+}
+
+.back-button {
+    width: 40px;
+    height: 40px;
+
+    border: 3px solid #222;
+    border-radius: 50%;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    text-decoration: none;
+    color: #222;
+
+    font-size: 43px;
+    font-weight: 300;
+
+    line-height: 1;
+
+    transition: 0.2s;
+}
+
+.back-button:hover {
+    background: #eee;
+}
+
+
+/* =========================
+   Profile Card
+========================= */
+
+.profile-card {
+    width: 452px;
+
+    background: white;
+
+    border-radius: 20px;
+
+    overflow: hidden;
+
+    box-shadow:
+        0 2px 4px rgba(0, 0, 0, 0.15),
+        0 4px 8px rgba(0, 0, 0, 0.08);
+}
+
+
+/* =========================
+   Profile Header
+========================= */
+
+.profile-header {
+    height: 69px;
+
+    background: #ff7518;
+    color: white;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    font-size: 20px;
+    font-weight: bold;
+}
+
+
+/* =========================
+   Profile Content
+========================= */
+
+.profile-content {
+    padding: 10px 48px 20px;
+}
+
+.profile-icon {
+    height: 52px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    font-size: 42px;
+
+    margin-bottom: 4px;
+}
+
+
+/* =========================
+   Technician Information
+========================= */
+
+.profile-info {
+    margin: 8px 0 20px;
+    font-size: 17px;
+    line-height: 1.8;
+}
+
+.info-row {
+    display: flex;
+    align-items: baseline;
+    margin-bottom: 3px;
+}
+
+.info-label {
+    width: 70px;
+    flex-shrink: 0;
+
+    font-weight: bold;
+}
+
+.info-value {
+    color: #222;
+    font-weight: normal;
+}
+.profile-info div {
+    min-height: 28px;
+}
+
+
+/* =========================
+   Divider
+========================= */
+
+.profile-content hr {
+    border: none;
+
+    border-top: 1px solid #aaa;
+
+    margin: 8px 0 12px;
+}
+
+
+/* =========================
+   Password Section
+========================= */
+
+.profile-content h3 {
+    margin: 0 0 14px;
+
+    font-size: 19px;
+    font-weight: bold;
+}
+
+
+/* =========================
+   Form
+========================= */
+
+.profile-content form {
+    width: 100%;
+}
+
+.profile-content label {
+    display: block;
+
+    margin: 8px 0 2px;
+
+    font-size: 17px;
+    font-weight: bold;
+}
+
+.profile-content input {
+    width: 100%;
+    height: 28px;
+
+    border: 1px solid #999;
+    border-radius: 15px;
+
+    padding: 3px 12px;
+
+    font-size: 15px;
+
+    outline: none;
+}
+
+.profile-content input:focus {
+    border-color: #ff7518;
+}
+
+
+/* =========================
+   Forgot Password
+========================= */
+
+.password-link {
+    text-align: center;
+
+    margin-top: 6px;
+
+    font-size: 12px;
+
+    cursor: pointer;
+}
+
+
+/* =========================
+   Messages
+========================= */
+
+.success-message,
+.error-message {
+    text-align: center;
+
+    padding: 8px 10px;
+
+    margin-bottom: 10px;
+
+    border-radius: 8px;
+
+    font-size: 14px;
+}
+
+.success-message {
+    background: #e8f7e8;
+    color: #218838;
+}
+
+.error-message {
+    background: #fde8e8;
+    color: #dc3545;
+}
+
+
+/* =========================
+   Buttons
+========================= */
+
+.button-group {
+    display: flex;
+
+    justify-content: center;
+    gap: 18px;
+
+    margin-top: 18px;
+}
+
+.cancel-button,
+.save-button {
+    width: 108px;
+    height: 32px;
+
+    border-radius: 18px;
+
+    font-size: 16px;
+    font-weight: bold;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    cursor: pointer;
+
+    text-decoration: none;
+}
+
+
+/* Cancel */
+
+.cancel-button {
+    background: white;
+
+    color: #111;
+
+    border: 1px solid #ff7518;
+}
+
+.cancel-button:hover {
+    background: #fff4ec;
+}
+
+
+/* Save */
+
+.save-button {
+    background: #ff7518;
+
+    color: #111;
+
+    border: 1px solid #ff7518;
+}
+
+.save-button:hover {
+    background: #ff6500;
+}
+
+
+/* =========================
+   Responsive
+========================= */
+
+@media (max-width: 700px) {
+
+    .top-bar {
+        padding: 0 20px;
+    }
+
+    .system-name {
+        font-size: 18px;
+    }
+
+    .technician-info {
+        min-width: 120px;
+    }
+
+    .profile-page {
+        padding: 30px 15px;
+    }
+
+    .back-section {
+        left: 15px;
+        top: 20px;
+    }
+
+    .profile-card {
+        width: 100%;
+        max-width: 452px;
+    }
+
+    .profile-content {
+        padding-left: 30px;
+        padding-right: 30px;
+    }
+}

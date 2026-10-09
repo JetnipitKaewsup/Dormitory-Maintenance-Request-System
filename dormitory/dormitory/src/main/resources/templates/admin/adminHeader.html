@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<body>
+
+<!-- ============================================
+     Fragment: adminHeader (มี nav tabs)
+     ============================================ -->
+<div th:fragment="adminHeader(activeTab)">
+
+    <header class="topbar">
+        <a class="brand" th:href="@{/admin/requests}">ระบบจัดการแจ้งซ่อมหอพัก</a>
+        <div class="right">
+            <div class="user-chip">
+                <span class="avatar"></span>
+                <div class="user-info">
+                    <div class="user-name" th:text="${session.userFullName} ?: 'ผู้ใช้งาน'">ชื่อผู้ใช้</div>
+                    <div class="user-role" th:text="${session.role} ?: '-'">ตำแหน่ง</div>
+                </div>
+            </div>
+
+            <div th:replace="~{admin/admin-notification :: notification}"></div>
+
+            <form th:action="@{/logout}" method="post" style="display:inline;">
+                <button class="icon-btn" type="submit" title="ออกจากระบบ">
+                    <i data-lucide="log-out"></i>
+                </button>
+            </form>
+        </div>
+    </header>
+
+    <nav class="tabs">
+        <a th:href="@{/admin/requests}" th:classappend="${activeTab == 'requests'} ? 'active' : ''">คำร้อง</a>
+        <a th:href="@{/admin/assignments}" th:classappend="${activeTab == 'assignments'} ? 'active' : ''">มอบหมายงาน</a>
+        <a th:href="@{/admin/inspections}" th:classappend="${activeTab == 'inspections'} ? 'active' : ''">ตรวจงาน</a>
+        <a th:href="@{/admin/technicians}" th:classappend="${activeTab == 'technicians'} ? 'active' : ''">จัดการช่าง</a>
+        <a th:href="@{/admin/reporters}" th:classappend="${activeTab == 'reporters'} ? 'active' : ''">จัดการผู้แจ้ง</a>
+        <a th:href="@{/admin/residents}" th:classappend="${activeTab == 'residents'} ? 'active' : ''">ผู้พักอาศัย</a>
+    </nav>
+</div>
+<!-- ============================================
+     Fragment: homeHeader (ไม่มี nav tabs)
+     ============================================ -->
+<div th:fragment="homeHeader()">
+
+    <header class="topbar">
+
+        <!-- Brand -->
+        <a
+                class="brand"
+                th:href="@{/admin/requests}">
+
+            Dormitory Repair System
+
+        </a>
+
+
+        <div class="right">
+
+            <!-- ================= USER ================= -->
+
+            <div class="user-chip">
+
+                <span class="avatar"></span>
+
+                <div class="user-info">
+
+                    <div
+                            class="user-name"
+                            th:text="${session.userFullName} ?: 'ผู้ใช้งาน'">
+
+                        ชื่อผู้ใช้
+
+                    </div>
+
+                    <div
+                            class="user-role"
+                            th:text="${session.role} ?: '-'">
+
+                        ตำแหน่ง
+
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <!-- ================= NOTIFICATION ================= -->
+
+            <div
+                    th:replace="~{admin/admin-notification :: notification}">
+            </div>
+
+
+            <!-- ================= LOGOUT ================= -->
+
+            <form
+                    th:action="@{/logout}"
+                    method="post"
+                    style="display: inline;">
+
+                <button
+                        class="icon-btn admin-logout-btn"
+                        type="submit"
+                        title="ออกจากระบบ">
+
+                    <i data-lucide="log-out"></i>
+
+                </button>
+
+            </form>
+
+        </div>
+
+    </header>
+
+</div>
+</html>

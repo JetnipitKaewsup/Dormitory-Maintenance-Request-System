@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8" />
+    <title>จัดการผู้พักอาศัย - Dormitory Repair System</title>
+    <link rel="stylesheet" th:href="@{/css/adminCommon.css}" />
+    <link rel="stylesheet" th:href="@{/css/adminTechnician.css}" />
+            <meta name="_csrf"
+          th:content="${_csrf.token}">
+
+    <meta name="_csrf_header"
+          th:content="${_csrf.headerName}">
+
+    <link
+            rel="stylesheet"
+            th:href="@{/css/admin-notification.css}">
+
+    <script
+            src="https://unpkg.com/lucide@latest">
+    </script>
+</head>
+<body>
+
+<div th:replace="~{admin/adminHeader :: adminHeader('residents')}"></div>
+
+<main>
+    <div class="page-head">
+        <div>
+            <h1 class="page-title">จัดการผู้พักอาศัย</h1>
+            <p class="page-sub">ดูข้อมูลและแก้ไขข้อมูลผู้พักอาศัยในหอพัก</p>
+        </div>
+        <a class="btn btn-approve" th:href="@{/admin/residents/create}">+ เพิ่มผู้พักอาศัย</a>
+    </div>
+
+    <div class="alert alert-success" th:if="${success}" th:text="${success}"></div>
+    <div class="alert alert-error" th:if="${error}" th:text="${error}"></div>
+
+    <div class="toolbar">
+        <input type="text" id="searchInput" placeholder="ค้นหาชื่อ หรือเลขห้อง..." />
+    </div>
+
+    <div class="tech-list" id="residentList" th:if="${residents != null and !residents.isEmpty()}">
+        <div class="tech-card"
+             th:each="res : ${residents}"
+             th:attr="data-name=${res.firstName + ' ' + res.lastName}, data-room=${res.roomNo}">
+            <div class="tech-main">
+                <div class="tech-avatar" th:text="${#strings.substring(res.firstName,0,1)}">ก</div>
+                <div>
+                    <div class="tech-name"
+                         th:text="${res.firstName + ' ' + res.lastName}">ชื่อ นามสกุล</div>
+                    <div class="tech-meta"
+                         th:text="${res.phoneNo} + ' · ห้อง ' + ${res.roomNo}">เบอร์โทร · ห้อง</div>
+                </div>
+            </div>
+            <div class="tech-actions">
+                <button type="button" class="btn btn-outline edit-btn"
+                        th:attr="data-id=${res.residentId},
+                                 data-firstname=${res.firstName},
+                                 data-lastname=${res.lastName},
+                                 data-phone=${res.phoneNo},
+                                 data-room=${res.roomNo}">
+                    แก้ไข
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <div class="empty-state" th:if="${residents == null or residents.isEmpty()}">
+        ยังไม่มีข้อมูลผู้พักอาศัยในระบบ
+    </div>
+    <div class="empty-state" id="noResultState" style="display:none;">
+        ไม่พบผู้พักอาศัยที่ตรงกับคำค้นหา
+    </div>
+</main>
+
+<div class="modal-backdrop" id="editModalBackdrop">
+    <div class="modal">
+        <h3>แก้ไขข้อมูลผู้พักอาศัย</h3>
+        <p class="sub">แก้ไขข้อมูลส่วนตัวและห้องพัก</p>
+
+        <form method="post" th:action="@{/admin/residents/update}">
+            <input type="hidden" name="residentId" id="edit-residentId" />
+
+            <div class="form-group">
+                <label>ชื่อ</label>
+                <input type="text" name="firstName" id="edit-firstName" required />
+            </div>
+            <div class="form-group">
+                <label>นามสกุล</label>
+                <input type="text" name="lastName" id="edit-lastName" required />
+            </div>
+            <div class="form-group">
+                <label>เบอร์โทรศัพท์</label>
+                <input type="text" name="phoneNo" id="edit-phoneNo" />
+            </div>
+            <div class="form-group">
+                <label>เลขห้อง</label>
+                <input list="editRoomOptions" name="roomNo" id="edit-roomNo" placeholder="พิมพ์เลขห้องเพื่อค้นหา..." autocomplete="off" />
+                <datalist id="editRoomOptions">
+                    <option th:each="room : ${rooms}"
+                            th:value="${room.roomNo}"
+                            th:label="'ห้อง ' + ${room.roomNo} + ' (ตึก ' + ${room.building.buildingName} + ')'">
+                    </option>
+                </datalist>
+            </div>
+
+            <div class="modal-actions">
+                <button type="button" class="btn btn-outline" id="cancelEditBtn">ยกเลิก</button>
+                <button type="submit" class="btn btn-approve">บันทึก</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+    const editModalBackdrop = document.getElementById('editModalBackdrop');
+
+    document.querySelectorAll('.edit-btn').forEach(function (btn) {
+        btn.addEventListener('click', function () {
+            document.getElementById('edit-residentId').value = btn.dataset.id;
+            document.getElementById('edit-firstName').value = btn.dataset.firstname;
+            document.getElementById('edit-lastName').value = btn.dataset.lastname;
+            document.getElementById('edit-phoneNo').value = btn.dataset.phone;
+            document.getElementById('edit-roomNo').value = btn.dataset.room;
+            editModalBackdrop.classList.add('open');
+        });
+    });
+
+    document.getElementById('cancelEditBtn').addEventListener('click', function () {
+        editModalBackdrop.classList.remove('open');
+    });
+
+    editModalBackdrop.addEventListener('click', function (e) {
+        if (e.target === editModalBackdrop) {
+            editModalBackdrop.classList.remove('open');
+        }
+    });
+
+    const searchInput = document.getElementById('searchInput');
+    const cards = document.querySelectorAll('.tech-card');
+    const noResultState = document.getElementById('noResultState');
+
+    if (searchInput) {
+        searchInput.addEventListener('input', function () {
+            const keyword = searchInput.value.trim().toLowerCase();
+            let visibleCount = 0;
+            cards.forEach(function (card) {
+                const name = (card.dataset.name || '').toLowerCase();
+                const room = (card.dataset.room || '').toLowerCase();
+                const match = keyword === '' || name.includes(keyword) || room.includes(keyword);
+                card.style.display = match ? 'flex' : 'none';
+                if (match) visibleCount++;
+            });
+            noResultState.style.display = (cards.length > 0 && visibleCount === 0) ? 'block' : 'none';
+        });
+    }
+</script>
+<script>
+    lucide.createIcons();
+</script>
+</body>
+</html>
