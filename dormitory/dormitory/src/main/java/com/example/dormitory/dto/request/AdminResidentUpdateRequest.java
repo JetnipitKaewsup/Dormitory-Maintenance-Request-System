@@ -7,10 +7,14 @@ public class AdminResidentUpdateRequest {
     private String firstName;
     private String lastName;
 
-    @Pattern(regexp = "^[0-9]{9,10}$", message = "เบอร์โทรศัพท์ต้องเป็นตัวเลข 9-10 หลัก")
+    
+    @Pattern(
+        regexp = "^$|^[0-9]{9,10}$|^[0-9]{3}-[0-9]{3}-[0-9]{4}$",
+        message = "เบอร์โทรศัพท์ต้องเป็นตัวเลข 9-10 หลัก"
+    )
     private String phoneNo;
 
-    private Integer roomNo;
+    private Integer roomNo;   
 
     public String getFirstName() { return firstName; }
     public void setFirstName(String firstName) { this.firstName = firstName; }
