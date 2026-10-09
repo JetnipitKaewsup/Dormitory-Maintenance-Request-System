@@ -84,13 +84,13 @@ INSERT INTO building (
     total_floor
 ) VALUES
 (
-    1,
-    'อาคารหอพักชาย 1',
+    3,
+    'อาคารหอพักชาย 3',
     5
 ),
 (
-    2,
-    'อาคารหอพักหญิง 1',
+    4,
+    'อาคารหอพักหญิง 4',
     5
 );
 
@@ -103,12 +103,12 @@ INSERT INTO room (
     room_no,
     building_no
 ) VALUES
-(101, 1),
-(102, 1),
-(103, 1),
-(201, 2),
-(202, 2),
-(203, 2);
+(101, 3),
+(102, 3),
+(103, 3),
+(201, 4),
+(202, 4),
+(203, 4);
 
 
 -- =========================================================
@@ -650,126 +650,3 @@ INSERT INTO repair_assignment_status_history (
     '44444444-4444-4444-4444-444444444444'
 );
 
-
--- =========================================================
--- 12. NOTIFICATION
--- =========================================================
-
--- Notification: New Repair Request
-INSERT INTO notification (
-    notification_id,
-    created_at,
-    event_type,
-    message,
-    is_read,
-    reference_id,
-    title,
-    recipient_id
-) VALUES
-
-(
-    'aaaa7777-aaaa-aaaa-aaaa-aaaaaaaaaaaa',
-    '2026-10-08 09:00:00',
-    'NEW_REPAIR_REQUEST',
-    'มีคำร้องแจ้งซ่อมใหม่จากผู้พักอาศัย',
-    FALSE,
-    'eeeeeeee-5555-5555-5555-555555555555',
-    'คำร้องแจ้งซ่อมใหม่',
-    '11111111-1111-1111-1111-111111111111'
-);
-
-
--- Notification: New Assignment
-INSERT INTO notification (
-    notification_id,
-    created_at,
-    event_type,
-    message,
-    is_read,
-    reference_id,
-    title,
-    recipient_id
-) VALUES
-
-(
-    'bbbb8888-bbbb-bbbb-bbbb-bbbbbbbbbbbb',
-    '2026-10-08 10:00:00',
-    'NEW_REPAIR_ASSIGNMENT',
-    'คุณได้รับมอบหมายงานซ่อมใหม่',
-    FALSE,
-    'aaaa1111-aaaa-aaaa-aaaa-aaaaaaaaaaaa',
-    'ได้รับมอบหมายงานซ่อม',
-    '44444444-4444-4444-4444-444444444444'
-);
-
-
--- Notification: Assignment Approved
-INSERT INTO notification (
-    notification_id,
-    created_at,
-    event_type,
-    message,
-    is_read,
-    reference_id,
-    title,
-    recipient_id
-) VALUES
-
-(
-    'cccc9999-cccc-cccc-cccc-cccccccccccc',
-    '2026-10-08 10:05:00',
-    'ASSIGNMENT_APPROVED',
-    'งานซ่อมของคุณได้รับการอนุมัติและมอบหมายให้ช่างแล้ว',
-    FALSE,
-    'aaaa1111-aaaa-aaaa-aaaa-aaaaaaaaaaaa',
-    'มอบหมายงานสำเร็จ',
-    '22222222-2222-2222-2222-222222222222'
-);
-
-
--- Notification: Repair Completed
-INSERT INTO notification (
-    notification_id,
-    created_at,
-    event_type,
-    message,
-    is_read,
-    reference_id,
-    title,
-    recipient_id
-) VALUES
-
-(
-    'dddd0000-dddd-dddd-dddd-dddddddddddd',
-    '2026-10-07 18:30:00',
-    'REPAIR_COMPLETED',
-    'งานซ่อมดำเนินการเสร็จสิ้น กรุณาตรวจสอบผลการซ่อม',
-    FALSE,
-    'cccccccc-3333-3333-3333-333333333333',
-    'งานซ่อมเสร็จสิ้น',
-    '22222222-2222-2222-2222-222222222222'
-);
-
-
--- Notification: Repair Not Completed
-INSERT INTO notification (
-    notification_id,
-    created_at,
-    event_type,
-    message,
-    is_read,
-    reference_id,
-    title,
-    recipient_id
-) VALUES
-
-(
-    'eeee0000-eeee-eeee-eeee-eeeeeeeeeeee',
-    '2026-10-08 18:00:00',
-    'REPAIR_NOT_COMPLETED',
-    'ผู้แจ้งยังไม่ได้ยืนยันผลการซ่อม',
-    TRUE,
-    'bbbbbbbb-2222-2222-2222-222222222222',
-    'ยังไม่ได้ยืนยันผลการซ่อม',
-    '11111111-1111-1111-1111-111111111111'
-);
