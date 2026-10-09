@@ -32,13 +32,16 @@ import com.example.dormitory.domain.entity.Technician;
 import com.example.dormitory.domain.entity.User;
 import com.example.dormitory.domain.enums.RepairRequestStatus;
 import com.example.dormitory.domain.state.RepairRequestState;
+import com.example.dormitory.domain.state.RepairRequestStateRegistry;
 import com.example.dormitory.event.RepairAssignmentSubject;
 import com.example.dormitory.event.RepairStatusSubject;
+import com.example.dormitory.mapper.DailyRepairJobMapper;
 import com.example.dormitory.repository.AdminRepository;
 import com.example.dormitory.repository.RepairAssignmentRepository;
 import com.example.dormitory.repository.RepairAssignmentStatusHistoryRepository;
 import com.example.dormitory.repository.RepairRequestRepository;
 import com.example.dormitory.repository.TechnicianRepository;
+import com.example.dormitory.service.impl.RepairAssignmentServiceImpl;
 
 @ExtendWith(MockitoExtension.class)
 class RepairAssignmentServiceTS32UnitTest {
@@ -66,6 +69,12 @@ class RepairAssignmentServiceTS32UnitTest {
 
     @Mock
     private RepairAssignmentSubject repairAssignmentSubject;
+
+    @Mock 
+    private RepairRequestStateRegistry repairRequestStateRegistry;
+
+    @Mock 
+    private DailyRepairJobMapper dailyRepairJobMapper;
 
     private RepairAssignmentService repairAssignmentService;
 
@@ -132,16 +141,16 @@ class RepairAssignmentServiceTS32UnitTest {
         repairRequestStates.add(repairRequestState);
 
         // สร้าง Service โดยส่ง State List เข้า Constructor โดยตรง
-        repairAssignmentService = new RepairAssignmentService(
+        repairAssignmentService = new RepairAssignmentServiceImpl(
                 repairAssignmentRepository,
                 technicianRepository,
                 historyRepository,
-                repairRequestStates,
                 adminRepository,
                 repairRequestService,
-                repairRequestRepository,
+                repairRequestStateRegistry,
                 repairStatusSubject,
-                repairAssignmentSubject
+                repairAssignmentSubject,
+                dailyRepairJobMapper
         );
 
         lenient().when(
@@ -154,8 +163,9 @@ class RepairAssignmentServiceTS32UnitTest {
     }
 
     private void prepareValidTransition() {
-        when(repairRequestState.getAllowedNext())
-                .thenReturn(Set.of(RepairRequestStatus.COMPLETED));
+        when(repairRequestStateRegistry.canTransition(
+                RepairRequestStatus.IN_PROGRESS, RepairRequestStatus.COMPLETED))
+                .thenReturn(true);
     }
 
     @Test

@@ -19,14 +19,17 @@ import com.example.dormitory.domain.entity.RepairAssignment;
 import com.example.dormitory.domain.entity.Technician;
 import com.example.dormitory.domain.enums.RepairRequestStatus;
 import com.example.dormitory.domain.state.RepairRequestState;
+import com.example.dormitory.domain.state.RepairRequestStateRegistry;
 import com.example.dormitory.dto.response.DailyRepairSummaryDto;
 import com.example.dormitory.event.RepairAssignmentSubject;
 import com.example.dormitory.event.RepairStatusSubject;
+import com.example.dormitory.mapper.DailyRepairJobMapper;
 import com.example.dormitory.repository.AdminRepository;
 import com.example.dormitory.repository.RepairAssignmentRepository;
 import com.example.dormitory.repository.RepairAssignmentStatusHistoryRepository;
 import com.example.dormitory.repository.RepairRequestRepository;
 import com.example.dormitory.repository.TechnicianRepository;
+import com.example.dormitory.service.impl.RepairAssignmentServiceImpl;
 
 @ExtendWith(MockitoExtension.class)
 class RepairAssignmentServiceTS30UnitTest {
@@ -58,23 +61,29 @@ class RepairAssignmentServiceTS30UnitTest {
     @Mock
     private Technician technician;
 
-    private RepairAssignmentService service;
+    @Mock 
+    private DailyRepairJobMapper dailyRepairJobMapper;
+
+    @Mock 
+    private RepairRequestStateRegistry repairRequestStateRegistry;
+    
+    private RepairAssignmentServiceImpl service;
 
     private final UUID technicianId =
             UUID.fromString("22222222-2222-2222-2222-222222222222");
 
     @BeforeEach
     void setUp() {
-        service = new RepairAssignmentService(
+        service = new RepairAssignmentServiceImpl(
                 repairAssignmentRepository,
                 technicianRepository,
                 historyRepository,
-                List.<RepairRequestState>of(),
                 adminRepository,
                 repairRequestService,
-                repairRequestRepository,
+                repairRequestStateRegistry,
                 repairStatusSubject,
-                repairAssignmentSubject
+                repairAssignmentSubject,
+                dailyRepairJobMapper
         );
     }
 
