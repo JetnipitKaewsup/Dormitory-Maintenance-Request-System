@@ -1,0 +1,85 @@
+<!-- techniciab-notification.html -->
+<!DOCTYPE html>
+<html lang="th"
+      xmlns:th="http://www.thymeleaf.org">
+
+<body>
+
+<div th:fragment="notification"
+     class="technician-notification-wrapper">
+
+    <button type="button"
+            id="technicianNotificationButton"
+            class="icon-button technician-notification-button"
+            aria-label="การแจ้งเตือน">
+
+        <i data-lucide="bell"></i>
+
+        <span id="technicianNotificationBadge"
+              class="technician-notification-badge"
+              style="display: none;">
+        </span>
+
+    </button>
+
+
+    <div id="technicianNotificationPopup"
+         class="technician-notification-popup">
+
+        <div class="technician-notification-popup-header">
+
+            <div class="technician-notification-header-title">
+
+                <div class="technician-notification-header-icon">
+                    <i data-lucide="bell"></i>
+                </div>
+
+                <div>
+                    <h3>การแจ้งเตือน</h3>
+                    <p>รายการแจ้งเตือนของคุณ</p>
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <div class="technician-notification-tabs">
+
+            <button type="button"
+                    class="technician-notification-tab active"
+                    data-filter="all">
+                ทั้งหมด
+            </button>
+
+            <button type="button"
+                    class="technician-notification-tab"
+                    data-filter="unread">
+                ยังไม่อ่าน
+            </button>
+
+            <button type="button"
+                    class="technician-notification-tab"
+                    data-filter="read">
+                อ่านแล้ว
+            </button>
+
+        </div>
+
+
+        <div id="technicianNotificationList"
+             class="technician-notification-list">
+
+            <div class="technician-notification-empty">
+                <i data-lucide="bell-off"></i>
+                <span>ไม่มีการแจ้งเตือน</span>
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+</body>
+</html>
