@@ -12,7 +12,7 @@ public class Resident {
     @GeneratedValue(strategy = GenerationType.UUID)
     private UUID residentId;
 
-    @ManyToOne
+    @OneToOne
     @JoinColumn(name = "room_no")
     private Room room;
 

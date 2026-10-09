@@ -1,0 +1,710 @@
+/* =====================================================
+   REPORTER NOTIFICATION
+   ===================================================== */
+
+
+/* =====================================================
+   WRAPPER
+   ===================================================== */
+
+.reporter-notification-wrapper {
+
+    position: relative;
+
+}
+
+
+/* =====================================================
+   NOTIFICATION BUTTON
+   ===================================================== */
+
+.reporter-notification-btn {
+
+    position: relative;
+
+    width: 40px;
+    height: 40px;
+
+    padding: 0;
+
+    display: inline-flex;
+
+    align-items: center;
+    justify-content: center;
+
+    border: none;
+
+    background: transparent;
+
+    color: #ffffff;
+
+    cursor: pointer;
+}
+
+
+.reporter-notification-btn svg {
+
+    width: 24px;
+    height: 24px;
+
+    min-width: 24px;
+    min-height: 24px;
+
+    flex-shrink: 0;
+
+    display: block;
+
+    stroke: currentColor;
+
+    stroke-width: 2.2;
+}
+
+
+/* =====================================================
+   BADGE
+   ===================================================== */
+
+.reporter-notification-badge {
+
+    position: absolute;
+
+    top: -4px;
+    right: -5px;
+
+    min-width: 20px;
+    height: 20px;
+
+    padding: 0 5px;
+
+    display: flex;
+
+    align-items: center;
+    justify-content: center;
+
+    border-radius: 10px;
+
+    background: #e53935;
+
+    color: #ffffff;
+
+    font-size: 11px;
+    font-weight: 700;
+
+    line-height: 1;
+
+    border: none;
+
+    box-sizing: border-box;
+}
+
+
+/* =====================================================
+   POPUP
+   ===================================================== */
+
+.reporter-notification-popup {
+
+    position: fixed;
+
+    top: 70px;
+    right: 30px;
+
+    width: 380px;
+
+    max-width: calc(100vw - 30px);
+
+    background: #ffffff;
+
+    border-radius: 12px;
+
+    box-shadow:
+        0 8px 30px rgba(0, 0, 0, 0.18);
+
+    overflow: hidden;
+
+    display: none;
+
+    z-index: 9999;
+}
+
+
+.reporter-notification-popup.show {
+
+    display: block;
+
+}
+
+
+/* =====================================================
+   HEADER
+   ===================================================== */
+
+.reporter-notification-header {
+
+    display: flex;
+
+    align-items: center;
+    justify-content: center;
+
+    width: 100%;
+
+    min-height: 56px;
+
+    padding: 14px 20px;
+
+    box-sizing: border-box;
+
+    background: #4285f4;
+
+    color: #ffffff;
+}
+
+
+.reporter-notification-header h3 {
+
+    display: block;
+
+    margin: 0;
+    padding: 0;
+
+    font-family: inherit;
+
+    font-size: 20px;
+
+    font-weight: 600;
+
+    line-height: 1.5;
+
+    color: #ffffff;
+
+    text-align: center;
+}
+
+
+/* =====================================================
+   TABS
+   ===================================================== */
+
+.reporter-notification-tabs {
+
+    display: flex;
+
+    align-items: center;
+
+    gap: 6px;
+
+    padding: 10px 15px;
+
+    background: #ffffff;
+
+    border-bottom: 1px solid #eeeeee;
+}
+
+
+.reporter-notification-tab {
+
+    border: 1px solid #ff4b4b;
+
+    background: #ffffff;
+
+    padding: 7px 12px;
+
+    border-radius: 20px;
+
+    font-size: 13px;
+
+    color: #222222;
+
+    cursor: pointer;
+
+    transition:
+        background 0.15s ease,
+        color 0.15s ease;
+}
+
+
+.reporter-notification-tab:hover {
+
+    background: #fff1f1;
+
+}
+
+
+.reporter-notification-tab.active {
+
+    background: #fff1f1;
+
+    color: #222222;
+
+    font-weight: 600;
+
+}
+
+
+/* =====================================================
+   LIST
+   ===================================================== */
+
+.reporter-notification-list {
+
+    max-height: 450px;
+
+    overflow-y: auto;
+
+    background: #ffffff;
+}
+
+
+/* =====================================================
+   SCROLLBAR
+   ===================================================== */
+
+.reporter-notification-list::-webkit-scrollbar {
+
+    width: 6px;
+}
+
+
+.reporter-notification-list::-webkit-scrollbar-track {
+
+    background: transparent;
+}
+
+
+.reporter-notification-list::-webkit-scrollbar-thumb {
+
+    background: #cccccc;
+
+    border-radius: 10px;
+}
+
+
+/* =====================================================
+   EMPTY
+   ===================================================== */
+
+.reporter-notification-empty {
+
+    padding: 35px 20px;
+
+    text-align: center;
+
+    color: #999999;
+
+    font-size: 14px;
+}
+
+
+/* =====================================================
+   ITEM
+   ===================================================== */
+
+.reporter-notification-item {
+
+    position: relative;
+
+    display: flex;
+
+    align-items: flex-start;
+
+    gap: 12px;
+
+    margin: 8px 15px;
+
+    padding: 15px 18px;
+
+    border-radius: 18px;
+
+    cursor: pointer;
+
+    transition:
+        transform 0.15s ease,
+        box-shadow 0.15s ease;
+}
+
+
+.reporter-notification-item:hover {
+
+    transform: translateY(-1px);
+
+    box-shadow:
+        0 3px 10px rgba(0, 0, 0, 0.08);
+
+}
+
+
+/* =====================================================
+   TYPE COLORS
+   ===================================================== */
+
+/* อนุมัติแล้ว */
+.reporter-notification-item.type-status-approved {
+    background: #c8f5c8;
+}
+
+/* ปฏิเสธ */
+.reporter-notification-item.type-status-rejected {
+    background: #ffe5d6;
+}
+
+/* ดำเนินการซ่อมเสร็จ */
+.reporter-notification-item.type-status-completed {
+    background: #a9caff;
+}
+
+
+/* =====================================================
+   READ
+   ===================================================== */
+
+/* อ่านแล้ว = ขาว/เทาอ่อน โปร่งใสเล็กน้อย */
+.reporter-notification-item.read {
+    background: rgba(245, 245, 245, 0.82) !important;
+    color: #777777;
+}
+
+.reporter-notification-item.read
+.reporter-notification-title {
+    color: #666666;
+}
+
+.reporter-notification-item.read
+.reporter-notification-message {
+    color: #777777;
+}
+
+.reporter-notification-item.read
+.reporter-notification-time {
+    color: #aaaaaa;
+}
+
+
+/* =====================================================
+   ICON
+   ===================================================== */
+
+.reporter-notification-icon {
+    flex-shrink: 0;
+
+    width: 34px;
+    height: 34px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.reporter-notification-icon svg {
+    width: 24px;
+    height: 24px;
+    stroke-width: 2.2;
+}
+
+
+/* =====================================================
+   ICON COLORS
+   ===================================================== */
+
+/* อนุมัติ = เขียว */
+.reporter-notification-item.type-status-approved
+.reporter-notification-icon,
+.reporter-notification-item.type-status-approved
+.reporter-notification-icon svg {
+    color: #168b35;
+    stroke: currentColor;
+}
+
+
+/* ปฏิเสธ = ส้ม */
+.reporter-notification-item.type-status-rejected
+.reporter-notification-icon,
+.reporter-notification-item.type-status-rejected
+.reporter-notification-icon svg {
+    color: #df6b28;
+    stroke: currentColor;
+}
+
+
+/* ซ่อมเสร็จ = น้ำเงิน */
+.reporter-notification-item.type-status-completed
+.reporter-notification-icon,
+.reporter-notification-item.type-status-completed
+.reporter-notification-icon svg {
+    color: #1769e0;
+    stroke: currentColor;
+}
+
+
+/* อ่านแล้ว = เทา */
+.reporter-notification-item.read
+.reporter-notification-icon,
+.reporter-notification-item.read
+.reporter-notification-icon svg {
+    color: #999999;
+    stroke: currentColor;
+}
+
+
+.reporter-notification-item.read
+.reporter-notification-title {
+
+    color: #666666;
+
+}
+
+
+.reporter-notification-item.read
+.reporter-notification-message {
+
+    color: #777777;
+
+}
+
+
+.reporter-notification-item.read
+.reporter-notification-time {
+
+    color: #aaaaaa;
+
+}
+
+
+/* =====================================================
+   ICON
+   ===================================================== */
+
+.reporter-notification-icon {
+
+    flex-shrink: 0;
+
+    width: 34px;
+    height: 34px;
+
+    display: flex;
+
+    align-items: center;
+    justify-content: center;
+}
+
+
+.reporter-notification-icon svg {
+
+    width: 24px;
+    height: 24px;
+
+    stroke-width: 2.2;
+}
+
+
+/* =====================================================
+   ICON COLORS
+   ===================================================== */
+
+
+/* อนุมัติ */
+
+.type-status_approved
+.reporter-notification-icon {
+
+    color: #168b35;
+
+}
+
+
+.type-status_approved
+.reporter-notification-icon svg {
+
+    color: #168b35;
+
+    stroke: currentColor;
+}
+
+
+/* ปฏิเสธ */
+
+.type-status_rejected
+.reporter-notification-icon {
+
+    color: #df6b28;
+
+}
+
+
+.type-status_rejected
+.reporter-notification-icon svg {
+
+    color: #df6b28;
+
+    stroke: currentColor;
+}
+
+
+/* ซ่อมเสร็จ */
+
+.type-status_completed
+.reporter-notification-icon {
+
+    color: #1769e0;
+
+}
+
+
+.type-status_completed
+.reporter-notification-icon svg {
+
+    color: #1769e0;
+
+    stroke: currentColor;
+}
+
+
+/* อ่านแล้ว */
+
+.reporter-notification-item.read
+.reporter-notification-icon {
+
+    color: #999999;
+
+}
+
+
+.reporter-notification-item.read
+.reporter-notification-icon svg {
+
+    color: #999999;
+
+    stroke: currentColor;
+}
+
+
+/* =====================================================
+   CONTENT
+   ===================================================== */
+
+.reporter-notification-content {
+
+    flex: 1;
+
+    min-width: 0;
+}
+
+
+/* =====================================================
+   TITLE
+   ===================================================== */
+
+.reporter-notification-title {
+
+    margin-bottom: 5px;
+
+    color: #222222;
+
+    font-size: 14px;
+
+    font-weight: 600;
+
+    line-height: 1.4;
+}
+
+
+/* =====================================================
+   MESSAGE
+   ===================================================== */
+
+.reporter-notification-message {
+
+    color: #555555;
+
+    font-size: 13px;
+
+    line-height: 1;
+}
+
+
+/* =====================================================
+   TIME
+   ===================================================== */
+
+.reporter-notification-time {
+
+    margin-top: 6px;
+
+    color: #999999;
+
+    font-size: 11px;
+
+    line-height: 1.3;
+}
+
+
+/* =====================================================
+   MOBILE
+   ===================================================== */
+
+@media (max-width: 600px) {
+
+    .reporter-notification-popup {
+
+        top: 65px;
+
+        left: 15px;
+        right: 15px;
+
+        width: auto;
+
+        max-width: none;
+    }
+
+
+    .reporter-notification-header h3 {
+
+        font-size: 19px;
+
+    }
+
+
+    .reporter-notification-tabs {
+
+        padding: 10px 15px;
+
+        gap: 5px;
+
+    }
+
+
+    .reporter-notification-tab {
+
+        flex: 1;
+
+        padding: 7px 8px;
+
+        font-size: 12px;
+
+    }
+
+
+    .reporter-notification-item {
+
+        margin: 8px 15px;
+
+        padding: 14px;
+
+        border-radius: 16px;
+
+    }
+
+
+    .reporter-notification-title {
+
+        font-size: 14px;
+
+    }
+
+
+    .reporter-notification-message {
+
+        font-size: 13px;
+
+    }
+
+}

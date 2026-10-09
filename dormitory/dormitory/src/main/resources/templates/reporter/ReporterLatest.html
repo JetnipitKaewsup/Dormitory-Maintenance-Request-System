@@ -9,8 +9,13 @@
   <title>DormCare - รายละเอียดคำร้อง</title>
 
   <link rel="stylesheet" th:href="@{/css/reporter.css}" />
-
+<link rel="stylesheet" th:href="@{/css/reporter-notification.css}">
   <script src="https://unpkg.com/lucide@latest"></script>
+  <meta name="_csrf"
+      th:content="${_csrf.token}">
+
+<meta name="_csrf_header"
+      th:content="${_csrf.headerName}">
 </head>
 
 <body>
@@ -21,11 +26,13 @@
     </a>
 
     <div class="nav-actions">
-      <button class="notification-btn">
+      <!-- <button class="notification-btn">
         <i data-lucide="bell"></i>
         <span class="notification-dot"></span>
-      </button>
-
+      </button> -->
+      <!-- bell -->
+       <div th:replace="~{reporter/reporter-notification :: notification}">
+</div>
       <div class="user-profile">
         <a th:href="@{/reporter/profile/edit}" class="user-profile-link">
           <div>
@@ -346,6 +353,9 @@
       }
     });
   </script>
+
+    <!-- Reporter Notification JS -->
+    <script th:src="@{/js/reporter-notification.js}"></script>
 </body>
 
 </html>
