@@ -29,7 +29,8 @@
 <main class="ins-page"
       th:with="phone=${request.reporter?.user?.phoneNo ?: request.reporter?.resident?.phoneNo},
                hasPhone=${(request.reporter?.user?.phoneNo ?: request.reporter?.resident?.phoneNo) != null},
-               techDone=${assignment != null and assignment.jobStatus != null and assignment.jobStatus.name() == 'COMPLETED'}">
+               techDone=${assignment != null and assignment.jobStatus != null and assignment.jobStatus.name() == 'COMPLETED'},
+               canReject=${assignment != null and assignment.jobStatus != null and assignment.jobStatus.name() == 'IN_COMPLETED' and request.status.name() == 'IN_PROGRESS'}">
 
     <a class="ins-back" th:href="@{/admin/inspections}">← กลับไปรายการตรวจงาน</a>
 
@@ -83,13 +84,25 @@
                     <p class="ins-hint" th:if="${techDone}">
                         โทรเช็คกับผู้แจ้งว่างานเสร็จจริงก่อนกดยืนยัน
                     </p>
-                    <p class="ins-hint is-wait" th:unless="${techDone}">
+                    <p class="ins-hint is-wait" th:if="${canReject}">
+                        ช่างแจ้งว่าซ่อมไม่สำเร็จ สามารถบันทึกผลได้ที่ปุ่มด้านขวา
+                    </p>
+                    <p class="ins-hint is-wait" th:unless="${techDone or canReject}">
                         ยืนยันได้เมื่อช่างแจ้งว่างานเสร็จแล้วเท่านั้น
                     </p>
+
+                    <button type="submit" class="ins-reject" th:if="${canReject}"
+                            th:formaction="@{/admin/requests/{id}/incomplete(id=${request.repairRequestId})}"
+                            onclick="return confirm('ยืนยันว่าคำร้องซ่อมไม่สำเร็จ?')">
+                        คำร้องซ่อมไม่สำเร็จ
+                    </button>
+
                     <button type="submit" class="ins-confirm" th:disabled="${!techDone}">
                         ยืนยันสถานะคำร้อง
                     </button>
                 </div>
+
+                
             </form>
         </div>
 
