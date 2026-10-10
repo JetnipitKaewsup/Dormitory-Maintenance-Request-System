@@ -1,6 +1,7 @@
 package com.example.dormitory.service.impl;
 
 import com.example.dormitory.domain.entity.RepairAssignment;
+import com.example.dormitory.domain.entity.RepairRequest;
 import com.example.dormitory.domain.entity.Technician;
 import com.example.dormitory.domain.entity.User;
 import com.example.dormitory.dto.request.AdminTechnicianCreateRequest;
@@ -123,6 +124,7 @@ public class AdminTechnicianServiceImpl implements AdminTechnicianService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public List<AdminTechnicianHistoryResponse> getRepairHistoryByTechnicianId(UUID technicianId) {
         technicianRepository.findById(technicianId)
                 .orElseThrow(() -> new RuntimeException("ไม่พบข้อมูลช่าง"));
@@ -136,17 +138,29 @@ public class AdminTechnicianServiceImpl implements AdminTechnicianService {
     }
 
     private AdminTechnicianHistoryResponse toHistoryResponse(RepairAssignment assignment) {
+        RepairRequest request = assignment.getRepairRequest();
+
+        String requesterName = null;
+        if (request != null && request.getReporter() != null
+                && request.getReporter().getUser() != null) {
+            User requester = request.getReporter().getUser();
+            requesterName = requester.getFirstName() + " " + requester.getLastName();
+        }
+
         return new AdminTechnicianHistoryResponse(
                 assignment.getAssignmentId(),
-                assignment.getRepairRequest() != null ? assignment.getRepairRequest().getRepairRequestId() : null,
-                assignment.getRepairRequest() != null && assignment.getRepairRequest().getRepairType() != null
-                        ? assignment.getRepairRequest().getRepairType().name() : null,
-                assignment.getRepairRequest() != null ? assignment.getRepairRequest().getDescription() : null,
+                request != null ? request.getRepairRequestId() : null,
+                request != null && request.getRepairType() != null
+                        ? request.getRepairType().name() : null,
+                request != null ? request.getDescription() : null,
                 assignment.getJobStatus() != null ? assignment.getJobStatus().getThaiName() : null,
                 assignment.getJobStatus() != null ? assignment.getJobStatus().getCssClass() : null,
                 assignment.getAdminNote(),
                 assignment.getTechnicianNote(),
-                assignment.getAssignDate()
+                assignment.getAssignDate(),
+                request != null && request.getStatus() != null ? request.getStatus().getThaiName() : null,
+                request != null && request.getStatus() != null ? request.getStatus().getCssClass() : null,
+                requesterName
         );
     }
 

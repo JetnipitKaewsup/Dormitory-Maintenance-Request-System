@@ -5,6 +5,13 @@
     <title>ประวัติการซ่อม - Dormitory Repair System</title>
     <link rel="stylesheet" th:href="@{/css/adminCommon.css}" />
     <link rel="stylesheet" th:href="@{/css/adminTechnician.css}" />
+
+    <meta name="_csrf" th:content="${_csrf.token}">
+    <meta name="_csrf_header" th:content="${_csrf.headerName}">
+
+    <link rel="stylesheet" th:href="@{/css/admin-notification.css}" />
+
+    <script src="https://unpkg.com/lucide@latest"></script>
 </head>
 <body>
 
@@ -27,11 +34,28 @@
 
     <div class="tech-list" th:if="${history != null and !history.isEmpty()}">
         <div class="tech-card" th:each="job : ${history}" style="flex-direction: column; align-items: flex-start;">
-            <div style="display:flex; justify-content: space-between; width:100%;">
+
+            <div style="display:flex; justify-content: space-between; align-items:center; width:100%;">
                 <span class="tech-spec-badge" th:text="${job.repairType}">ประเภทงาน</span>
-                <span class="badge" th:classappend="${job.statusCssClass}" th:text="${job.statusLabel}">สถานะ</span>
+                <span class="badge" th:if="${job.requestStatusLabel != null}"
+                      th:classappend="${job.requestStatusCssClass}"
+                      th:text="${job.requestStatusLabel}">สถานะ</span>
             </div>
+
             <p style="margin-top:10px; font-size:14px;" th:text="${job.description}">รายละเอียดงาน</p>
+
+            <div class="tech-meta" style="margin-top:8px;"
+                 th:if="${job.repairRequestId != null}"
+                 th:text="'รหัสคำร้อง: ' + ${job.repairRequestId}">
+                รหัสคำร้อง
+            </div>
+
+            <div class="tech-meta" style="margin-top:4px;"
+                 th:if="${job.requesterName != null}"
+                 th:text="'ผู้แจ้ง: ' + ${job.requesterName}">
+                ผู้แจ้ง
+            </div>
+
             <div class="tech-meta" style="margin-top:8px;"
                  th:text="'ได้รับมอบหมาย: ' + ${#temporals.format(job.assignDate, 'dd/MM/yyyy HH:mm')}">
                 วันที่มอบหมาย
@@ -52,5 +76,8 @@
     </div>
 </main>
 
+<script>
+    lucide.createIcons();
+</script>
 </body>
 </html>
