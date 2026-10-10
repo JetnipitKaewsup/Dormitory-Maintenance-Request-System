@@ -11,26 +11,21 @@ import java.util.UUID;
 import org.junit.jupiter.api.AfterEach;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.ui.ExtendedModelMap;
-import org.springframework.ui.Model;
 import org.springframework.web.reactive.function.client.WebClient;
 
-import com.example.dormitory.controller.web.AuthController;
 import com.example.dormitory.domain.entity.User;
+import com.example.dormitory.dto.request.LoginRequest;
+import com.example.dormitory.dto.response.SupabaseAuthResponse;
 import com.example.dormitory.repository.AdminRepository;
 import com.example.dormitory.repository.UserRepository;
 import com.example.dormitory.service.AuthRequestValidator;
@@ -52,7 +47,6 @@ class LoginIntegrationTest {
     private HttpServer mockSupabaseServer;
 
     private AuthService authService;
-    private AuthController authController;
     private LoginSessionService loginSessionService;
 
     private SpringSecurityService springSecurityService;
@@ -68,57 +62,36 @@ class LoginIntegrationTest {
 
     @BeforeEach
     void setUp() throws Exception {
+        userId = UUID.randomUUID();
 
-        // ---------------------------------------------------------
-        // 1. Start Mock Supabase Server
-        // ---------------------------------------------------------
-
+        // เริ่ม Mock HTTP Server สำหรับจำลอง Supabase Auth
         mockSupabaseServer = HttpServer.create(
-                new InetSocketAddress(0),
-                0
-        );
+                new InetSocketAddress(0), 0);
 
         mockSupabaseServer.createContext(
                 "/auth/v1/token",
-                this::handleSupabaseLogin
-        );
+                this::handleSupabaseLogin);
 
         mockSupabaseServer.start();
 
-        int port = mockSupabaseServer.getAddress().getPort();
-
-        // ---------------------------------------------------------
-        // 2. Create real WebClient
-        // ---------------------------------------------------------
-
         WebClient webClient = WebClient.builder()
-                .baseUrl("http://localhost:" + port)
+                .baseUrl(
+                        "http://localhost:"
+                                + mockSupabaseServer.getAddress().getPort())
                 .build();
 
         ObjectMapper objectMapper = new ObjectMapper();
 
-        // ---------------------------------------------------------
-        // 3. Create REAL SupabaseAuthGateway and AuthService
-        // ---------------------------------------------------------
-
-        SupabaseAuthGateway supabaseAuthGateway =
+        SupabaseAuthGateway gateway =
                 new SupabaseAuthGatewayImpl(
                         webClient,
-                        objectMapper
-                );
-
-        AuthRequestValidator authRequestValidator =
-                new AuthRequestValidator();
+                        objectMapper);
 
         authService = new AuthService(
-                supabaseAuthGateway,
-                authRequestValidator
-        );
+                gateway,
+                new AuthRequestValidator());
 
-        // ---------------------------------------------------------
-        // 4. Create mocked dependencies
-        // ---------------------------------------------------------
-
+        // Mock dependencies สำหรับสร้าง Security Context และ Session
         springSecurityService = mock(SpringSecurityService.class);
         userRepository = mock(UserRepository.class);
         adminRepository = mock(AdminRepository.class);
@@ -126,50 +99,19 @@ class LoginIntegrationTest {
         request = mock(HttpServletRequest.class);
         response = mock(HttpServletResponse.class);
         session = mock(HttpSession.class);
-
         user = mock(User.class);
 
-        /*
-         * จำลอง Session ที่ยังไม่มีอยู่ก่อน Login
-         * จากนั้นระบบจะใช้ Session ที่จำลองไว้
-         */
-        when(request.getSession(false))
-                .thenReturn(null, session);
-
-        when(request.getSession(true))
-                .thenReturn(session);
-
-        when(request.getSession())
-                .thenReturn(session);
-
-        // ---------------------------------------------------------
-        // 5. Create LoginSessionService
-        // ---------------------------------------------------------
+        when(request.getSession(false)).thenReturn(null);
+        when(request.getSession(true)).thenReturn(session);
 
         loginSessionService = new LoginSessionService(
                 springSecurityService,
                 userRepository,
-                adminRepository
-        );
-
-        // ---------------------------------------------------------
-        // 6. Create REAL AuthController
-        // ---------------------------------------------------------
-
-        authController = new AuthController(
-                authService,
-                springSecurityService,
-                userRepository,
-                adminRepository,
-                loginSessionService
-        );
-
-        userId = UUID.randomUUID();
+                adminRepository);
     }
 
     @AfterEach
     void tearDown() {
-
         if (mockSupabaseServer != null) {
             mockSupabaseServer.stop(0);
         }
@@ -177,12 +119,11 @@ class LoginIntegrationTest {
         SecurityContextHolder.clearContext();
     }
 
-    // =============================================================
-    // Mock Supabase
-    // =============================================================
-
-    private void handleSupabaseLogin(
-            HttpExchange exchange) throws IOException {
+    /**
+     * จำลองการตอบกลับสำเร็จจาก Supabase Auth
+     */
+    private void handleSupabaseLogin(HttpExchange exchange)
+            throws IOException {
 
         if (!"POST".equalsIgnoreCase(
                 exchange.getRequestMethod())) {
@@ -190,12 +131,7 @@ class LoginIntegrationTest {
             writeResponse(
                     exchange,
                     405,
-                    """
-                    {
-                        "error": "Method Not Allowed"
-                    }
-                    """
-            );
+                    "{\"error\":\"Method Not Allowed\"}");
 
             return;
         }
@@ -215,6 +151,9 @@ class LoginIntegrationTest {
         writeResponse(exchange, 200, responseBody);
     }
 
+    /**
+     * ส่ง HTTP Response จาก Mock Supabase Server
+     */
     private void writeResponse(
             HttpExchange exchange,
             int status,
@@ -224,8 +163,7 @@ class LoginIntegrationTest {
 
         exchange.getResponseHeaders().set(
                 "Content-Type",
-                "application/json"
-        );
+                "application/json");
 
         exchange.sendResponseHeaders(status, bytes.length);
 
@@ -234,15 +172,11 @@ class LoginIntegrationTest {
         }
     }
 
-    // =============================================================
-    // Test Helpers
-    // =============================================================
-
-    private com.example.dormitory.dto.request.LoginRequest
-            createValidLoginRequest() {
-
-        var loginRequest =
-                new com.example.dormitory.dto.request.LoginRequest();
+    /**
+     * สร้างข้อมูล Login ที่ถูกต้อง
+     */
+    private LoginRequest createValidLoginRequest() {
+        LoginRequest loginRequest = new LoginRequest();
 
         loginRequest.setEmail("test@example.com");
         loginRequest.setPassword("test-password");
@@ -250,18 +184,17 @@ class LoginIntegrationTest {
         return loginRequest;
     }
 
+    /**
+     * เตรียม Authentication สำหรับผู้ใช้ Reporter
+     */
     private Authentication configureReporterAuthentication() {
-
         Authentication authentication =
                 new UsernamePasswordAuthenticationToken(
                         userId.toString(),
                         null,
                         List.of(
                                 new SimpleGrantedAuthority(
-                                        "ROLE_REPORTER"
-                                )
-                        )
-                );
+                                        "ROLE_REPORTER")));
 
         when(springSecurityService.createAuthentication(userId))
                 .thenReturn(authentication);
@@ -269,80 +202,46 @@ class LoginIntegrationTest {
         when(userRepository.findById(userId))
                 .thenReturn(Optional.of(user));
 
-        when(user.getFirstName())
-                .thenReturn("Test");
-
-        when(user.getLastName())
-                .thenReturn("Reporter");
+        when(user.getFirstName()).thenReturn("Test");
+        when(user.getLastName()).thenReturn("Reporter");
 
         return authentication;
     }
 
-    // =============================================================
-    // TC-IT-02-01
-    // Login ด้วยข้อมูลที่ถูกต้อง
-    // =============================================================
-
+    /**
+     * TC-IT-02-01:
+     * เข้าสู่ระบบด้วยข้อมูลที่ถูกต้องและรับ Token จาก Supabase
+     */
     @Test
-    void TC_IT_02_01_loginWithValidData_shouldSuccess()
+    void TC_IT_02_01_loginWithValidData_shouldAuthenticateWithSupabase()
             throws Exception {
 
-        var loginRequest = createValidLoginRequest();
+        SupabaseAuthResponse authResponse =
+                authService.login(createValidLoginRequest());
 
-        configureReporterAuthentication();
-
-        Model model = new ExtendedModelMap();
-
-        String result = authController.processLogin(
-                loginRequest,
-                request,
-                response,
-                model
-        );
+        assertNotNull(authResponse);
 
         assertEquals(
-                "redirect:/reporter/requests",
-                result
-        );
+                "test-access-token",
+                authResponse.getAccess_token());
 
-        verify(springSecurityService)
-                .createAuthentication(userId);
+        assertEquals(
+                "test-refresh-token",
+                authResponse.getRefresh_token());
 
-        verify(session).setAttribute(
-                "accessToken",
-                "test-access-token"
-        );
-
-        verify(session).setAttribute(
-                "refreshToken",
-                "test-refresh-token"
-        );
-
-        verify(session).setAttribute(
-                "userId",
-                userId.toString()
-        );
-
-        verify(session).setAttribute(
-                "userFullName",
-                "Test Reporter"
-        );
-
-        verify(session).setAttribute(
-                "role",
-                "REPORTER"
-        );
+        assertEquals(
+                userId.toString(),
+                authResponse.getUser().getId());
     }
 
-    // =============================================================
-    // TC-IT-02-02
-    // Email / Password ไม่ถูกต้อง
-    // =============================================================
-
+    /**
+     * TC-IT-02-02:
+     * เข้าสู่ระบบด้วย Password ที่ไม่ถูกต้อง
+     */
     @Test
-    void TC_IT_02_02_loginWithWrongPassword_shouldReturnLoginPage()
-            throws Exception {
+    void TC_IT_02_02_loginWithWrongPassword_shouldFail() {
 
+        // เปลี่ยน Mock Supabase ให้ตอบกลับ Unauthorized
         mockSupabaseServer.removeContext("/auth/v1/token");
 
         mockSupabaseServer.createContext(
@@ -356,214 +255,114 @@ class LoginIntegrationTest {
                             "error_description":
                                 "Invalid login credentials"
                         }
-                        """
-                )
-        );
+                        """));
 
-        var loginRequest = createValidLoginRequest();
+        LoginRequest loginRequest = createValidLoginRequest();
         loginRequest.setPassword("wrong-password");
 
-        Model model = new ExtendedModelMap();
-
-        String result = authController.processLogin(
-                loginRequest,
-                request,
-                response,
-                model
-        );
-
-        assertEquals("login", result);
-
-        assertEquals(
-                "Invalid email or password",
-                model.getAttribute("error")
-        );
-
-        verify(
-                springSecurityService,
-                never()
-        ).createAuthentication(any());
-
-        verify(
-                session,
-                never()
-        ).setAttribute(
-                eq("accessToken"),
-                any()
-        );
+        assertThrows(
+                Exception.class,
+                () -> authService.login(loginRequest));
     }
 
-    // =============================================================
-    // TC-IT-02-03
-    // ไม่กรอก Password
-    // =============================================================
-
+    /**
+     * TC-IT-02-03:
+     * เข้าสู่ระบบโดยไม่ระบุ Password
+     */
     @Test
-    void TC_IT_02_03_loginWithoutPassword_shouldReturnLoginPage() {
+    void TC_IT_02_03_loginWithoutPassword_shouldFail() {
 
-        var loginRequest = createValidLoginRequest();
+        LoginRequest loginRequest = createValidLoginRequest();
         loginRequest.setPassword("");
 
-        Model model = new ExtendedModelMap();
-
-        String result = authController.processLogin(
-                loginRequest,
-                request,
-                response,
-                model
-        );
-
-        assertEquals("login", result);
-
-        assertEquals(
-                "Invalid email or password",
-                model.getAttribute("error")
-        );
-
-        verify(
-                springSecurityService,
-                never()
-        ).createAuthentication(any());
-
-        verify(
-                session,
-                never()
-        ).setAttribute(
-                eq("accessToken"),
-                any()
-        );
+        assertThrows(
+                Exception.class,
+                () -> authService.login(loginRequest));
     }
 
-    // =============================================================
-    // TC-IT-02-04
-    // ไม่กรอก Email
-    // =============================================================
-
+    /**
+     * TC-IT-02-04:
+     * เข้าสู่ระบบโดยไม่ระบุ Email
+     */
     @Test
-    void TC_IT_02_04_loginWithoutEmail_shouldReturnLoginPage() {
+    void TC_IT_02_04_loginWithoutEmail_shouldFail() {
 
-        var loginRequest = createValidLoginRequest();
+        LoginRequest loginRequest = createValidLoginRequest();
         loginRequest.setEmail("");
 
-        Model model = new ExtendedModelMap();
-
-        String result = authController.processLogin(
-                loginRequest,
-                request,
-                response,
-                model
-        );
-
-        assertEquals("login", result);
-
-        assertEquals(
-                "Invalid email or password",
-                model.getAttribute("error")
-        );
-
-        verify(
-                springSecurityService,
-                never()
-        ).createAuthentication(any());
-
-        verify(
-                session,
-                never()
-        ).setAttribute(
-                eq("accessToken"),
-                any()
-        );
+        assertThrows(
+                Exception.class,
+                () -> authService.login(loginRequest));
     }
 
-    // =============================================================
-    // TC-IT-02-05
-    // ตรวจสอบการสร้าง Authentication
-    // =============================================================
-
+    /**
+     * TC-IT-02-05:
+     * ตรวจสอบว่าระบบสร้าง Authentication หลัง Login สำเร็จ
+     */
     @Test
     void TC_IT_02_05_loginSuccessfully_shouldCreateAuthentication()
             throws Exception {
 
-        var loginRequest = createValidLoginRequest();
+        // Arrange
+        configureReporterAuthentication();
 
-        Authentication authentication =
-                configureReporterAuthentication();
+        SupabaseAuthResponse authResponse =
+                authService.login(createValidLoginRequest());
 
-        Model model = new ExtendedModelMap();
-
-        String result = authController.processLogin(
-                loginRequest,
+        // Act
+        String destination = loginSessionService.establishSession(
+                authResponse,
                 request,
-                response,
-                model
-        );
+                response);
 
-        assertEquals(
-                "redirect:/reporter/requests",
-                result
-        );
+        // Assert
+        assertEquals("/reporter/requests", destination);
 
-        verify(springSecurityService, times(1))
+        verify(springSecurityService)
                 .createAuthentication(userId);
-
-        assertNotNull(authentication);
-
-        assertTrue(authentication.isAuthenticated());
-
-        assertEquals(
-                "ROLE_REPORTER",
-                authentication.getAuthorities()
-                        .iterator()
-                        .next()
-                        .getAuthority()
-        );
     }
 
-    // =============================================================
-    // TC-IT-02-06
-    // ตรวจสอบการจัดเก็บข้อมูล Login ลง Session
-    // =============================================================
-
+    /**
+     * TC-IT-02-06:
+     * ตรวจสอบการบันทึกข้อมูล Login ลง Session
+     */
     @Test
     void TC_IT_02_06_loginSuccessfully_shouldStoreLoginDataInSession()
             throws Exception {
 
-        var loginRequest = createValidLoginRequest();
-
+        // Arrange
         configureReporterAuthentication();
 
-        Model model = new ExtendedModelMap();
+        SupabaseAuthResponse authResponse =
+                authService.login(createValidLoginRequest());
 
-        authController.processLogin(
-                loginRequest,
+        // Act
+        String destination = loginSessionService.establishSession(
+                authResponse,
                 request,
-                response,
-                model
-        );
+                response);
+
+        // Assert
+        assertEquals("/reporter/requests", destination);
 
         verify(session).setAttribute(
                 "accessToken",
-                "test-access-token"
-        );
+                "test-access-token");
 
         verify(session).setAttribute(
                 "refreshToken",
-                "test-refresh-token"
-        );
+                "test-refresh-token");
 
         verify(session).setAttribute(
                 "userId",
-                userId.toString()
-        );
+                userId.toString());
 
         verify(session).setAttribute(
                 "userFullName",
-                "Test Reporter"
-        );
+                "Test Reporter");
 
         verify(session).setAttribute(
                 "role",
-                "REPORTER"
-        );
+                "REPORTER");
     }
 }

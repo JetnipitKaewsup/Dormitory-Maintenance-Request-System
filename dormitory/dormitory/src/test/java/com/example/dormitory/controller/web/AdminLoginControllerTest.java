@@ -1,3 +1,4 @@
+
 package com.example.dormitory.controller.web;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -13,11 +14,8 @@ import org.springframework.ui.Model;
 
 import com.example.dormitory.dto.request.LoginRequest;
 import com.example.dormitory.dto.response.SupabaseAuthResponse;
-import com.example.dormitory.repository.AdminRepository;
-import com.example.dormitory.repository.UserRepository;
 import com.example.dormitory.service.AuthService;
 import com.example.dormitory.service.LoginSessionService;
-import com.example.dormitory.service.SpringSecurityService;
 
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -27,15 +25,6 @@ class AdminLoginControllerTest {
 
     @Mock
     private AuthService authService;
-
-    @Mock
-    private SpringSecurityService springSecurityService;
-
-    @Mock
-    private UserRepository userRepository;
-
-    @Mock
-    private AdminRepository adminRepository;
 
     @Mock
     private LoginSessionService loginSessionService;
@@ -53,13 +42,15 @@ class AdminLoginControllerTest {
     private SupabaseAuthResponse authResponse;
 
     @InjectMocks
-    private AuthController controller;
+    private LoginController controller;
 
     private LoginRequest loginRequest;
 
     @BeforeEach
     void setUp() {
         loginRequest = new LoginRequest();
+        loginRequest.setEmail("admin@example.com");
+        loginRequest.setPassword("test-password");
     }
 
     private void mockSuccessfulLogin() {
@@ -67,10 +58,8 @@ class AdminLoginControllerTest {
                 .thenReturn(authResponse);
 
         when(loginSessionService.establishSession(
-                authResponse,
-                request,
-                response
-        )).thenReturn("/admin/requests");
+                authResponse, request, response))
+                .thenReturn("/admin/requests");
     }
 
     /**
@@ -79,113 +68,109 @@ class AdminLoginControllerTest {
      */
     @Test
     void TC_UT_08_01_shouldLoginSuccessfullyAsAdmin() {
-
         mockSuccessfulLogin();
 
         String result = controller.processLogin(
-                loginRequest,
-                request,
-                response,
-                model
-        );
+                loginRequest, request, response, model);
 
         assertEquals("redirect:/admin/requests", result);
-
         verify(authService).login(loginRequest);
     }
 
     /**
      * TC-UT-08-02
-     * ตรวจสอบการส่งผลการ Authentication
+     * ตรวจสอบการส่ง Authentication Response
      * ไปยัง LoginSessionService
      */
     @Test
     void TC_UT_08_02_shouldEstablishSessionAfterAuthentication() {
-
         mockSuccessfulLogin();
 
         controller.processLogin(
-                loginRequest,
-                request,
-                response,
-                model
-        );
+                loginRequest, request, response, model);
 
         verify(loginSessionService).establishSession(
-                authResponse,
-                request,
-                response
-        );
+                authResponse, request, response);
     }
 
     /**
      * TC-UT-08-03
-     * ตรวจสอบการส่ง HttpServletRequest
-     * และ HttpServletResponse สำหรับจัดการ Session
+     * ตรวจสอบการส่ง Request และ Response ให้ Service
      */
     @Test
     void TC_UT_08_03_shouldPassRequestAndResponseToSessionService() {
-
         mockSuccessfulLogin();
 
         controller.processLogin(
-                loginRequest,
-                request,
-                response,
-                model
-        );
+                loginRequest, request, response, model);
 
         verify(loginSessionService).establishSession(
-                authResponse,
-                request,
-                response
-        );
+                authResponse, request, response);
     }
 
     /**
      * TC-UT-08-04
-     * ตรวจสอบว่ามีการเรียก Service
-     * เพื่อจัดการข้อมูล Session หลัง Login
+     * ตรวจสอบว่า Controller มอบหมายการจัดการ Session ให้ Service
      */
     @Test
     void TC_UT_08_04_shouldDelegateSessionManagementToService() {
-
         mockSuccessfulLogin();
 
         controller.processLogin(
-                loginRequest,
-                request,
-                response,
-                model
-        );
+                loginRequest, request, response, model);
 
         verify(loginSessionService).establishSession(
-                authResponse,
-                request,
-                response
-        );
+                authResponse, request, response);
     }
 
     /**
      * TC-UT-08-05
-     * ตรวจสอบการ Redirect ของ Admin
-     * ไปยังหน้าจัดการคำร้อง
+     * ตรวจสอบการ Redirect Admin ไปหน้าจัดการคำร้อง
      */
     @Test
     void TC_UT_08_05_shouldRedirectAdminToRequestManagementPage() {
-
         mockSuccessfulLogin();
 
         String result = controller.processLogin(
-                loginRequest,
-                request,
-                response,
-                model
-        );
+                loginRequest, request, response, model);
 
-        assertEquals(
-                "redirect:/admin/requests",
-                result
-        );
+        assertEquals("redirect:/admin/requests", result);
+    }
+
+    /**
+     * ตรวจสอบว่าการ Login ล้มเหลวจะกลับไปหน้า Login
+     */
+    @Test
+    void shouldReturnLoginPageWhenAuthenticationFails() {
+        when(authService.login(loginRequest))
+                .thenThrow(new RuntimeException("Authentication failed"));
+
+        String result = controller.processLogin(
+                loginRequest, request, response, model);
+
+        assertEquals("login", result);
+        verify(model).addAttribute(
+                "error", "Invalid email or password");
+    }
+
+    /**
+     * ตรวจสอบว่าหากสร้าง Session ไม่สำเร็จ
+     * Controller จะไม่ Redirect ไปหน้าปลายทาง
+     */
+    @Test
+    void shouldReturnLoginPageWhenSessionEstablishmentFails() {
+        when(authService.login(loginRequest))
+                .thenReturn(authResponse);
+
+        when(loginSessionService.establishSession(
+                authResponse, request, response))
+                .thenThrow(new RuntimeException("Session creation failed"));
+
+        String result = controller.processLogin(
+                loginRequest, request, response, model);
+
+        assertEquals("login", result);
+        verify(model).addAttribute(
+                "error", "Invalid email or password");
     }
 }
