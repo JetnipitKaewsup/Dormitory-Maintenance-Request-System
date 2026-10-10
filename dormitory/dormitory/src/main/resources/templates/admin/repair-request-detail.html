@@ -48,7 +48,7 @@
     <!-- 3. APPROVED -->
     <div class="step"
          th:classappend="${request.status.name() == 'APPROVED'} ? 'current' :
-                          (${request.status.name() == 'IN_PROGRESS' or request.status.name() == 'COMPLETED'} ? 'done' : '')">
+                          (${request.status.name() == 'IN_PROGRESS' or request.status.name() == 'COMPLETED' or request.status.name() == 'IN_COMPLETED'} ? 'done' : '')">
         <div class="dot"></div>
         <div class="label">อนุมัติแล้ว</div>
     </div>
@@ -56,15 +56,18 @@
     <!-- 4. IN-PROGRESS -->
     <div class="step"
          th:classappend="${request.status.name() == 'IN_PROGRESS'} ? 'current' :
-                          (${request.status.name() == 'COMPLETED'} ? 'done' : '')">
+                          (${request.status.name() == 'COMPLETED' or request.status.name() == 'IN_COMPLETED'} ? 'done' : '')">
         <div class="dot"></div>
         <div class="label">กำลังดำเนินการ</div>
     </div>
 
-    <!-- 5. COMPLETED -->
-    <div class="step" th:classappend="${request.status.name() == 'COMPLETED'} ? 'done current' : ''">
+    <!-- 5. COMPLETED / IN_COMPLETED -->
+    <div class="step"
+         th:classappend="${request.status.name() == 'COMPLETED'} ? 'done current' :
+                          (${request.status.name() == 'IN_COMPLETED'} ? 'rejected' : '')">
         <div class="dot"></div>
-        <div class="label">เสร็จสิ้น</div>
+        <div class="label"
+             th:text="${request.status.name() == 'IN_COMPLETED'} ? 'ไม่สำเร็จ' : 'เสร็จสิ้น'">เสร็จสิ้น</div>
     </div>
 </div>
 
@@ -75,6 +78,7 @@
             <span th:case="'REJECTED'">สถานะปัจจุบัน: <b style="color:var(--color-danger)">ถูกปฏิเสธคำร้อง</b></span>
             <span th:case="'IN_PROGRESS'">สถานะปัจจุบัน: <b>ช่างกำลังดำเนินการซ่อม</b></span>
             <span th:case="'COMPLETED'">สถานะปัจจุบัน: <b>ซ่อมเสร็จสิ้นแล้ว</b></span>
+            <span th:case="'IN_COMPLETED'">สถานะปัจจุบัน: <b style="color:var(--color-danger)">ดำเนินการไม่สำเร็จ</b></span>
             <span th:case="'CANCELLED'">สถานะปัจจุบัน: <b style="color:var(--color-danger)">ยกเลิกคำร้อง</b></span>
             <span th:case="*">สถานะปัจจุบัน: <b th:text="${request.status.thaiName}">-</b></span>
         </div>
@@ -91,7 +95,8 @@
                   th:classappend="${request.status.name() == 'PENDING'} ? 'pending' :
                                    (${request.status.name() == 'APPROVED'} ? 'approved' :
                                    (${request.status.name() == 'REJECTED' or request.status.name() == 'CANCELLED'} ? 'rejected' :
-                                   (${request.status.name() == 'IN_PROGRESS'} ? 'inprogress' : 'completed')))"
+                                   (${request.status.name() == 'IN_PROGRESS'} ? 'inprogress' :
+                                   (${request.status.name() == 'IN_COMPLETED'} ? 'incompleted' : 'completed'))))"
                   th:text="${request.status.name() == 'PENDING'} ? 'รออนุมัติ / ปฏิเสธ' : ${request.status.thaiName}">
                 สถานะ
             </span>
@@ -136,7 +141,8 @@
             <div class="info-block">
                 <h3>รายละเอียดงานซ่อม</h3>
                 <div class="label" style="margin-bottom:6px;">ประเภทงานซ่อม</div>
-                <span class="repair-type-chip" th:text="${request.repairType}">-</span>
+                <span class="repair-type-chip"
+      th:text="${request.repairType != null ? request.repairType.thaiName : '-'}">-</span>
             </div>
         </div>
 

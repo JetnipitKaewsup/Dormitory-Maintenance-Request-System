@@ -13,13 +13,18 @@ public class AdminTechnicianHistoryResponse {
     private String adminNote;
     private String technicianNote;
     private LocalDateTime assignDate;
+    private String requestStatusLabel;
+    private String requestStatusCssClass;
+    private String requesterName;
 
     public AdminTechnicianHistoryResponse() {
     }
 
     public AdminTechnicianHistoryResponse(UUID assignmentId, UUID repairRequestId, String repairType,
                                            String description, String statusLabel, String statusCssClass,
-                                           String adminNote, String technicianNote, LocalDateTime assignDate) {
+                                           String adminNote, String technicianNote, LocalDateTime assignDate,
+                                           String requestStatusLabel, String requestStatusCssClass,
+                                           String requesterName) {
         this.assignmentId = assignmentId;
         this.repairRequestId = repairRequestId;
         this.repairType = repairType;
@@ -29,6 +34,9 @@ public class AdminTechnicianHistoryResponse {
         this.adminNote = adminNote;
         this.technicianNote = technicianNote;
         this.assignDate = assignDate;
+        this.requestStatusLabel = requestStatusLabel;
+        this.requestStatusCssClass = requestStatusCssClass;
+        this.requesterName = requesterName;
     }
 
     public UUID getAssignmentId() { return assignmentId; }
@@ -57,4 +65,13 @@ public class AdminTechnicianHistoryResponse {
 
     public LocalDateTime getAssignDate() { return assignDate; }
     public void setAssignDate(LocalDateTime assignDate) { this.assignDate = assignDate; }
+
+    public String getRequestStatusLabel() { return requestStatusLabel; }
+    public void setRequestStatusLabel(String requestStatusLabel) { this.requestStatusLabel = requestStatusLabel; }
+
+    public String getRequestStatusCssClass() { return requestStatusCssClass; }
+    public void setRequestStatusCssClass(String requestStatusCssClass) { this.requestStatusCssClass = requestStatusCssClass; }
+
+    public String getRequesterName() { return requesterName; }
+    public void setRequesterName(String requesterName) { this.requesterName = requesterName; }
 }
