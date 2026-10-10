@@ -42,32 +42,35 @@
     </div>
 
     <div class="work-list">
-        <div class="work-row" th:each="r : ${requests}"
-             th:classappend="${readyIds.contains(r.repairRequestId)} ? 'is-ready' :
-                             (${failedIds.contains(r.repairRequestId)} ? 'is-failed' : '')">
-            <span class="work-status" aria-hidden="true"></span>
+            <div class="work-row" th:each="r : ${requests}"
+                th:classappend="${readyIds.contains(r.repairRequestId)} ? 'is-ready' :
+                                (${techFailedIds.contains(r.repairRequestId)} ? 'is-ready is-failed' : '')">
+                <span class="work-status" aria-hidden="true"></span>
 
-            <div class="work-body">
-                <div class="work-title-line">
-                    <span class="work-type" th:text="${r.repairType != null ? r.repairType.thaiName : '-'}">...</span>
-                    <span class="work-badge work-badge-ready"
-                          th:if="${readyIds.contains(r.repairRequestId)}">ช่างแจ้งเสร็จแล้ว รอตรวจสอบ</span>
-                    <span class="work-badge work-badge-failed"
-                          th:if="${failedIds.contains(r.repairRequestId)}">ดำเนินการไม่สำเร็จ</span>
-                    <span class="work-badge"
-                          th:unless="${readyIds.contains(r.repairRequestId) or failedIds.contains(r.repairRequestId)}">กำลังดำเนินการ</span>
+                <div class="work-body">
+                    <div class="work-title-line">
+                        <span class="work-type" th:text="${r.repairType != null ? r.repairType.thaiName : '-'}">...</span>
+
+                        <span class="work-badge work-badge-ready"
+                            th:if="${readyIds.contains(r.repairRequestId)}">ช่างแจ้งเสร็จแล้ว รอตรวจสอบ</span>
+                        <span class="work-badge work-badge-failed"
+                            th:if="${techFailedIds.contains(r.repairRequestId)}">ช่างแจ้งว่าดำเนินงานไม่สำเร็จ รอตรวจสอบ</span>
+                        <span class="work-badge"
+                            th:unless="${readyIds.contains(r.repairRequestId)
+                                        or techFailedIds.contains(r.repairRequestId)}">กำลังดำเนินการ</span>
+                    </div>
+                    <p class="work-desc" th:text="${r.description}"></p>
+                    <p class="work-meta" th:text="'ห้อง ' + (${r.room != null ? r.room.roomNo : '-'})"></p>
                 </div>
-                <p class="work-desc" th:text="${r.description}"></p>
-                <p class="work-meta" th:text="'ห้อง ' + (${r.room != null ? r.room.roomNo : '-'})"></p>
-            </div>
 
-            <a class="work-btn"
-               th:classappend="${readyIds.contains(r.repairRequestId)} ? '' : 'work-btn-quiet'"
-               th:href="@{/admin/requests/{id}/inspect(id=${r.repairRequestId})}">
-                ตรวจสอบงาน
-            </a>
+                <a class="work-btn"
+                th:classappend="${readyIds.contains(r.repairRequestId) or techFailedIds.contains(r.repairRequestId)} ? '' : 'work-btn-quiet'"
+                th:href="@{/admin/requests/{id}/inspect(id=${r.repairRequestId})}">
+                    ตรวจสอบงาน
+                </a>
+            </div>
         </div>
-    </div>
+
 </main>
 <script>
     lucide.createIcons();
