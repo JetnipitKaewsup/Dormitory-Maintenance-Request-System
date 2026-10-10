@@ -1,50 +1,33 @@
+
 package com.example.dormitory.controller.web;
 
-import java.util.List;
-import java.util.Optional;
-import java.util.UUID;
-
-import org.junit.jupiter.api.AfterEach;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
-import org.mockito.MockitoAnnotations;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
-import org.springframework.security.core.context.SecurityContextHolder;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.ui.Model;
 
-import com.example.dormitory.domain.entity.Admin;
-import com.example.dormitory.domain.entity.User;
-import com.example.dormitory.dto.SupabaseUser;
 import com.example.dormitory.dto.request.LoginRequest;
 import com.example.dormitory.dto.response.SupabaseAuthResponse;
-import com.example.dormitory.repository.AdminRepository;
-import com.example.dormitory.repository.UserRepository;
 import com.example.dormitory.service.AuthService;
-import com.example.dormitory.service.SpringSecurityService;
+import com.example.dormitory.service.LoginSessionService;
 
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import jakarta.servlet.http.HttpSession;
 
+@ExtendWith(MockitoExtension.class)
 class AdminLoginControllerTest {
 
     @Mock
     private AuthService authService;
 
     @Mock
-    private SpringSecurityService springSecurityService;
-
-    @Mock
-    private UserRepository userRepository;
-
-    @Mock
-    private AdminRepository adminRepository;
+    private LoginSessionService loginSessionService;
 
     @Mock
     private HttpServletRequest request;
@@ -53,53 +36,30 @@ class AdminLoginControllerTest {
     private HttpServletResponse response;
 
     @Mock
-    private HttpSession session;
-
-    @Mock
     private Model model;
 
     @Mock
     private SupabaseAuthResponse authResponse;
 
-    @Mock
-    private SupabaseUser supabaseUser;
+    @InjectMocks
+    private LoginController controller;
 
-    @Mock
-    private User user;
-
-    @Mock
-    private Admin admin;
-
-    @Mock
-    private Authentication authentication;
-
-    private AuthController controller;
-
-    private UUID userId;
-    private UUID adminId;
+    private LoginRequest loginRequest;
 
     @BeforeEach
     void setUp() {
-
-        MockitoAnnotations.openMocks(this);
-
-        controller = new AuthController(
-                authService,
-                springSecurityService,
-                userRepository,
-                adminRepository
-        );
-
-        userId = UUID.randomUUID();
-        adminId = UUID.randomUUID();
-
-        when(request.getSession())
-                .thenReturn(session);
+        loginRequest = new LoginRequest();
+        loginRequest.setEmail("admin@example.com");
+        loginRequest.setPassword("test-password");
     }
 
-    @AfterEach
-    void tearDown() {
-        SecurityContextHolder.clearContext();
+    private void mockSuccessfulLogin() {
+        when(authService.login(loginRequest))
+                .thenReturn(authResponse);
+
+        when(loginSessionService.establishSession(
+                authResponse, request, response))
+                .thenReturn("/admin/requests");
     }
 
     /**
@@ -108,332 +68,109 @@ class AdminLoginControllerTest {
      */
     @Test
     void TC_UT_08_01_shouldLoginSuccessfullyAsAdmin() {
-
-        LoginRequest loginRequest = new LoginRequest();
-
-        when(authService.login(loginRequest))
-                .thenReturn(authResponse);
-
-        when(authResponse.getUser())
-                .thenReturn(supabaseUser);
-
-        when(supabaseUser.getId())
-                .thenReturn(userId.toString());
-
-        when(authResponse.getAccess_token())
-                .thenReturn("access-token");
-
-        when(authResponse.getRefresh_token())
-                .thenReturn("refresh-token");
-
-        when(springSecurityService.createAuthentication(userId))
-                .thenReturn(authentication);
-
-        doReturn(
-                List.of(
-                        new SimpleGrantedAuthority("ROLE_ADMIN")
-                )
-        ).when(authentication).getAuthorities();
-
-        when(userRepository.findById(userId))
-                .thenReturn(Optional.of(user));
-
-        when(user.getFirstName())
-                .thenReturn("Admin");
-
-        when(user.getLastName())
-                .thenReturn("User");
-
-        when(adminRepository.findByUser(user))
-                .thenReturn(Optional.of(admin));
-
-        when(admin.getAdminId())
-                .thenReturn(adminId);
+        mockSuccessfulLogin();
 
         String result = controller.processLogin(
-                loginRequest,
-                request,
-                response,
-                model
-        );
+                loginRequest, request, response, model);
 
-        assertEquals(
-                "redirect:/admin/requests",
-                result
-        );
-
-        verify(authService)
-                .login(loginRequest);
+        assertEquals("redirect:/admin/requests", result);
+        verify(authService).login(loginRequest);
     }
 
     /**
      * TC-UT-08-02
-     * ตรวจสอบการสร้าง Authentication ด้วย User ID
+     * ตรวจสอบการส่ง Authentication Response
+     * ไปยัง LoginSessionService
      */
     @Test
-    void TC_UT_08_02_shouldCreateAuthenticationForAdminUser() {
-
-        LoginRequest loginRequest = new LoginRequest();
-
-        when(authService.login(loginRequest))
-                .thenReturn(authResponse);
-
-        when(authResponse.getUser())
-                .thenReturn(supabaseUser);
-
-        when(supabaseUser.getId())
-                .thenReturn(userId.toString());
-
-        when(authResponse.getAccess_token())
-                .thenReturn("access-token");
-
-        when(authResponse.getRefresh_token())
-                .thenReturn("refresh-token");
-
-        when(springSecurityService.createAuthentication(userId))
-                .thenReturn(authentication);
-
-        doReturn(
-                List.of(
-                        new SimpleGrantedAuthority("ROLE_ADMIN")
-                )
-        ).when(authentication).getAuthorities();
-
-        when(userRepository.findById(userId))
-                .thenReturn(Optional.of(user));
-
-        when(user.getFirstName())
-                .thenReturn("Admin");
-
-        when(user.getLastName())
-                .thenReturn("User");
-
-        when(adminRepository.findByUser(user))
-                .thenReturn(Optional.of(admin));
-
-        when(admin.getAdminId())
-                .thenReturn(adminId);
+    void TC_UT_08_02_shouldEstablishSessionAfterAuthentication() {
+        mockSuccessfulLogin();
 
         controller.processLogin(
-                loginRequest,
-                request,
-                response,
-                model
-        );
+                loginRequest, request, response, model);
 
-        verify(springSecurityService)
-                .createAuthentication(userId);
+        verify(loginSessionService).establishSession(
+                authResponse, request, response);
     }
 
     /**
      * TC-UT-08-03
-     * ตรวจสอบการบันทึกข้อมูล Login ลง Session
+     * ตรวจสอบการส่ง Request และ Response ให้ Service
      */
     @Test
-    void TC_UT_08_03_shouldStoreAdminLoginInformationInSession() {
-
-        LoginRequest loginRequest = new LoginRequest();
-
-        when(authService.login(loginRequest))
-                .thenReturn(authResponse);
-
-        when(authResponse.getUser())
-                .thenReturn(supabaseUser);
-
-        when(supabaseUser.getId())
-                .thenReturn(userId.toString());
-
-        when(authResponse.getAccess_token())
-                .thenReturn("access-token");
-
-        when(authResponse.getRefresh_token())
-                .thenReturn("refresh-token");
-
-        when(springSecurityService.createAuthentication(userId))
-                .thenReturn(authentication);
-
-        doReturn(
-                List.of(
-                        new SimpleGrantedAuthority("ROLE_ADMIN")
-                )
-        ).when(authentication).getAuthorities();
-
-        when(userRepository.findById(userId))
-                .thenReturn(Optional.of(user));
-
-        when(user.getFirstName())
-                .thenReturn("Admin");
-
-        when(user.getLastName())
-                .thenReturn("User");
-
-        when(adminRepository.findByUser(user))
-                .thenReturn(Optional.of(admin));
-
-        when(admin.getAdminId())
-                .thenReturn(adminId);
+    void TC_UT_08_03_shouldPassRequestAndResponseToSessionService() {
+        mockSuccessfulLogin();
 
         controller.processLogin(
-                loginRequest,
-                request,
-                response,
-                model
-        );
+                loginRequest, request, response, model);
 
-        verify(session)
-                .setAttribute(
-                        "accessToken",
-                        "access-token"
-                );
-
-        verify(session)
-                .setAttribute(
-                        "refreshToken",
-                        "refresh-token"
-                );
-
-        verify(session)
-                .setAttribute(
-                        "userId",
-                        userId.toString()
-                );
-
-        verify(session)
-                .setAttribute(
-                        "userFullName",
-                        "Admin User"
-                );
-
-        verify(session)
-                .setAttribute(
-                        "role",
-                        "ADMIN"
-                );
+        verify(loginSessionService).establishSession(
+                authResponse, request, response);
     }
 
     /**
      * TC-UT-08-04
-     * ตรวจสอบการบันทึก Admin ID ลง Session
+     * ตรวจสอบว่า Controller มอบหมายการจัดการ Session ให้ Service
      */
     @Test
-    void TC_UT_08_04_shouldStoreAdminIdInSession() {
-
-        LoginRequest loginRequest = new LoginRequest();
-
-        when(authService.login(loginRequest))
-                .thenReturn(authResponse);
-
-        when(authResponse.getUser())
-                .thenReturn(supabaseUser);
-
-        when(supabaseUser.getId())
-                .thenReturn(userId.toString());
-
-        when(authResponse.getAccess_token())
-                .thenReturn("access-token");
-
-        when(authResponse.getRefresh_token())
-                .thenReturn("refresh-token");
-
-        when(springSecurityService.createAuthentication(userId))
-                .thenReturn(authentication);
-
-        doReturn(
-                List.of(
-                        new SimpleGrantedAuthority("ROLE_ADMIN")
-                )
-        ).when(authentication).getAuthorities();
-
-        when(userRepository.findById(userId))
-                .thenReturn(Optional.of(user));
-
-        when(user.getFirstName())
-                .thenReturn("Admin");
-
-        when(user.getLastName())
-                .thenReturn("User");
-
-        when(adminRepository.findByUser(user))
-                .thenReturn(Optional.of(admin));
-
-        when(admin.getAdminId())
-                .thenReturn(adminId);
+    void TC_UT_08_04_shouldDelegateSessionManagementToService() {
+        mockSuccessfulLogin();
 
         controller.processLogin(
-                loginRequest,
-                request,
-                response,
-                model
-        );
+                loginRequest, request, response, model);
 
-        verify(adminRepository)
-                .findByUser(user);
-
-        verify(session)
-                .setAttribute(
-                        "adminId",
-                        adminId
-                );
+        verify(loginSessionService).establishSession(
+                authResponse, request, response);
     }
 
     /**
      * TC-UT-08-05
-     * ตรวจสอบการ Redirect ของ Admin
+     * ตรวจสอบการ Redirect Admin ไปหน้าจัดการคำร้อง
      */
     @Test
     void TC_UT_08_05_shouldRedirectAdminToRequestManagementPage() {
+        mockSuccessfulLogin();
 
-        LoginRequest loginRequest = new LoginRequest();
+        String result = controller.processLogin(
+                loginRequest, request, response, model);
 
+        assertEquals("redirect:/admin/requests", result);
+    }
+
+    /**
+     * ตรวจสอบว่าการ Login ล้มเหลวจะกลับไปหน้า Login
+     */
+    @Test
+    void shouldReturnLoginPageWhenAuthenticationFails() {
+        when(authService.login(loginRequest))
+                .thenThrow(new RuntimeException("Authentication failed"));
+
+        String result = controller.processLogin(
+                loginRequest, request, response, model);
+
+        assertEquals("login", result);
+        verify(model).addAttribute(
+                "error", "Invalid email or password");
+    }
+
+    /**
+     * ตรวจสอบว่าหากสร้าง Session ไม่สำเร็จ
+     * Controller จะไม่ Redirect ไปหน้าปลายทาง
+     */
+    @Test
+    void shouldReturnLoginPageWhenSessionEstablishmentFails() {
         when(authService.login(loginRequest))
                 .thenReturn(authResponse);
 
-        when(authResponse.getUser())
-                .thenReturn(supabaseUser);
-
-        when(supabaseUser.getId())
-                .thenReturn(userId.toString());
-
-        when(authResponse.getAccess_token())
-                .thenReturn("access-token");
-
-        when(authResponse.getRefresh_token())
-                .thenReturn("refresh-token");
-
-        when(springSecurityService.createAuthentication(userId))
-                .thenReturn(authentication);
-
-        doReturn(
-                List.of(
-                        new SimpleGrantedAuthority("ROLE_ADMIN")
-                )
-        ).when(authentication).getAuthorities();
-
-        when(userRepository.findById(userId))
-                .thenReturn(Optional.of(user));
-
-        when(user.getFirstName())
-                .thenReturn("Admin");
-
-        when(user.getLastName())
-                .thenReturn("User");
-
-        when(adminRepository.findByUser(user))
-                .thenReturn(Optional.of(admin));
-
-        when(admin.getAdminId())
-                .thenReturn(adminId);
+        when(loginSessionService.establishSession(
+                authResponse, request, response))
+                .thenThrow(new RuntimeException("Session creation failed"));
 
         String result = controller.processLogin(
-                loginRequest,
-                request,
-                response,
-                model
-        );
+                loginRequest, request, response, model);
 
-        assertEquals(
-                "redirect:/admin/requests",
-                result
-        );
+        assertEquals("login", result);
+        verify(model).addAttribute(
+                "error", "Invalid email or password");
     }
 }

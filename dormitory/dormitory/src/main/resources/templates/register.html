@@ -59,9 +59,11 @@
             method="post"
             class="register-form"
           >
-          <input type="hidden"
-            th:name="${_csrf.parameterName}"
-            th:value="${_csrf.token}">
+            <input
+              type="hidden"
+              th:name="${_csrf.parameterName}"
+              th:value="${_csrf.token}"
+            />
             <!-- ================= NAME ================= -->
 
             <div class="name-row">
@@ -235,17 +237,28 @@
 
             <!-- ================= TERMS ================= -->
 
+            <!-- ================= TERMS ================= -->
+
             <label class="terms-checkbox">
               <input type="checkbox" name="terms" required />
 
               <span>
                 ฉันยอมรับ
-
-                <a href="#"> เงื่อนไขการใช้งาน </a>
-
+                <a
+                  th:href="@{/terms}"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  เงื่อนไขการใช้งาน
+                </a>
                 และ
-
-                <a href="#"> นโยบายความเป็นส่วนตัว </a>
+                <a
+                  th:href="@{/privacy}"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  นโยบายความเป็นส่วนตัว
+                </a>
               </span>
             </label>
 
