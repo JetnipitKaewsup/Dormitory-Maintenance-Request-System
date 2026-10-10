@@ -40,16 +40,25 @@ public class AdminWorkflowController {
         return "admin/assignments-list";
     }
 
-    // แท็บ "ตรวจงาน" — คำร้องที่กำลังดำเนินการ โดยงานที่ช่างกดเสร็จแล้ว (รอแอดมินยืนยัน) จะขึ้นก่อน
+    // แท็บ "ตรวจงาน" — คำร้องที่กำลังดำเนินการ และที่ดำเนินการไม่สำเร็จ
+    // ลำดับ: รอตรวจสอบ -> กำลังดำเนินการ -> ไม่สำเร็จ
     @GetMapping("/admin/inspections")
     public String listInspections(Model model) {
-        List<RepairRequest> inProgress = repairRequestService.getAllRequests().stream()
-                .filter(r -> r.getStatus() == RepairRequestStatus.IN_PROGRESS)
+        List<RepairRequest> inspectable = repairRequestService.getAllRequests().stream()
+                .filter(r -> r.getStatus() == RepairRequestStatus.IN_PROGRESS
+                          || r.getStatus() == RepairRequestStatus.IN_COMPLETED)
                 .toList();
 
-        // คำร้องที่ช่างอัปเดตสถานะงานเป็น COMPLETED แล้ว
+        // คำร้องที่ช่างอัปเดตสถานะงานเป็น COMPLETED แล้ว (รอแอดมินยืนยัน)
         Set<UUID> readyIds = new HashSet<>();
-        for (RepairRequest r : inProgress) {
+        // คำร้องที่ดำเนินการไม่สำเร็จ
+        Set<UUID> failedIds = new HashSet<>();
+
+        for (RepairRequest r : inspectable) {
+            if (r.getStatus() == RepairRequestStatus.IN_COMPLETED) {
+                failedIds.add(r.getRepairRequestId());
+                continue;
+            }
             RepairAssignment assignment =
                     repairAssignmentService.getAssignmentByRequestId(r.getRepairRequestId());
             if (assignment != null
@@ -59,13 +68,15 @@ public class AdminWorkflowController {
             }
         }
 
-        // งานที่รอตรวจสอบขึ้นก่อน ที่เหลือคงลำดับเดิม
-        List<RepairRequest> requests = inProgress.stream()
-                .sorted(Comparator.comparing((RepairRequest r) -> !readyIds.contains(r.getRepairRequestId())))
+        List<RepairRequest> requests = inspectable.stream()
+                .sorted(Comparator.comparingInt((RepairRequest r) ->
+                        readyIds.contains(r.getRepairRequestId()) ? 0
+                      : failedIds.contains(r.getRepairRequestId()) ? 2 : 1))
                 .toList();
 
         model.addAttribute("requests", requests);
         model.addAttribute("readyIds", readyIds);
+        model.addAttribute("failedIds", failedIds);
         model.addAttribute("readyCount", readyIds.size());
         return "admin/inspections-list";
     }

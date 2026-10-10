@@ -278,3 +278,8 @@ textarea.remark-box:focus { outline: none; border-color: var(--color-primary); }
     color: #4CAF50;
     display: block;
 }
+
+.badge.incompleted {
+    background: #fee2e2;
+    color: #dc2626;
+}
