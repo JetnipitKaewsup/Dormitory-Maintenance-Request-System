@@ -1,3 +1,4 @@
+
 package com.example.dormitory.controller.web;
 
 import org.junit.jupiter.api.DisplayName;
@@ -17,12 +18,9 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.view;
 
 import com.example.dormitory.dto.request.RegisterRequest;
-import com.example.dormitory.repository.AdminRepository;
-import com.example.dormitory.repository.UserRepository;
 import com.example.dormitory.service.AuthService;
-import com.example.dormitory.service.SpringSecurityService;
 
-@WebMvcTest(AuthController.class)
+@WebMvcTest(RegistrationController.class)
 class AuthControllerRegisterIntegrationTest {
 
     @Autowired
@@ -31,148 +29,97 @@ class AuthControllerRegisterIntegrationTest {
     @MockitoBean
     private AuthService authService;
 
-    @MockitoBean
-    private SpringSecurityService springSecurityService;
-
-    @MockitoBean
-    private UserRepository userRepository;
-
-    @MockitoBean
-    private AdminRepository adminRepository;
-
-    // =========================================================
-    // TC-IT-01-01
-    // =========================================================
+    private void submitValidRegistration() throws Exception {
+        mockMvc.perform(post("/register")
+                .with(csrf())
+                .param("firstName", "Hathaipat")
+                .param("lastName", "Wisutthitam")
+                .param("username", "hathaipat")
+                .param("email", "hathaipat012@gmail.com")
+                .param("roomAddress", "A")
+                .param("roomNumber", "101")
+                .param("password", "123456")
+                .param("confirmPassword", "123456")
+                .param("phoneNo", "0812345678")
+                .param("terms", "true"))
+            .andExpect(status().isOk())
+            .andExpect(view().name("register-success"))
+            .andExpect(model().attribute(
+                    "message",
+                    "สมัครสมาชิกสำเร็จ กรุณาตรวจสอบ Email "
+                            + "และกดลิงก์เพื่อยืนยันบัญชี"));
+    }
 
     @Test
-    @DisplayName(
-            "TC-IT-01-01 - Register with valid data"
-    )
+    @DisplayName("TC-IT-01-01 - Register with valid data")
     void processRegister_validData_shouldReturnSuccessPage()
             throws Exception {
 
-        mockMvc.perform(
-                post("/register")
-                        .with(csrf())
-                        .param("firstName", "Hathaipat")
-                        .param("lastName", "Wisutthitam")
-                        .param("username", "hathaipat")
-                        .param("email", "hathaipat012@gmail.com")
-                        .param("roomAddress", "A")
-                        .param("roomNumber", "101")
-                        .param("password", "123456")
-                        .param("confirmPassword", "123456")
-                        .param("phoneNo", "0812345678")
-                        .param("terms", "true")
-        )
-        .andExpect(status().isOk())
-        .andExpect(view().name("register-success"))
-        .andExpect(
-                model().attribute(
-                        "message",
-                        "สมัครสมาชิกสำเร็จ กรุณาตรวจสอบ Email และกดลิงก์เพื่อยืนยันบัญชี"
-                )
-        );
+        submitValidRegistration();
 
-        verify(
-                authService,
-                times(1)
-        ).register(any(RegisterRequest.class));
+        verify(authService, times(1))
+                .register(any(RegisterRequest.class));
     }
 
-    // =========================================================
-    // TC-IT-01-02
-    // =========================================================
-
     @Test
-    @DisplayName(
-            "TC-IT-01-02 - Register when AuthService returns error"
-    )
+    @DisplayName("TC-IT-01-02 - Registration service error")
     void processRegister_serviceError_shouldReturnRegisterPage()
             throws Exception {
 
-        doThrow(
-                new RuntimeException(
-                        "Supabase Auth Error: 400 BAD_REQUEST - Email already registered"
-                )
-        )
-        .when(authService)
-        .register(any(RegisterRequest.class));
+        doThrow(new RuntimeException("Email already registered"))
+                .when(authService)
+                .register(any(RegisterRequest.class));
 
-        mockMvc.perform(
-                post("/register")
-                        .with(csrf())
-                        .param("firstName", "Hathaipat")
-                        .param("lastName", "Wisutthitam")
-                        .param("username", "hathaipat")
-                        .param("email", "hathaipat012@gmail.com")
-                        .param("roomAddress", "A")
-                        .param("roomNumber", "101")
-                        .param("password", "123456")
-                        .param("confirmPassword", "123456")
-                        .param("phoneNo", "0812345678")
-                        .param("terms", "true")
-        )
-        .andExpect(status().isOk())
-        .andExpect(view().name("register"))
-        .andExpect(
-                model().attribute(
-                        "error",
-                        "Supabase Auth Error: 400 BAD_REQUEST - Email already registered"
-                )
-        );
+        mockMvc.perform(post("/register")
+                .with(csrf())
+                .param("firstName", "Hathaipat")
+                .param("lastName", "Wisutthitam")
+                .param("username", "hathaipat")
+                .param("email", "hathaipat012@gmail.com")
+                .param("roomAddress", "A")
+                .param("roomNumber", "101")
+                .param("password", "123456")
+                .param("confirmPassword", "123456")
+                .param("phoneNo", "0812345678")
+                .param("terms", "true"))
+            .andExpect(status().isOk())
+            .andExpect(view().name("register"))
+            .andExpect(model().attribute(
+                    "error",
+                    "ไม่สามารถสมัครสมาชิกได้ กรุณาตรวจสอบข้อมูล"));
 
-        verify(
-                authService,
-                times(1)
-        ).register(any(RegisterRequest.class));
+        verify(authService, times(1))
+                .register(any(RegisterRequest.class));
     }
 
-    // =========================================================
-    // TC-IT-01-03
-    // =========================================================
-
     @Test
-    @DisplayName(
-            "TC-IT-01-03 - Register with invalid First Name"
-    )
+    @DisplayName("TC-IT-01-03 - Register with invalid first name")
     void processRegister_invalidFirstName_shouldReturnRegisterPage()
             throws Exception {
 
-        doThrow(
-                new IllegalArgumentException(
-                        "First Name is required"
-                )
-        )
-        .when(authService)
-        .register(any(RegisterRequest.class));
+        doThrow(new IllegalArgumentException("First Name is required"))
+                .when(authService)
+                .register(any(RegisterRequest.class));
 
-        mockMvc.perform(
-                post("/register")
-                        .with(csrf())
-                        .param("firstName", "")
-                        .param("lastName", "Wisutthitam")
-                        .param("username", "hathaipat")
-                        .param("email", "hathaipat012@gmail.com")
-                        .param("roomAddress", "A")
-                        .param("roomNumber", "101")
-                        .param("password", "123456")
-                        .param("confirmPassword", "123456")
-                        .param("phoneNo", "0812345678")
-                        .param("terms", "true")
-        )
-        .andExpect(status().isOk())
-        .andExpect(view().name("register"))
-        .andExpect(
-                model().attribute(
-                        "error",
-                        "First Name is required"
-                )
-        );
+        mockMvc.perform(post("/register")
+                .with(csrf())
+                .param("firstName", "")
+                .param("lastName", "Wisutthitam")
+                .param("username", "hathaipat")
+                .param("email", "hathaipat012@gmail.com")
+                .param("roomAddress", "A")
+                .param("roomNumber", "101")
+                .param("password", "123456")
+                .param("confirmPassword", "123456")
+                .param("phoneNo", "0812345678")
+                .param("terms", "true"))
+            .andExpect(status().isOk())
+            .andExpect(view().name("register"))
+            .andExpect(model().attribute(
+                    "error",
+                    "ไม่สามารถสมัครสมาชิกได้ กรุณาตรวจสอบข้อมูล"));
 
-        verify(
-                authService,
-                times(1)
-        ).register(any(RegisterRequest.class));
+        verify(authService, times(1))
+                .register(any(RegisterRequest.class));
     }
 }

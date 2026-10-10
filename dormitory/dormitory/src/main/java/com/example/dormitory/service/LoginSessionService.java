@@ -41,27 +41,26 @@ public class LoginSessionService {
             HttpServletResponse response) {
 
         UUID userId = UUID.fromString(
-                authResponse.getUser().getId()
-        );
+                authResponse.getUser().getId());
 
         Authentication authentication =
                 springSecurityService.createAuthentication(userId);
 
+        // สร้าง SecurityContext สำหรับผู้ใช้ที่ผ่านการยืนยันตัวตน
         SecurityContext context =
                 SecurityContextHolder.createEmptyContext();
 
         context.setAuthentication(authentication);
 
-        // ป้องกันการนำ Session ID เดิมมาใช้ต่อหลัง Login
-        HttpSession session = request.getSession(false);
+        // ป้องกัน Session Fixation ด้วยการเปลี่ยน Session หลัง Login
+        HttpSession oldSession = request.getSession(false);
 
-        if (session != null) {
-            session.invalidate();
+        if (oldSession != null) {
+            oldSession.invalidate();
         }
 
-        session = request.getSession(true);
+        HttpSession session = request.getSession(true);
 
-        // บันทึก SecurityContext ลง Session
         SecurityContextHolder.setContext(context);
 
         HttpSessionSecurityContextRepository repository =
@@ -69,30 +68,25 @@ public class LoginSessionService {
 
         repository.saveContext(context, request, response);
 
-        // บันทึกข้อมูล Session
+        // เก็บ Token และข้อมูล Session ที่ระบบเดิมใช้งาน
         session.setAttribute(
                 "accessToken",
-                authResponse.getAccess_token()
-        );
+                authResponse.getAccess_token());
 
         session.setAttribute(
                 "refreshToken",
-                authResponse.getRefresh_token()
-        );
+                authResponse.getRefresh_token());
 
         session.setAttribute("userId", userId.toString());
 
         User user = userRepository.findById(userId)
                 .orElseThrow(() ->
                         new IllegalStateException(
-                                "Authenticated user record was not found"
-                        )
-                );
+                                "Authenticated user record was not found"));
 
         session.setAttribute(
                 "userFullName",
-                user.getFirstName() + " " + user.getLastName()
-        );
+                user.getFirstName() + " " + user.getLastName());
 
         String role = authentication.getAuthorities()
                 .stream()
@@ -100,29 +94,25 @@ public class LoginSessionService {
                 .filter(authority ->
                         authority.equals("ROLE_ADMIN")
                         || authority.equals("ROLE_TECHNICIAN")
-                        || authority.equals("ROLE_REPORTER")
-                )
+                        || authority.equals("ROLE_REPORTER"))
                 .findFirst()
                 .orElseThrow(() ->
                         new IllegalStateException(
-                                "User does not have a supported role"
-                        )
-                );
+                                "User does not have a supported role"));
 
         session.setAttribute(
                 "role",
-                role.substring("ROLE_".length())
-        );
+                role.substring("ROLE_".length()));
 
         if ("ROLE_ADMIN".equals(role)) {
             Admin admin = adminRepository.findByUser(user)
                     .orElseThrow(() ->
                             new IllegalStateException(
-                                    "Admin profile was not found"
-                            )
-                    );
+                                    "Admin profile was not found"));
 
-            session.setAttribute("adminId", admin.getAdminId());
+            session.setAttribute(
+                    "adminId",
+                    admin.getAdminId());
 
             return "/admin/requests";
         }
