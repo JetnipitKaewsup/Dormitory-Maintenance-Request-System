@@ -13,9 +13,12 @@ import static org.mockito.Mockito.when;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.webmvc.test.autoconfigure.AutoConfigureMockMvc;
 import org.springframework.boot.webmvc.test.autoconfigure.WebMvcTest;
+import org.springframework.security.web.csrf.CsrfToken;
+import org.springframework.security.web.csrf.DefaultCsrfToken;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import org.springframework.test.web.servlet.request.RequestPostProcessor;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.model;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.view;
@@ -55,15 +58,34 @@ class AdminReporterControllerTS16IntegrationTest {
     }
 
     /**
+     * เพิ่ม CSRF token ใน request attribute
+     * เพื่อรองรับ Thymeleaf template ที่อ้างถึง ${_csrf.token}
+     */
+    private RequestPostProcessor withCsrfRequestAttribute() {
+        return request -> {
+            CsrfToken csrfToken = new DefaultCsrfToken(
+                    "X-CSRF-TOKEN",
+                    "_csrf",
+                    "test-csrf-token"
+            );
+
+            request.setAttribute(CsrfToken.class.getName(), csrfToken);
+            request.setAttribute("_csrf", csrfToken);
+
+            return request;
+        };
+    }
+
+    /**
      * TC-IT-16-01
      * ตรวจสอบการเปิดหน้าประวัติการแจ้งซ่อม
      */
     @Test
     void shouldOpenRepairHistoryPage() throws Exception {
-
         mockMvc.perform(
-                        get("/admin/reporters/{reporterId}/history", reporterId)
-                )
+                get("/admin/reporters/{reporterId}/history", reporterId)
+                        .with(withCsrfRequestAttribute())
+        )
                 .andExpect(status().isOk())
                 .andExpect(view().name("admin/reporterHistory"))
                 .andExpect(model().attribute("reporter", reporter))
@@ -82,7 +104,6 @@ class AdminReporterControllerTS16IntegrationTest {
      */
     @Test
     void shouldDisplayMultipleRepairHistoryRecords() throws Exception {
-
         List<RepairRequestHistoryResponse> histories =
                 List.of(history1, history2);
 
@@ -90,8 +111,9 @@ class AdminReporterControllerTS16IntegrationTest {
                 .thenReturn(histories);
 
         mockMvc.perform(
-                        get("/admin/reporters/{reporterId}/history", reporterId)
-                )
+                get("/admin/reporters/{reporterId}/history", reporterId)
+                        .with(withCsrfRequestAttribute())
+        )
                 .andExpect(status().isOk())
                 .andExpect(view().name("admin/reporterHistory"))
                 .andExpect(model().attribute("history", histories));
@@ -106,13 +128,13 @@ class AdminReporterControllerTS16IntegrationTest {
      */
     @Test
     void shouldDisplayPageWhenRepairHistoryIsEmpty() throws Exception {
-
         when(adminReporterService.getRepairHistoryByReporterId(reporterId))
                 .thenReturn(List.of());
 
         mockMvc.perform(
-                        get("/admin/reporters/{reporterId}/history", reporterId)
-                )
+                get("/admin/reporters/{reporterId}/history", reporterId)
+                        .with(withCsrfRequestAttribute())
+        )
                 .andExpect(status().isOk())
                 .andExpect(view().name("admin/reporterHistory"))
                 .andExpect(model().attribute("reporter", reporter))
@@ -128,10 +150,10 @@ class AdminReporterControllerTS16IntegrationTest {
      */
     @Test
     void shouldAddReporterInformationToModel() throws Exception {
-
         mockMvc.perform(
-                        get("/admin/reporters/{reporterId}/history", reporterId)
-                )
+                get("/admin/reporters/{reporterId}/history", reporterId)
+                        .with(withCsrfRequestAttribute())
+        )
                 .andExpect(status().isOk())
                 .andExpect(model().attributeExists("reporter"))
                 .andExpect(model().attribute("reporter", reporter));
@@ -146,10 +168,10 @@ class AdminReporterControllerTS16IntegrationTest {
      */
     @Test
     void shouldPassReporterIdToBothServiceMethods() throws Exception {
-
         mockMvc.perform(
-                        get("/admin/reporters/{reporterId}/history", reporterId)
-                )
+                get("/admin/reporters/{reporterId}/history", reporterId)
+                        .with(withCsrfRequestAttribute())
+        )
                 .andExpect(status().isOk())
                 .andExpect(view().name("admin/reporterHistory"));
 

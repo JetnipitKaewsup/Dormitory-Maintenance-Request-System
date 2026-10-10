@@ -1,3 +1,4 @@
+
 package com.example.dormitory.controller.web;
 
 import java.util.List;
@@ -21,10 +22,13 @@ import static org.mockito.Mockito.when;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.webmvc.test.autoconfigure.AutoConfigureMockMvc;
+import org.springframework.security.web.csrf.CsrfToken;
+import org.springframework.security.web.csrf.DefaultCsrfToken;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import org.springframework.test.web.servlet.request.RequestPostProcessor;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.model;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.view;
@@ -55,6 +59,25 @@ class AdminWorkFlowControllerTS14IntegrationTest {
     }
 
     /**
+     * เพิ่ม CSRF token เป็น request attribute
+     * เพื่อให้ Thymeleaf อ่าน ${_csrf.token} ได้
+     */
+    private RequestPostProcessor withCsrfRequestAttribute() {
+        return request -> {
+            CsrfToken csrfToken = new DefaultCsrfToken(
+                    "X-CSRF-TOKEN",
+                    "_csrf",
+                    "test-csrf-token"
+            );
+
+            request.setAttribute(CsrfToken.class.getName(), csrfToken);
+            request.setAttribute("_csrf", csrfToken);
+
+            return request;
+        };
+    }
+
+    /**
      * TC-IT-14-01
      * ตรวจสอบว่า HTTP GET /admin/inspections
      * เปิดหน้าแสดงรายการตรวจสอบงานได้ถูกต้อง
@@ -64,13 +87,17 @@ class AdminWorkFlowControllerTS14IntegrationTest {
         when(repairRequestService.getAllRequests())
                 .thenReturn(List.of());
 
-        MvcResult result = mockMvc.perform(get("/admin/inspections"))
+        MvcResult result = mockMvc.perform(
+                    get("/admin/inspections")
+                            .with(withCsrfRequestAttribute())
+                )
                 .andExpect(status().isOk())
                 .andExpect(view().name("admin/inspections-list"))
                 .andExpect(model().attributeExists(
                         "requests",
                         "readyIds",
-                        "readyCount"))
+                        "readyCount"
+                ))
                 .andReturn();
 
         ModelMap model = result.getModelAndView().getModelMap();
@@ -107,18 +134,23 @@ class AdminWorkFlowControllerTS14IntegrationTest {
                 .thenReturn(List.of(
                         inProgressRequest,
                         approvedRequest,
-                        completedRequest));
+                        completedRequest
+                ));
 
         when(repairAssignmentService.getAssignmentByRequestId(inProgressId))
                 .thenReturn(null);
 
-        MvcResult result = mockMvc.perform(get("/admin/inspections"))
+        MvcResult result = mockMvc.perform(
+                    get("/admin/inspections")
+                            .with(withCsrfRequestAttribute())
+                )
                 .andExpect(status().isOk())
                 .andExpect(view().name("admin/inspections-list"))
                 .andExpect(model().attributeExists(
                         "requests",
                         "readyIds",
-                        "readyCount"))
+                        "readyCount"
+                ))
                 .andReturn();
 
         ModelMap model = result.getModelAndView().getModelMap();
@@ -174,13 +206,17 @@ class AdminWorkFlowControllerTS14IntegrationTest {
         when(assignment.getJobStatus())
                 .thenReturn(RepairRequestStatus.COMPLETED);
 
-        MvcResult result = mockMvc.perform(get("/admin/inspections"))
+        MvcResult result = mockMvc.perform(
+                    get("/admin/inspections")
+                            .with(withCsrfRequestAttribute())
+                )
                 .andExpect(status().isOk())
                 .andExpect(view().name("admin/inspections-list"))
                 .andExpect(model().attributeExists(
                         "requests",
                         "readyIds",
-                        "readyCount"))
+                        "readyCount"
+                ))
                 .andReturn();
 
         ModelMap model = result.getModelAndView().getModelMap();
@@ -199,7 +235,7 @@ class AdminWorkFlowControllerTS14IntegrationTest {
                 .getAssignmentByRequestId(requestId);
 
         // ไม่ตรวจจำนวนครั้งของ getJobStatus()
-        // เพราะ Controller เรียก getter นี้ได้มากกว่าหนึ่งครั้ง
+        // เพราะ Controller อาจเรียก getter นี้มากกว่าหนึ่งครั้ง
     }
 
     /**
@@ -208,7 +244,9 @@ class AdminWorkFlowControllerTS14IntegrationTest {
      * ถูกจัดลำดับไว้ก่อนรายการที่ยังไม่เสร็จ
      */
     @Test
-    void shouldLoadAssignmentsAndPrioritizeCompletedJobs() throws Exception {
+    void shouldLoadAssignmentsAndPrioritizeCompletedJobs()
+            throws Exception {
+
         UUID readyId = UUID.randomUUID();
         UUID pendingId = UUID.randomUUID();
 
@@ -218,8 +256,11 @@ class AdminWorkFlowControllerTS14IntegrationTest {
         RepairRequest pendingRequest =
                 mockRequest(pendingId, RepairRequestStatus.IN_PROGRESS);
 
-        RepairAssignment completedAssignment = mock(RepairAssignment.class);
-        RepairAssignment unfinishedAssignment = mock(RepairAssignment.class);
+        RepairAssignment completedAssignment =
+                mock(RepairAssignment.class);
+
+        RepairAssignment unfinishedAssignment =
+                mock(RepairAssignment.class);
 
         // ตั้งใจให้รายการที่ยังไม่เสร็จมาก่อน
         // เพื่อทดสอบว่า Controller จัดลำดับใหม่ถูกต้อง
@@ -238,7 +279,10 @@ class AdminWorkFlowControllerTS14IntegrationTest {
         when(unfinishedAssignment.getJobStatus())
                 .thenReturn(RepairRequestStatus.IN_PROGRESS);
 
-        MvcResult result = mockMvc.perform(get("/admin/inspections"))
+        MvcResult result = mockMvc.perform(
+                    get("/admin/inspections")
+                            .with(withCsrfRequestAttribute())
+                )
                 .andExpect(status().isOk())
                 .andExpect(view().name("admin/inspections-list"))
                 .andReturn();
@@ -287,17 +331,25 @@ class AdminWorkFlowControllerTS14IntegrationTest {
         UUID nullStatusId = UUID.randomUUID();
 
         RepairRequest noAssignmentRequest =
-                mockRequest(noAssignmentId, RepairRequestStatus.IN_PROGRESS);
+                mockRequest(
+                        noAssignmentId,
+                        RepairRequestStatus.IN_PROGRESS
+                );
 
         RepairRequest nullStatusRequest =
-                mockRequest(nullStatusId, RepairRequestStatus.IN_PROGRESS);
+                mockRequest(
+                        nullStatusId,
+                        RepairRequestStatus.IN_PROGRESS
+                );
 
-        RepairAssignment nullStatusAssignment = mock(RepairAssignment.class);
+        RepairAssignment nullStatusAssignment =
+                mock(RepairAssignment.class);
 
         when(repairRequestService.getAllRequests())
                 .thenReturn(List.of(
                         noAssignmentRequest,
-                        nullStatusRequest));
+                        nullStatusRequest
+                ));
 
         when(repairAssignmentService.getAssignmentByRequestId(noAssignmentId))
                 .thenReturn(null);
@@ -308,13 +360,17 @@ class AdminWorkFlowControllerTS14IntegrationTest {
         when(nullStatusAssignment.getJobStatus())
                 .thenReturn(null);
 
-        MvcResult result = mockMvc.perform(get("/admin/inspections"))
+        MvcResult result = mockMvc.perform(
+                    get("/admin/inspections")
+                            .with(withCsrfRequestAttribute())
+                )
                 .andExpect(status().isOk())
                 .andExpect(view().name("admin/inspections-list"))
                 .andExpect(model().attributeExists(
                         "requests",
                         "readyIds",
-                        "readyCount"))
+                        "readyCount"
+                ))
                 .andReturn();
 
         ModelMap model = result.getModelAndView().getModelMap();
