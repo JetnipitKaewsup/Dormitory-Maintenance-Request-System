@@ -1,3 +1,4 @@
+
 package com.example.dormitory.controller.web;
 
 import org.slf4j.Logger;
@@ -37,6 +38,15 @@ public class RegistrationController {
             @ModelAttribute("registerRequest")
             RegisterRequest registerRequest,
             Model model) {
+
+        // ตรวจสอบการยอมรับเงื่อนไขก่อนสมัครสมาชิก
+        if (!registerRequest.isTerms()) {
+            model.addAttribute(
+                    "error",
+                    "กรุณายอมรับเงื่อนไขการใช้งานและนโยบายความเป็นส่วนตัว");
+
+            return "register";
+        }
 
         try {
             authService.register(registerRequest);

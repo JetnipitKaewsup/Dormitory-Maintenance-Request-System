@@ -214,3 +214,15 @@
 .work-btn-quiet:hover {
     background: var(--work-green-wash);
 }
+
+.work-row.is-failed {
+    border-color: #dc2626;
+    background: #fff5f5;
+}
+.work-row.is-failed .work-status {
+    background: #dc2626;
+}
+.work-badge-failed {
+    background: #fee2e2;
+    color: #dc2626;
+}
