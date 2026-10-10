@@ -1,12 +1,12 @@
 package com.example.dormitory.functional;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-
+import java.net.URI;
 import java.time.Duration;
 
 import org.junit.jupiter.api.AfterEach;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.openqa.selenium.By;
@@ -34,6 +34,9 @@ class AdminRepairRequestDetailFunctionalTest {
     private static final String ADMIN_PASSWORD =
             "adminnaib";
 
+    private static final Duration WAIT_TIMEOUT =
+            Duration.ofSeconds(40);
+
     private WebDriver driver;
     private WebDriverWait wait;
 
@@ -44,7 +47,7 @@ class AdminRepairRequestDetailFunctionalTest {
 
         wait = new WebDriverWait(
                 driver,
-                Duration.ofSeconds(40)
+                WAIT_TIMEOUT
         );
 
         driver.manage()
@@ -69,19 +72,17 @@ class AdminRepairRequestDetailFunctionalTest {
 
         driver.get(BASE_URL + "/login");
 
-        WebElement email =
-                wait.until(
-                        ExpectedConditions.visibilityOfElementLocated(
-                                By.name("email")
-                        )
-                );
+        WebElement email = wait.until(
+                ExpectedConditions.visibilityOfElementLocated(
+                        By.name("email")
+                )
+        );
 
-        WebElement password =
-                wait.until(
-                        ExpectedConditions.visibilityOfElementLocated(
-                                By.name("password")
-                        )
-                );
+        WebElement password = wait.until(
+                ExpectedConditions.visibilityOfElementLocated(
+                        By.name("password")
+                )
+        );
 
         assertTrue(email.isDisplayed());
         assertTrue(password.isDisplayed());
@@ -96,19 +97,17 @@ class AdminRepairRequestDetailFunctionalTest {
 
         driver.get(BASE_URL + "/login");
 
-        WebElement email =
-                wait.until(
-                        ExpectedConditions.visibilityOfElementLocated(
-                                By.name("email")
-                        )
-                );
+        WebElement email = wait.until(
+                ExpectedConditions.visibilityOfElementLocated(
+                        By.name("email")
+                )
+        );
 
-        WebElement password =
-                wait.until(
-                        ExpectedConditions.visibilityOfElementLocated(
-                                By.name("password")
-                        )
-                );
+        WebElement password = wait.until(
+                ExpectedConditions.visibilityOfElementLocated(
+                        By.name("password")
+                )
+        );
 
         email.clear();
         email.sendKeys(ADMIN_EMAIL);
@@ -154,11 +153,10 @@ class AdminRepairRequestDetailFunctionalTest {
         openFirstRepairRequest();
 
         assertTrue(
-                driver.getCurrentUrl()
-                        .matches(
-                                BASE_URL
-                                        + "/admin/requests/[^/]+"
-                        )
+                isRepairRequestDetailUrl(
+                        driver.getCurrentUrl()
+                ),
+                "URL ควรเป็นหน้ารายละเอียดคำร้อง /admin/requests/{id}"
         );
     }
 
@@ -174,80 +172,63 @@ class AdminRepairRequestDetailFunctionalTest {
         openFirstRepairRequest();
 
         wait.until(
-                ExpectedConditions.urlContains(
-                        "/admin/requests/"
-                )
-        );
-
-        wait.until(
                 ExpectedConditions.visibilityOfElementLocated(
                         By.cssSelector(".page-title")
                 )
         );
 
-        String pageSource =
-                driver.getPageSource();
+        String pageSource = driver.getPageSource();
 
         assertTrue(
-                pageSource.contains(
-                        "รายละเอียดคำร้องแจ้งซ่อม"
-                )
+                pageSource.contains("รายละเอียดคำร้องแจ้งซ่อม"),
+                "ควรแสดงหัวข้อรายละเอียดคำร้องแจ้งซ่อม"
         );
 
         assertTrue(
-                pageSource.contains(
-                        "ข้อมูลผู้แจ้ง"
-                )
+                pageSource.contains("ข้อมูลผู้แจ้ง"),
+                "ควรแสดงส่วนข้อมูลผู้แจ้ง"
         );
 
         assertTrue(
-                pageSource.contains(
-                        "รายละเอียดงานซ่อม"
-                )
+                pageSource.contains("รายละเอียดงานซ่อม"),
+                "ควรแสดงส่วนรายละเอียดงานซ่อม"
         );
 
         assertTrue(
-                pageSource.contains(
-                        "รายละเอียดปัญหา"
-                )
+                pageSource.contains("รายละเอียดปัญหา"),
+                "ควรแสดงส่วนรายละเอียดปัญหา"
         );
 
         assertFalse(
-                pageSource.contains(
-                        "Whitelabel Error Page"
-                )
+                pageSource.contains("Whitelabel Error Page"),
+                "ไม่ควรแสดงหน้า Whitelabel Error"
         );
 
         assertFalse(
-                pageSource.contains(
-                        "There was an unexpected error"
-                )
+                pageSource.contains("There was an unexpected error"),
+                "ไม่ควรแสดงข้อความข้อผิดพลาดของระบบ"
         );
     }
 
     /**
-     * Login ด้วยบัญชี Admin จริง
-     *
-     * ใช้รูปแบบเดียวกับ TS-09
-     * ซึ่งผ่านการทดสอบจริงแล้ว
+     * Login ด้วยบัญชี Admin
+     * และรอให้ระบบ redirect ไปหน้ารายการคำร้อง
      */
     private void performAdminLogin() {
 
         driver.get(BASE_URL + "/login");
 
-        WebElement email =
-                wait.until(
-                        ExpectedConditions.visibilityOfElementLocated(
-                                By.name("email")
-                        )
-                );
+        WebElement email = wait.until(
+                ExpectedConditions.visibilityOfElementLocated(
+                        By.name("email")
+                )
+        );
 
-        WebElement password =
-                wait.until(
-                        ExpectedConditions.visibilityOfElementLocated(
-                                By.name("password")
-                        )
-                );
+        WebElement password = wait.until(
+                ExpectedConditions.visibilityOfElementLocated(
+                        By.name("password")
+                )
+        );
 
         email.clear();
         email.sendKeys(ADMIN_EMAIL);
@@ -255,21 +236,14 @@ class AdminRepairRequestDetailFunctionalTest {
         password.clear();
         password.sendKeys(ADMIN_PASSWORD);
 
-        WebElement loginButton =
-                wait.until(
-                        ExpectedConditions.elementToBeClickable(
-                                By.cssSelector(
-                                        "button[type='submit']"
-                                )
-                        )
-                );
+        WebElement loginButton = wait.until(
+                ExpectedConditions.elementToBeClickable(
+                        By.cssSelector("button[type='submit']")
+                )
+        );
 
         loginButton.click();
 
-        /*
-         * รอให้ระบบ Login สำเร็จและ redirect
-         * ไปยังหน้ารายการคำร้องของ Admin
-         */
         wait.until(
                 ExpectedConditions.urlToBe(
                         BASE_URL + "/admin/requests"
@@ -283,7 +257,7 @@ class AdminRepairRequestDetailFunctionalTest {
     }
 
     /**
-     * เปิดรายละเอียดคำร้องรายการแรก
+     * เปิดรายละเอียดคำร้องรายการแรกจากหน้ารายการ
      */
     private void openFirstRepairRequest() {
 
@@ -293,34 +267,61 @@ class AdminRepairRequestDetailFunctionalTest {
                 )
         );
 
-        /*
-         * เลือก Link รายละเอียดคำร้อง
-         * จากหน้ารายการแจ้งซ่อม
-         */
-        WebElement requestLink =
-                wait.until(
-                        ExpectedConditions.elementToBeClickable(
-                                By.cssSelector(
-                                        "a[href^='/admin/requests/']"
-                                )
+        WebElement requestLink = wait.until(
+                ExpectedConditions.elementToBeClickable(
+                        By.cssSelector(
+                                "a[href^='/admin/requests/']"
                         )
-                );
+                )
+        );
 
-        String detailUrl =
-                requestLink.getAttribute("href");
+        String detailUrl = requestLink.getAttribute("href");
 
         assertTrue(
-                detailUrl.startsWith(
-                        BASE_URL + "/admin/requests/"
-                )
+                isRepairRequestDetailUrl(detailUrl),
+                "Link ต้องชี้ไปยังหน้ารายละเอียดคำร้อง"
         );
 
         requestLink.click();
 
         wait.until(
-                ExpectedConditions.urlContains(
-                        "/admin/requests/"
+                driver -> isRepairRequestDetailUrl(
+                        driver.getCurrentUrl()
                 )
         );
+    }
+
+    /**
+     * ตรวจสอบว่า URL เป็น /admin/requests/{id}
+     * โดยไม่รวม URL ของหน้ารายการ /admin/requests
+     */
+    private boolean isRepairRequestDetailUrl(String url) {
+
+        if (url == null || url.isBlank()) {
+            return false;
+        }
+
+        try {
+            URI uri = URI.create(url);
+
+            String expectedOrigin = URI.create(BASE_URL).getAuthority();
+
+            String actualOrigin = uri.getAuthority();
+
+            String path = uri.getPath();
+
+            if (!URI.create(BASE_URL).getScheme().equals(uri.getScheme())
+                    || !expectedOrigin.equals(actualOrigin)
+                    || path == null) {
+                return false;
+            }
+
+            return path.matches(
+                    "/admin/requests/[^/]+/?"
+            );
+
+        } catch (IllegalArgumentException exception) {
+            return false;
+        }
     }
 }
