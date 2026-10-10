@@ -1,22 +1,24 @@
 package com.example.dormitory.controller.web;
 
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.model;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.view;
-
 import java.time.LocalDateTime;
 import java.util.UUID;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.webmvc.test.autoconfigure.AutoConfigureMockMvc;
 import org.springframework.boot.webmvc.test.autoconfigure.WebMvcTest;
+import org.springframework.security.web.csrf.CsrfToken;
+import org.springframework.security.web.csrf.DefaultCsrfToken;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import org.springframework.test.web.servlet.request.RequestPostProcessor;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.model;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.view;
 
 import com.example.dormitory.domain.entity.Building;
 import com.example.dormitory.domain.entity.RepairRequest;
@@ -55,56 +57,24 @@ class AdminRepairRequestControllerTS10IntegrationTest {
 
         requestId = UUID.randomUUID();
 
-        request = org.mockito.Mockito
-                .mock(RepairRequest.class);
+        request = org.mockito.Mockito.mock(RepairRequest.class);
 
-        Reporter reporter = org.mockito.Mockito
-                .mock(Reporter.class);
+        Reporter reporter = org.mockito.Mockito.mock(Reporter.class);
+        User user = org.mockito.Mockito.mock(User.class);
+        Room room = org.mockito.Mockito.mock(Room.class);
+        Building building = org.mockito.Mockito.mock(Building.class);
 
-        User user = org.mockito.Mockito
-                .mock(User.class);
-
-        Room room = org.mockito.Mockito
-                .mock(Room.class);
-
-        Building building = org.mockito.Mockito
-                .mock(Building.class);
-
-        /*
-         * ============================================================
-         * Mock ข้อมูล RepairRequest ที่ Template
-         * admin/repair-request-detail.html
-         * เรียกใช้งานจริง
-         * ============================================================
-         */
-
-        when(request.getRepairRequestId())
-                .thenReturn(requestId);
+        // Mock ข้อมูลคำร้อง
+        when(request.getRepairRequestId()).thenReturn(requestId);
 
         when(request.getStatus())
                 .thenReturn(RepairRequestStatus.PENDING);
 
         when(request.getStartDateTime())
-                .thenReturn(
-                        LocalDateTime.of(
-                                2026,
-                                10,
-                                8,
-                                10,
-                                0
-                        )
-                );
+                .thenReturn(LocalDateTime.of(2026, 10, 8, 10, 0));
 
         when(request.getEndDateTime())
-                .thenReturn(
-                        LocalDateTime.of(
-                                2026,
-                                10,
-                                8,
-                                11,
-                                0
-                        )
-                );
+                .thenReturn(LocalDateTime.of(2026, 10, 8, 11, 0));
 
         when(request.getRepairType())
                 .thenReturn(RepairType.ELECTRICAL);
@@ -115,53 +85,47 @@ class AdminRepairRequestControllerTS10IntegrationTest {
         when(request.getReporterNote())
                 .thenReturn("กรุณาตรวจสอบโดยเร็ว");
 
-        /*
-         * ============================================================
-         * Mock Reporter
-         * ============================================================
-         */
+        // Mock Reporter
+        when(request.getReporter()).thenReturn(reporter);
+        when(reporter.getUser()).thenReturn(user);
 
-        when(request.getReporter())
-                .thenReturn(reporter);
+        when(user.getFirstName()).thenReturn("Integration");
+        when(user.getLastName()).thenReturn("Tester");
+        when(user.getPhoneNo()).thenReturn("0812345678");
 
-        when(reporter.getUser())
-                .thenReturn(user);
+        // Mock Room / Building
+        when(request.getRoom()).thenReturn(room);
+        when(room.getBuilding()).thenReturn(building);
+        when(building.getBuildingName()).thenReturn("Building A");
+        when(room.getRoomNo()).thenReturn(101);
 
-        when(user.getFirstName())
-                .thenReturn("Integration");
-
-        when(user.getLastName())
-                .thenReturn("Tester");
-
-        when(user.getPhoneNo())
-                .thenReturn("0812345678");
-
-        /*
-         * ============================================================
-         * Mock Room / Building
-         * ============================================================
-         */
-
-        when(request.getRoom())
-                .thenReturn(room);
-
-        when(room.getBuilding())
-                .thenReturn(building);
-
-        when(building.getBuildingName())
-                .thenReturn("Building A");
-
-        when(room.getRoomNo())
-                .thenReturn(101);
-
-        /*
-         * ============================================================
-         * Service
-         * ============================================================
-         */
-
+        // Mock Service
         when(repairRequestService.getById(requestId))
                 .thenReturn(request);
+    }
+
+    /**
+     * กำหนด CSRF token ใน request attribute
+     * เพื่อให้ Thymeleaf อ่าน ${_csrf.token} ได้
+     * ระหว่างการทดสอบหน้าเว็บด้วย MockMvc
+     */
+    private RequestPostProcessor withCsrfRequestAttribute() {
+        return servletRequest -> {
+            CsrfToken csrfToken = new DefaultCsrfToken(
+                    "X-CSRF-TOKEN",
+                    "_csrf",
+                    "test-csrf-token"
+            );
+
+            servletRequest.setAttribute(
+                    CsrfToken.class.getName(),
+                    csrfToken
+            );
+
+            servletRequest.setAttribute("_csrf", csrfToken);
+
+            return servletRequest;
+        };
     }
 
     /**
@@ -174,13 +138,10 @@ class AdminRepairRequestControllerTS10IntegrationTest {
 
         mockMvc.perform(
                 get("/admin/requests/{id}", requestId)
+                        .with(withCsrfRequestAttribute())
         )
         .andExpect(status().isOk())
-        .andExpect(
-                view().name(
-                        "admin/repair-request-detail"
-                )
-        );
+        .andExpect(view().name("admin/repair-request-detail"));
     }
 
     /**
@@ -193,14 +154,10 @@ class AdminRepairRequestControllerTS10IntegrationTest {
 
         mockMvc.perform(
                 get("/admin/requests/{id}", requestId)
+                        .with(withCsrfRequestAttribute())
         )
         .andExpect(status().isOk())
-        .andExpect(
-                model().attribute(
-                        "request",
-                        request
-                )
-        );
+        .andExpect(model().attribute("request", request));
     }
 
     /**
@@ -213,11 +170,11 @@ class AdminRepairRequestControllerTS10IntegrationTest {
 
         mockMvc.perform(
                 get("/admin/requests/{id}", requestId)
+                        .with(withCsrfRequestAttribute())
         )
         .andExpect(status().isOk());
 
-        verify(repairRequestService)
-                .getById(requestId);
+        verify(repairRequestService).getById(requestId);
     }
 
     /**
@@ -234,19 +191,11 @@ class AdminRepairRequestControllerTS10IntegrationTest {
 
         mockMvc.perform(
                 get("/admin/requests/{id}", requestId)
+                        .with(withCsrfRequestAttribute())
         )
         .andExpect(status().isOk())
-        .andExpect(
-                model().attribute(
-                        "request",
-                        request
-                )
-        )
-        .andExpect(
-                view().name(
-                        "admin/repair-request-detail"
-                )
-        );
+        .andExpect(model().attribute("request", request))
+        .andExpect(view().name("admin/repair-request-detail"));
     }
 
     /**
@@ -259,17 +208,10 @@ class AdminRepairRequestControllerTS10IntegrationTest {
 
         mockMvc.perform(
                 get("/admin/requests/{id}", requestId)
+                        .with(withCsrfRequestAttribute())
         )
         .andExpect(status().isOk())
-        .andExpect(
-                view().name(
-                        "admin/repair-request-detail"
-                )
-        )
-        .andExpect(
-                model().attributeExists(
-                        "request"
-                )
-        );
+        .andExpect(view().name("admin/repair-request-detail"))
+        .andExpect(model().attributeExists("request"));
     }
 }

@@ -1,3 +1,4 @@
+
 package com.example.dormitory.controller.web;
 
 import java.util.List;
@@ -11,9 +12,12 @@ import static org.mockito.Mockito.when;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.webmvc.test.autoconfigure.AutoConfigureMockMvc;
 import org.springframework.boot.webmvc.test.autoconfigure.WebMvcTest;
+import org.springframework.security.web.csrf.CsrfToken;
+import org.springframework.security.web.csrf.DefaultCsrfToken;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import org.springframework.test.web.servlet.request.RequestPostProcessor;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.model;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.view;
@@ -36,7 +40,6 @@ class AdminTechnicianControllerTS17IntegrationTest {
 
     @BeforeEach
     void setUp() {
-        // เตรียมข้อมูลช่างจำลองสำหรับทดสอบ Controller
         technician1 = mock(AdminTechnicianResponse.class);
         technician2 = mock(AdminTechnicianResponse.class);
 
@@ -45,13 +48,34 @@ class AdminTechnicianControllerTS17IntegrationTest {
     }
 
     /**
+     * เพิ่ม CSRF token เป็น request attribute
+     * เพื่อให้ Thymeleaf อ่าน ${_csrf.token} ได้
+     */
+    private RequestPostProcessor withCsrfRequestAttribute() {
+        return request -> {
+            CsrfToken csrfToken = new DefaultCsrfToken(
+                    "X-CSRF-TOKEN",
+                    "_csrf",
+                    "test-csrf-token"
+            );
+
+            request.setAttribute(CsrfToken.class.getName(), csrfToken);
+            request.setAttribute("_csrf", csrfToken);
+
+            return request;
+        };
+    }
+
+    /**
      * TC-IT-17-01
      * ตรวจสอบการเปิดหน้ารายการช่างเมื่อมีข้อมูล
      */
     @Test
     void shouldOpenTechnicianListPage() throws Exception {
-
-        mockMvc.perform(get("/admin/technicians"))
+        mockMvc.perform(
+                    get("/admin/technicians")
+                            .with(withCsrfRequestAttribute())
+                )
                 .andExpect(status().isOk())
                 .andExpect(view().name("admin/technicianManage"))
                 .andExpect(model().attributeExists("technicians"))
@@ -70,11 +94,13 @@ class AdminTechnicianControllerTS17IntegrationTest {
      */
     @Test
     void shouldDisplayPageWhenTechnicianListIsEmpty() throws Exception {
-
         when(adminTechnicianService.getAllTechnicians())
                 .thenReturn(List.of());
 
-        mockMvc.perform(get("/admin/technicians"))
+        mockMvc.perform(
+                    get("/admin/technicians")
+                            .with(withCsrfRequestAttribute())
+                )
                 .andExpect(status().isOk())
                 .andExpect(view().name("admin/technicianManage"))
                 .andExpect(model().attributeExists("technicians"))
@@ -90,8 +116,10 @@ class AdminTechnicianControllerTS17IntegrationTest {
      */
     @Test
     void shouldAddTechniciansToModel() throws Exception {
-
-        mockMvc.perform(get("/admin/technicians"))
+        mockMvc.perform(
+                    get("/admin/technicians")
+                            .with(withCsrfRequestAttribute())
+                )
                 .andExpect(status().isOk())
                 .andExpect(model().attributeExists("technicians"))
                 .andExpect(model().attribute(
@@ -109,8 +137,10 @@ class AdminTechnicianControllerTS17IntegrationTest {
      */
     @Test
     void shouldCallServiceToRetrieveTechnicians() throws Exception {
-
-        mockMvc.perform(get("/admin/technicians"))
+        mockMvc.perform(
+                    get("/admin/technicians")
+                            .with(withCsrfRequestAttribute())
+                )
                 .andExpect(status().isOk())
                 .andExpect(view().name("admin/technicianManage"));
 

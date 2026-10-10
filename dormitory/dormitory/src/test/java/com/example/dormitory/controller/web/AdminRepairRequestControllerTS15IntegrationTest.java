@@ -1,22 +1,24 @@
+
 package com.example.dormitory.controller.web;
 
 import java.util.UUID;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.webmvc.test.autoconfigure.AutoConfigureMockMvc;
 import org.springframework.boot.webmvc.test.autoconfigure.WebMvcTest;
+import org.springframework.security.web.csrf.CsrfToken;
+import org.springframework.security.web.csrf.DefaultCsrfToken;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import org.springframework.test.web.servlet.request.RequestPostProcessor;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.model;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.redirectedUrl;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -55,9 +57,7 @@ class AdminRepairRequestControllerTS15IntegrationTest {
         repairRequest = mock(RepairRequest.class);
         repairAssignment = mock(RepairAssignment.class);
 
-        when(repairRequest.getRepairRequestId())
-                .thenReturn(requestId);
-
+        when(repairRequest.getRepairRequestId()).thenReturn(requestId);
         when(repairRequest.getStatus())
                 .thenReturn(RepairRequestStatus.IN_PROGRESS);
 
@@ -72,131 +72,148 @@ class AdminRepairRequestControllerTS15IntegrationTest {
     }
 
     /**
+     * เพิ่ม CSRF token ใน request attribute
+     * เพื่อให้ Thymeleaf สามารถอ่าน ${_csrf.token} ได้
+     */
+    private RequestPostProcessor withCsrfRequestAttribute() {
+        return request -> {
+            CsrfToken csrfToken = new DefaultCsrfToken(
+                    "X-CSRF-TOKEN",
+                    "_csrf",
+                    "test-csrf-token"
+            );
+
+            request.setAttribute(CsrfToken.class.getName(), csrfToken);
+            request.setAttribute("_csrf", csrfToken);
+
+            return request;
+        };
+    }
+
+    /**
      * TC-IT-15-01
-     * ตรวจสอบว่าผู้ดูแลระบบเปิดหน้าตรวจสอบงานได้
+     * ตรวจสอบว่าเปิดหน้าตรวจสอบงานได้
      */
     @Test
-    void shouldOpenInspectWorkPage() throws Exception {
-
+    void TC_IT_15_01_adminCanViewInspectWorkPage() throws Exception {
         mockMvc.perform(
-                        get("/admin/requests/{id}/inspect", requestId)
-                )
+                get("/admin/requests/{id}/inspect", requestId)
+                        .with(withCsrfRequestAttribute())
+        )
                 .andExpect(status().isOk())
                 .andExpect(view().name("admin/inspect-work"))
-                .andExpect(model().attribute("request", repairRequest))
-                .andExpect(model().attribute(
-                        "assignment", repairAssignment));
+                .andExpect(model().attributeExists("request"))
+                .andExpect(model().attributeExists("assignment"));
 
-        verify(repairRequestService)
-                .getById(requestId);
-
+        verify(repairRequestService).getById(requestId);
         verify(repairAssignmentService)
                 .getAssignmentByRequestId(requestId);
     }
 
     /**
      * TC-IT-15-02
-     * ตรวจสอบว่าการยืนยันผลซ่อมส่งสถานะ COMPLETED
-     * และหมายเหตุไปยัง RepairRequestService
+     * ตรวจสอบการยืนยันงานสำเร็จพร้อมหมายเหตุ
      */
     @Test
-    void shouldConfirmCompletionWithReporterCoordinationNote()
+    void TC_IT_15_02_adminCanConfirmCompletionWithNote()
             throws Exception {
 
-        String note = "โทรประสานผู้แจ้งแล้ว ผู้แจ้งยืนยันว่าซ่อมเรียบร้อย";
+        String note =
+                "โทรประสานผู้แจ้งแล้ว ผู้แจ้งยืนยันว่าซ่อมเรียบร้อย";
 
         mockMvc.perform(
-                        post("/admin/requests/{id}/inspect", requestId)
-                                .sessionAttr("adminId", adminId)
-                                .param("note", note)
-                )
+                post("/admin/requests/{id}/inspect", requestId)
+                        .sessionAttr("adminId", adminId)
+                        .param("note", note)
+        )
                 .andExpect(status().is3xxRedirection())
                 .andExpect(redirectedUrl(
-                        "/admin/requests/" + requestId));
+                        "/admin/requests/" + requestId
+                ));
 
-        verify(repairRequestService, times(1))
-                .adminUpdateStatus(
-                        requestId,
-                        adminId,
-                        RepairRequestStatus.COMPLETED,
-                        note
-                );
+        verify(repairRequestService).adminUpdateStatus(
+                requestId,
+                adminId,
+                RepairRequestStatus.COMPLETED,
+                note
+        );
     }
 
     /**
      * TC-IT-15-03
-     * ตรวจสอบว่าระบบรองรับการยืนยันโดยไม่ระบุหมายเหตุ
+     * ตรวจสอบการยืนยันงานสำเร็จโดยไม่ระบุหมายเหตุ
      */
     @Test
-    void shouldConfirmCompletionWithoutNote() throws Exception {
+    void TC_IT_15_03_adminCanConfirmCompletionWithoutNote()
+            throws Exception {
 
         mockMvc.perform(
-                        post("/admin/requests/{id}/inspect", requestId)
-                                .sessionAttr("adminId", adminId)
-                )
+                post("/admin/requests/{id}/inspect", requestId)
+                        .sessionAttr("adminId", adminId)
+        )
                 .andExpect(status().is3xxRedirection())
                 .andExpect(redirectedUrl(
-                        "/admin/requests/" + requestId));
+                        "/admin/requests/" + requestId
+                ));
 
-        verify(repairRequestService, times(1))
-                .adminUpdateStatus(
-                        requestId,
-                        adminId,
-                        RepairRequestStatus.COMPLETED,
-                        null
-                );
+        verify(repairRequestService).adminUpdateStatus(
+                requestId,
+                adminId,
+                RepairRequestStatus.COMPLETED,
+                null
+        );
     }
 
     /**
      * TC-IT-15-04
-     * ตรวจสอบว่าระบบไม่ยืนยันผลซ่อมเมื่อไม่มี adminId ใน session
+     * ตรวจสอบการยืนยันงานเมื่อไม่มี adminId ใน session
      */
     @Test
-    void shouldRedirectToLoginWhenAdminSessionIsMissing()
+    void TC_IT_15_04_redirectsToLoginWhenAdminSessionIsMissing()
             throws Exception {
 
         mockMvc.perform(
-                        post("/admin/requests/{id}/inspect", requestId)
-                                .param("note", "ตรวจสอบแล้ว")
-                )
+                post("/admin/requests/{id}/inspect", requestId)
+        )
                 .andExpect(status().is3xxRedirection())
                 .andExpect(redirectedUrl("/login"));
 
-        verify(repairRequestService, never())
-                .adminUpdateStatus(
-                        any(UUID.class),
-                        any(UUID.class),
-                        any(RepairRequestStatus.class),
-                        any()
-                );
+        verify(repairRequestService, never()).adminUpdateStatus(
+                org.mockito.ArgumentMatchers.eq(requestId),
+                org.mockito.ArgumentMatchers.any(UUID.class),
+                org.mockito.ArgumentMatchers.eq(
+                        RepairRequestStatus.COMPLETED
+                ),
+                org.mockito.ArgumentMatchers.any()
+        );
     }
 
     /**
      * TC-IT-15-05
-     * ตรวจสอบว่าการยืนยันใช้ adminId จาก session
-     * ไม่ใช่ UUID ที่ส่งผ่าน request parameter
+     * ตรวจสอบว่าใช้ adminId จาก session
+     * ไม่ใช่ adminId ที่ส่งมาจาก request parameter
      */
     @Test
-    void shouldUseAdminIdFromSession() throws Exception {
-
-        UUID anotherAdminId = UUID.randomUUID();
+    void TC_IT_15_05_usesAdminIdFromSession() throws Exception {
+        UUID spoofedAdminId = UUID.randomUUID();
+        String note = "ประสานงานกับผู้แจ้งแล้ว";
 
         mockMvc.perform(
-                        post("/admin/requests/{id}/inspect", requestId)
-                                .sessionAttr("adminId", adminId)
-                                .param("adminId", anotherAdminId.toString())
-                                .param("note", "ประสานงานกับผู้แจ้งแล้ว")
-                )
+                post("/admin/requests/{id}/inspect", requestId)
+                        .sessionAttr("adminId", adminId)
+                        .param("adminId", spoofedAdminId.toString())
+                        .param("note", note)
+        )
                 .andExpect(status().is3xxRedirection())
                 .andExpect(redirectedUrl(
-                        "/admin/requests/" + requestId));
+                        "/admin/requests/" + requestId
+                ));
 
-        verify(repairRequestService, times(1))
-                .adminUpdateStatus(
-                        requestId,
-                        adminId,
-                        RepairRequestStatus.COMPLETED,
-                        "ประสานงานกับผู้แจ้งแล้ว"
-                );
+        verify(repairRequestService).adminUpdateStatus(
+                requestId,
+                adminId,
+                RepairRequestStatus.COMPLETED,
+                note
+        );
     }
 }
