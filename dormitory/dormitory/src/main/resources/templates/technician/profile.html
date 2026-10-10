@@ -82,148 +82,148 @@
 
 <main class="profile-page">
 
-    <div class="back-section">
-
-        <a th:href="@{/technician/dailywork}"
-           class="back-button">
-
-            ←
-
-        </a>
-
+<!-- ปุ่มกลับ -->
+<div class="back-section">
+    <a th:href="@{/technician/dailywork}" class="back-button">
+        <i data-lucide="arrow-left"></i>
         <span>กลับ</span>
+    </a>
+</div>
 
+<!-- Profile Card -->
+<section class="profile-card">
+
+    <!-- Header -->
+    <div class="profile-header">
+        <i data-lucide="user-round"></i>
+        <span>โปรไฟล์ช่าง</span>
+        <i data-lucide="wrench" class="profile-header-decoration"></i>
     </div>
 
+    <div class="profile-content">
 
-    <section class="profile-card">
+        <!-- ข้อมูลหลักของช่าง -->
+        <div class="profile-summary">
 
-        <div class="profile-header">
-            Profile
-        </div>
+            <div class="profile-avatar-column">
+                <div class="profile-icon">
+                    <i data-lucide="wrench"></i>
+                </div>
 
-
-        <div class="profile-content">
-
-            <div class="profile-icon">
-                🛠
+                <span class="profile-role-badge">ช่างซ่อม</span>
             </div>
 
+            <div class="profile-summary-details">
 
-            <!-- ข้อมูลช่าง -->
-
-        <div class="profile-info">
-
-            <div class="info-row">
-                <span class="info-label">ชื่อ:</span>
-                <span class="info-value"
+                <h1 class="profile-name"
                     th:text="${technician.user.firstName
-                            + ' '
-                            + technician.user.lastName}">
-                    สมชาย ดีดี
-                </span>
-            </div>
+                        + ' ' + technician.user.lastName}">
+                    วิชัย เย่
+                </h1>
 
-            <div class="info-row">
-                <span class="info-label">งาน:</span>
-                <span class="info-value"
-                    th:text="${technician.specialization}">
-                    งานไม้
-                </span>
-            </div>
+                <div class="profile-subtitle">ช่างซ่อม</div>
 
-            <div class="info-row">
-                <span class="info-label">เบอร์:</span>
-                <span class="info-value"
-                    th:text="${technician.user.phoneNo}">
-                    08x-xxx-xxxx
-                </span>
-            </div>
+                <div class="profile-contact-row">
 
-        </div>
+                    <div class="profile-contact">
+                        <div class="profile-contact-icon">
+                            <i data-lucide="phone"></i>
+                        </div>
 
+                        <div>
+                            <div class="profile-contact-label">
+                                เบอร์โทรศัพท์
+                            </div>
+                            <div class="profile-contact-value"
+                                 th:text="${technician.user.phoneNo}">
+                                0875151515
+                            </div>
+                        </div>
+                    </div>
 
-            <hr>
+                    <div class="profile-contact-divider"></div>
 
+                    <div class="profile-contact">
+                        <div class="profile-contact-icon">
+                            <i data-lucide="user-round"></i>
+                        </div>
 
-            <h3>จัดการรหัสผ่าน</h3>
-
-
-            <!-- message -->
-
-            <div class="success-message"
-                 th:if="${success}"
-                 th:text="${success}">
-            </div>
-
-            <div class="error-message"
-                 th:if="${error}"
-                 th:text="${error}">
-            </div>
-
-
-            <!-- เปลี่ยนรหัสผ่าน -->
-
-            <form th:action="@{/technician/profile/password}"
-                  method="post">
-
-                <label>
-                    รหัสผ่านปัจจุบัน
-                </label>
-
-                <input
-                    type="password"
-                    name="currentPassword"
-                    required>
-
-
-                <label>
-                    รหัสผ่านใหม่
-                </label>
-
-                <input
-                    type="password"
-                    name="newPassword"
-                    required>
-
-
-                <label>
-                    ยืนยันรหัสผ่านใหม่อีกครั้ง
-                </label>
-
-                <input
-                    type="password"
-                    name="confirmPassword"
-                    required>
-
-
-                <div class="password-link">
-                    ลืมรหัสผ่าน?
-                </div>
-
-
-                <div class="button-group">
-
-                    <a th:href="@{/technician/dailywork}"
-                       class="cancel-button">
-                        ยกเลิก
-                    </a>
-
-                    <button
-                        type="submit"
-                        class="save-button">
-                        บันทึก
-                    </button>
+                        <div>
+                            <div class="profile-contact-label">
+                                ตำแหน่ง
+                            </div>
+                            <div class="profile-contact-value">
+                                ช่างซ่อม
+                            </div>
+                        </div>
+                    </div>
 
                 </div>
-
-            </form>
-
+            </div>
         </div>
 
-    </section>
+        <!-- รายละเอียดเพิ่มเติม -->
+        <section class="profile-details-panel">
+
+            <h2 class="profile-section-title">
+                <span class="profile-section-title-icon">
+                    <i data-lucide="user-round"></i>
+                </span>
+                ข้อมูลส่วนตัว
+            </h2>
+
+            <div class="profile-info-list">
+
+                <div class="info-row">
+                    <span class="info-icon">
+                        <i data-lucide="user-round"></i>
+                    </span>
+
+                    <span class="info-label">ชื่อ</span>
+
+                    <span class="info-value"
+                          th:text="${technician.user.firstName
+                              + ' ' + technician.user.lastName}">
+                        สมชาย ดีดี
+                    </span>
+                </div>
+
+                <div class="info-row">
+                    <span class="info-icon">
+                        <i data-lucide="briefcase-business"></i>
+                    </span>
+
+                    <span class="info-label">งาน</span>
+
+                    <span class="info-value"
+                          th:text="${technician.specialization}">
+                        งานน้ำ
+                    </span>
+                </div>
+
+                <div class="info-row">
+                    <span class="info-icon">
+                        <i data-lucide="phone"></i>
+                    </span>
+
+                    <span class="info-label">เบอร์โทรศัพท์</span>
+
+                    <span class="info-value"
+                          th:text="${technician.user.phoneNo}">
+                        0875151515
+                    </span>
+                </div>
+
+            </div>
+        </section>
+
+
+    </div>
+</section>
+
 
 </main>
+
 
 <!-- =====================================================
      TECHNICIAN NOTIFICATION JS
