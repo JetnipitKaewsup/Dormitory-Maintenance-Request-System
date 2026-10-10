@@ -7,6 +7,7 @@ import com.example.dormitory.domain.entity.RepairAssignment;
 import com.example.dormitory.domain.entity.RepairRequest;
 import com.example.dormitory.domain.entity.Technician;
 import com.example.dormitory.domain.enums.RepairRequestStatus;
+import com.example.dormitory.exception.BusinessException;
 import com.example.dormitory.service.RepairAssignmentService;
 import com.example.dormitory.service.RepairRequestService;
 import jakarta.servlet.http.HttpSession;
@@ -15,6 +16,10 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+
+
+import com.example.dormitory.domain.command.impl.RejectCompletionCommand;
+
 
 import java.util.List;
 import java.util.UUID;
@@ -83,6 +88,7 @@ public String handleNotLoggedIn(IllegalStateException ex, RedirectAttributes red
         return "redirect:/admin/requests/" + id;
     }
 
+
     // ===================== มอบหมายงานให้ช่าง =====================
 
     @GetMapping("/{id}/assign")
@@ -133,6 +139,25 @@ public String handleNotLoggedIn(IllegalStateException ex, RedirectAttributes red
 
         return "redirect:/admin/requests/" + id;
     }
+        @PostMapping("/{id}/incomplete")
+        public String markIncomplete(@PathVariable UUID id,
+                                    @RequestParam(required = false) String note,
+                                    HttpSession session,
+                                    RedirectAttributes ra) {
+            UUID adminId = getCurrentAdminId(session);
+
+            try {
+                RepairCommand command = new RejectCompletionCommand(
+                        repairRequestService, id, adminId, note);
+                command.execute();
+            } catch (BusinessException e) {
+                ra.addFlashAttribute("error", e.getMessage());
+                return "redirect:/admin/requests/" + id + "/inspect";
+            }
+
+            return "redirect:/admin/requests/" + id;
+        }
+    
 
     private UUID getCurrentAdminId(HttpSession session) {
         Object adminId = session.getAttribute("adminId");
