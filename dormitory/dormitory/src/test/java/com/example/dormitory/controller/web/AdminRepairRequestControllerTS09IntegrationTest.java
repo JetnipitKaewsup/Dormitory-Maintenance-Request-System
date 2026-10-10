@@ -5,14 +5,18 @@ import java.util.List;
 import java.util.UUID;
 
 import org.junit.jupiter.api.Test;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.webmvc.test.autoconfigure.AutoConfigureMockMvc;
 import org.springframework.boot.webmvc.test.autoconfigure.WebMvcTest;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.user;
+import org.springframework.security.web.csrf.CsrfToken;
+import org.springframework.security.web.csrf.DefaultCsrfToken;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import org.springframework.test.web.servlet.request.RequestPostProcessor;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.view;
 
@@ -40,13 +44,35 @@ class AdminRepairRequestControllerTS09IntegrationTest {
     private RepairAssignmentService repairAssignmentService;
 
     /*
-     * ============================================================
+     * เพิ่ม CSRF Request Attribute สำหรับ Thymeleaf
+     * ที่อ้างถึง ${_csrf.token} ใน requests-list.html
+     */
+    private RequestPostProcessor withCsrfRequestAttribute() {
+        return request -> {
+            CsrfToken csrfToken = new DefaultCsrfToken(
+                    "X-CSRF-TOKEN",
+                    "_csrf",
+                    "test-csrf-token"
+            );
+
+            request.setAttribute(
+                    CsrfToken.class.getName(),
+                    csrfToken
+            );
+
+            request.setAttribute("_csrf", csrfToken);
+
+            return request;
+        };
+    }
+
+    /*
      * TC-IT-09-01
      * ตรวจสอบการเปิดหน้ารายการแจ้งซ่อมทั้งหมด
-     * ============================================================
      */
     @Test
-    void TC_IT_09_01_shouldOpenAllRepairRequestsPage() throws Exception {
+    void TC_IT_09_01_shouldOpenAllRepairRequestsPage()
+            throws Exception {
 
         RepairRequest request = createRepairRequest(
                 RepairRequestStatus.PENDING
@@ -57,21 +83,20 @@ class AdminRepairRequestControllerTS09IntegrationTest {
 
         mockMvc.perform(
                 get("/admin/requests")
-                        .with(user("integration_admin")
-                                .roles("ADMIN"))
+                        .with(user("integration_admin").roles("ADMIN"))
+                        .with(withCsrfRequestAttribute())
         )
         .andExpect(status().isOk())
         .andExpect(view().name("admin/requests-list"));
     }
 
     /*
-     * ============================================================
      * TC-IT-09-02
      * ตรวจสอบการโหลดรายการแจ้งซ่อมทั้งหมด
-     * ============================================================
      */
     @Test
-    void TC_IT_09_02_shouldLoadAllRepairRequests() throws Exception {
+    void TC_IT_09_02_shouldLoadAllRepairRequests()
+            throws Exception {
 
         RepairRequest request1 = createRepairRequest(
                 RepairRequestStatus.PENDING
@@ -86,18 +111,16 @@ class AdminRepairRequestControllerTS09IntegrationTest {
 
         mockMvc.perform(
                 get("/admin/requests")
-                        .with(user("integration_admin")
-                                .roles("ADMIN"))
+                        .with(user("integration_admin").roles("ADMIN"))
+                        .with(withCsrfRequestAttribute())
         )
         .andExpect(status().isOk())
         .andExpect(view().name("admin/requests-list"));
     }
 
     /*
-     * ============================================================
      * TC-IT-09-03
      * ตรวจสอบการแสดงรายการแจ้งซ่อมหลายรายการ
-     * ============================================================
      */
     @Test
     void TC_IT_09_03_shouldDisplayMultipleRepairRequests()
@@ -124,18 +147,16 @@ class AdminRepairRequestControllerTS09IntegrationTest {
 
         mockMvc.perform(
                 get("/admin/requests")
-                        .with(user("integration_admin")
-                                .roles("ADMIN"))
+                        .with(user("integration_admin").roles("ADMIN"))
+                        .with(withCsrfRequestAttribute())
         )
         .andExpect(status().isOk())
         .andExpect(view().name("admin/requests-list"));
     }
 
     /*
-     * ============================================================
      * TC-IT-09-04
      * ตรวจสอบกรณีไม่มีรายการแจ้งซ่อม
-     * ============================================================
      */
     @Test
     void TC_IT_09_04_shouldHandleEmptyRepairRequestList()
@@ -146,18 +167,16 @@ class AdminRepairRequestControllerTS09IntegrationTest {
 
         mockMvc.perform(
                 get("/admin/requests")
-                        .with(user("integration_admin")
-                                .roles("ADMIN"))
+                        .with(user("integration_admin").roles("ADMIN"))
+                        .with(withCsrfRequestAttribute())
         )
         .andExpect(status().isOk())
         .andExpect(view().name("admin/requests-list"));
     }
 
     /*
-     * ============================================================
      * TC-IT-09-05
      * ตรวจสอบ Admin สามารถเข้าถึงหน้ารายการแจ้งซ่อม
-     * ============================================================
      */
     @Test
     void TC_IT_09_05_shouldAllowAdminToAccessRepairRequests()
@@ -168,50 +187,24 @@ class AdminRepairRequestControllerTS09IntegrationTest {
 
         mockMvc.perform(
                 get("/admin/requests")
-                        .with(user("integration_admin")
-                                .roles("ADMIN"))
+                        .with(user("integration_admin").roles("ADMIN"))
+                        .with(withCsrfRequestAttribute())
         )
         .andExpect(status().isOk())
         .andExpect(view().name("admin/requests-list"));
     }
 
     /*
-     * ============================================================
      * Helper สำหรับสร้าง RepairRequest Mock
-     *
-     * Template admin/requests-list.html ต้องการข้อมูล:
-     *
-     * request.reporter.user.firstName
-     * request.reporter.user.lastName
-     * request.room.building.buildingName
-     * request.room.roomNo
-     * request.repairType.thaiName
-     * request.status.cssClass
-     * request.status.thaiName
-     * request.startDateTime
-     *
-     * ดังนั้นต้องสร้าง nested object ให้ครบ
-     * ============================================================
      */
     private RepairRequest createRepairRequest(
             RepairRequestStatus status) {
 
-        RepairRequest request = org.mockito.Mockito
-                .mock(RepairRequest.class);
-
-        Reporter reporter = org.mockito.Mockito
-                .mock(Reporter.class);
-
-        User user = org.mockito.Mockito
-                .mock(User.class);
-
-        Room room = org.mockito.Mockito
-                .mock(Room.class);
-
-        Building building = org.mockito.Mockito
-                .mock(Building.class);
-
-        RepairType repairType = RepairType.ELECTRICAL;
+        RepairRequest request = mock(RepairRequest.class);
+        Reporter reporter = mock(Reporter.class);
+        User user = mock(User.class);
+        Room room = mock(Room.class);
+        Building building = mock(Building.class);
 
         when(request.getRepairRequestId())
                 .thenReturn(UUID.randomUUID());
@@ -241,7 +234,7 @@ class AdminRepairRequestControllerTS09IntegrationTest {
                 .thenReturn(101);
 
         when(request.getRepairType())
-                .thenReturn(repairType);
+                .thenReturn(RepairType.ELECTRICAL);
 
         when(request.getStatus())
                 .thenReturn(status);
