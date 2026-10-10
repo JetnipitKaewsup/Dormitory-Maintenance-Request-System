@@ -40,44 +40,46 @@ public class AdminWorkflowController {
         return "admin/assignments-list";
     }
 
-    // แท็บ "ตรวจงาน" — คำร้องที่กำลังดำเนินการ และที่ดำเนินการไม่สำเร็จ
-    // ลำดับ: รอตรวจสอบ -> กำลังดำเนินการ -> ไม่สำเร็จ
+    // แท็บ "ตรวจงาน" — เฉพาะคำร้องที่ยังเป็น IN_PROGRESS
+    // ลำดับ: รอตรวจสอบ (ช่างแจ้งเสร็จ/ไม่สำเร็จ) -> กำลังดำเนินการ
+    // คำร้องที่ปิดแล้ว (COMPLETED / IN_COMPLETED) ไม่แสดงในหน้านี้
     @GetMapping("/admin/inspections")
     public String listInspections(Model model) {
-        List<RepairRequest> inspectable = repairRequestService.getAllRequests().stream()
-                .filter(r -> r.getStatus() == RepairRequestStatus.IN_PROGRESS
-                          || r.getStatus() == RepairRequestStatus.IN_COMPLETED)
+        List<RepairRequest> inProgress = repairRequestService.getAllRequests().stream()
+                .filter(r -> r.getStatus() == RepairRequestStatus.IN_PROGRESS)
                 .toList();
 
-        // คำร้องที่ช่างอัปเดตสถานะงานเป็น COMPLETED แล้ว (รอแอดมินยืนยัน)
+        // ช่างแจ้งงานเสร็จ (COMPLETED) รอแอดมินยืนยัน
         Set<UUID> readyIds = new HashSet<>();
-        // คำร้องที่ดำเนินการไม่สำเร็จ
-        Set<UUID> failedIds = new HashSet<>();
+        // ช่างแจ้งดำเนินงานไม่สำเร็จ (IN_COMPLETED) รอแอดมินตรวจสอบ
+        Set<UUID> techFailedIds = new HashSet<>();
 
-        for (RepairRequest r : inspectable) {
-            if (r.getStatus() == RepairRequestStatus.IN_COMPLETED) {
-                failedIds.add(r.getRepairRequestId());
-                continue;
-            }
+        for (RepairRequest r : inProgress) {
             RepairAssignment assignment =
                     repairAssignmentService.getAssignmentByRequestId(r.getRepairRequestId());
-            if (assignment != null
-                    && assignment.getJobStatus() != null
-                    && "COMPLETED".equals(assignment.getJobStatus().name())) {
+            if (assignment == null || assignment.getJobStatus() == null) {
+                continue;
+            }
+
+            String job = assignment.getJobStatus().name();
+            if ("COMPLETED".equals(job)) {
                 readyIds.add(r.getRepairRequestId());
+            } else if ("IN_COMPLETED".equals(job)) {
+                techFailedIds.add(r.getRepairRequestId());
             }
         }
 
-        List<RepairRequest> requests = inspectable.stream()
-                .sorted(Comparator.comparingInt((RepairRequest r) ->
-                        readyIds.contains(r.getRepairRequestId()) ? 0
-                      : failedIds.contains(r.getRepairRequestId()) ? 2 : 1))
+        // งานที่รอตรวจสอบขึ้นก่อน ที่เหลือคงลำดับเดิม
+        List<RepairRequest> requests = inProgress.stream()
+                .sorted(Comparator.comparing((RepairRequest r) ->
+                        !(readyIds.contains(r.getRepairRequestId())
+                          || techFailedIds.contains(r.getRepairRequestId()))))
                 .toList();
 
         model.addAttribute("requests", requests);
         model.addAttribute("readyIds", readyIds);
-        model.addAttribute("failedIds", failedIds);
-        model.addAttribute("readyCount", readyIds.size());
+        model.addAttribute("techFailedIds", techFailedIds);
+        model.addAttribute("readyCount", readyIds.size() + techFailedIds.size());
         return "admin/inspections-list";
     }
 }

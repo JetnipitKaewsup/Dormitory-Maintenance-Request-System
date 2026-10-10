@@ -275,3 +275,16 @@ tr[data-status="CANCELLED"] .badge {
     background: var(--rl-green);
     color: #fff;
 }
+
+.badge.in_complete {
+    background: #fee2e2;
+    color: #dc2626;
+}
+
+.stat-card.stat-incompleted {
+    background: #fee2e2;
+    border-left: 4px solid #991b1b;
+}
+.stat-card.stat-incompleted .stat-value {
+    color: #991b1b;
+}

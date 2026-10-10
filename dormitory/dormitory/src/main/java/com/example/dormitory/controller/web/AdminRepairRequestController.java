@@ -46,8 +46,8 @@ public class AdminRepairRequestController {
         long approvedCount = requests.stream().filter(r -> r.getStatus() == RepairRequestStatus.APPROVED).count();
         long inProgressCount = requests.stream().filter(r -> r.getStatus() == RepairRequestStatus.IN_PROGRESS).count();
         long completedCount = requests.stream().filter(r -> r.getStatus() == RepairRequestStatus.COMPLETED).count();
-        long rejectedCount = requests.stream().filter(r ->
-                r.getStatus() == RepairRequestStatus.REJECTED).count();
+        long rejectedCount = requests.stream().filter(r -> r.getStatus() == RepairRequestStatus.REJECTED).count();
+        long incompletedCount = requests.stream().filter(r -> r.getStatus() == RepairRequestStatus.IN_COMPLETED).count();
 
         model.addAttribute("requests", requests);
         model.addAttribute("pendingCount", pendingCount);
@@ -55,6 +55,7 @@ public class AdminRepairRequestController {
         model.addAttribute("inProgressCount", inProgressCount);
         model.addAttribute("completedCount", completedCount);
         model.addAttribute("rejectedCount", rejectedCount);
+        model.addAttribute("incompletedCount", incompletedCount);
 
         return "admin/requests-list";
     }

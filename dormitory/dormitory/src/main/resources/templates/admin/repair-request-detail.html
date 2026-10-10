@@ -141,7 +141,8 @@
             <div class="info-block">
                 <h3>รายละเอียดงานซ่อม</h3>
                 <div class="label" style="margin-bottom:6px;">ประเภทงานซ่อม</div>
-                <span class="repair-type-chip" th:text="${request.repairType}">-</span>
+                <span class="repair-type-chip"
+      th:text="${request.repairType != null ? request.repairType.thaiName : '-'}">-</span>
             </div>
         </div>
 

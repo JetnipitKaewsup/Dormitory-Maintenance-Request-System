@@ -53,6 +53,10 @@
             <div class="stat-label">เสร็จสิ้น</div>
             <div class="stat-value" th:text="${completedCount}">0</div>
         </div>
+        <div class="stat-card stat-incompleted">
+            <div class="stat-label">ไม่สำเร็จ</div>
+            <div class="stat-value" th:text="${incompletedCount}">0</div>
+        </div>
         <div class="stat-card stat-rejected">
             <div class="stat-label">ไม่อนุมัติ</div>
             <div class="stat-value" th:text="${rejectedCount}">0</div>
