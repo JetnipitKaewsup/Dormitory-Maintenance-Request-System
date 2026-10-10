@@ -3,6 +3,7 @@ package com.example.dormitory.integration;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.net.InetSocketAddress;
+import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -10,28 +11,29 @@ import java.util.UUID;
 import org.junit.jupiter.api.AfterEach;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
-import org.springframework.ui.ExtendedModelMap;
-import org.springframework.ui.Model;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.reactive.function.client.WebClient;
 
-import com.example.dormitory.controller.web.AuthController;
+import com.example.dormitory.domain.entity.User;
+import com.example.dormitory.dto.request.LoginRequest;
+import com.example.dormitory.dto.response.SupabaseAuthResponse;
 import com.example.dormitory.repository.AdminRepository;
 import com.example.dormitory.repository.UserRepository;
+import com.example.dormitory.service.AuthRequestValidator;
 import com.example.dormitory.service.AuthService;
+import com.example.dormitory.service.LoginSessionService;
 import com.example.dormitory.service.SpringSecurityService;
+import com.example.dormitory.service.SupabaseAuthGateway;
+import com.example.dormitory.service.impl.SupabaseAuthGatewayImpl;
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpServer;
 
@@ -45,7 +47,7 @@ class LoginIntegrationTest {
     private HttpServer mockSupabaseServer;
 
     private AuthService authService;
-    private AuthController authController;
+    private LoginSessionService loginSessionService;
 
     private SpringSecurityService springSecurityService;
     private UserRepository userRepository;
@@ -55,157 +57,86 @@ class LoginIntegrationTest {
     private HttpServletResponse response;
     private HttpSession session;
 
+    private User user;
     private UUID userId;
 
     @BeforeEach
     void setUp() throws Exception {
+        userId = UUID.randomUUID();
 
-        /*
-         * ---------------------------------------------------------
-         * 1. Start Mock Supabase Server
-         * ---------------------------------------------------------
-         */
-
-        mockSupabaseServer =
-                HttpServer.create(
-                        new InetSocketAddress(0),
-                        0
-                );
+        // เริ่ม Mock HTTP Server สำหรับจำลอง Supabase Auth
+        mockSupabaseServer = HttpServer.create(
+                new InetSocketAddress(0), 0);
 
         mockSupabaseServer.createContext(
                 "/auth/v1/token",
-                this::handleSupabaseLogin
-        );
+                this::handleSupabaseLogin);
 
         mockSupabaseServer.start();
 
-        int port =
-                mockSupabaseServer
-                        .getAddress()
-                        .getPort();
+        WebClient webClient = WebClient.builder()
+                .baseUrl(
+                        "http://localhost:"
+                                + mockSupabaseServer.getAddress().getPort())
+                .build();
 
-        /*
-         * ---------------------------------------------------------
-         * 2. Create real WebClient
-         * ---------------------------------------------------------
-         */
+        ObjectMapper objectMapper = new ObjectMapper();
 
-        WebClient webClient =
-                WebClient.builder()
-                        .baseUrl(
-                                "http://localhost:" + port
-                        )
-                        .build();
-
-        ObjectMapper objectMapper =
-                new ObjectMapper();
-
-        /*
-         * ---------------------------------------------------------
-         * 3. Create REAL AuthService
-         * ---------------------------------------------------------
-         */
-
-        authService =
-                new AuthService(
+        SupabaseAuthGateway gateway =
+                new SupabaseAuthGatewayImpl(
                         webClient,
-                        objectMapper
-                );
+                        objectMapper);
 
-        /*
-         * ---------------------------------------------------------
-         * 4. Mock dependencies of AuthController
-         * ---------------------------------------------------------
-         */
+        authService = new AuthService(
+                gateway,
+                new AuthRequestValidator());
 
-        springSecurityService =
-                mock(SpringSecurityService.class);
+        // Mock dependencies สำหรับสร้าง Security Context และ Session
+        springSecurityService = mock(SpringSecurityService.class);
+        userRepository = mock(UserRepository.class);
+        adminRepository = mock(AdminRepository.class);
 
-        userRepository =
-                mock(UserRepository.class);
+        request = mock(HttpServletRequest.class);
+        response = mock(HttpServletResponse.class);
+        session = mock(HttpSession.class);
+        user = mock(User.class);
 
-        adminRepository =
-                mock(AdminRepository.class);
+        when(request.getSession(false)).thenReturn(null);
+        when(request.getSession(true)).thenReturn(session);
 
-        request =
-                mock(HttpServletRequest.class);
-
-        response =
-                mock(HttpServletResponse.class);
-
-        session =
-                mock(HttpSession.class);
-
-        when(request.getSession())
-                .thenReturn(session);
-
-        /*
-         * ---------------------------------------------------------
-         * 5. Create REAL AuthController
-         * ---------------------------------------------------------
-         */
-
-        authController =
-                new AuthController(
-                        authService,
-                        springSecurityService,
-                        userRepository,
-                        adminRepository
-                );
-
-        userId = UUID.randomUUID();
+        loginSessionService = new LoginSessionService(
+                springSecurityService,
+                userRepository,
+                adminRepository);
     }
 
     @AfterEach
     void tearDown() {
-
         if (mockSupabaseServer != null) {
             mockSupabaseServer.stop(0);
         }
+
+        SecurityContextHolder.clearContext();
     }
 
-    /*
-     * =============================================================
-     * Mock Supabase
-     * =============================================================
+    /**
+     * จำลองการตอบกลับสำเร็จจาก Supabase Auth
      */
-
-    private void handleSupabaseLogin(
-            HttpExchange exchange) throws IOException {
-
-        String responseBody;
+    private void handleSupabaseLogin(HttpExchange exchange)
+            throws IOException {
 
         if (!"POST".equalsIgnoreCase(
                 exchange.getRequestMethod())) {
 
-            responseBody =
-                    """
-                    {
-                        "error": "Method Not Allowed"
-                    }
-                    """;
-
-            exchange.sendResponseHeaders(
+            writeResponse(
+                    exchange,
                     405,
-                    responseBody.getBytes().length
-            );
-
-            try (OutputStream output =
-                         exchange.getResponseBody()) {
-
-                output.write(
-                        responseBody.getBytes()
-                );
-            }
+                    "{\"error\":\"Method Not Allowed\"}");
 
             return;
         }
 
-        /*
-         * Valid credentials
-         */
-        responseBody =
-                """
+        String responseBody = """
                 {
                     "access_token": "test-access-token",
                     "refresh_token": "test-refresh-token",
@@ -217,531 +148,221 @@ class LoginIntegrationTest {
                 }
                 """.formatted(userId);
 
-        exchange.getResponseHeaders()
-                .set(
-                        "Content-Type",
-                        "application/json"
-                );
+        writeResponse(exchange, 200, responseBody);
+    }
 
-        exchange.sendResponseHeaders(
-                200,
-                responseBody.getBytes().length
-        );
+    /**
+     * ส่ง HTTP Response จาก Mock Supabase Server
+     */
+    private void writeResponse(
+            HttpExchange exchange,
+            int status,
+            String body) throws IOException {
 
-        try (OutputStream output =
-                     exchange.getResponseBody()) {
+        byte[] bytes = body.getBytes(StandardCharsets.UTF_8);
 
-            output.write(
-                    responseBody.getBytes()
-            );
+        exchange.getResponseHeaders().set(
+                "Content-Type",
+                "application/json");
+
+        exchange.sendResponseHeaders(status, bytes.length);
+
+        try (OutputStream output = exchange.getResponseBody()) {
+            output.write(bytes);
         }
     }
 
-    /*
-     * =============================================================
-     * TC-IT-02-01
-     *
-     * Login ด้วยข้อมูลที่ถูกต้อง
-     * =============================================================
+    /**
+     * สร้างข้อมูล Login ที่ถูกต้อง
      */
+    private LoginRequest createValidLoginRequest() {
+        LoginRequest loginRequest = new LoginRequest();
 
-    @Test
-    void TC_IT_02_01_loginWithValidData_shouldSuccess()
-            throws Exception {
+        loginRequest.setEmail("test@example.com");
+        loginRequest.setPassword("test-password");
 
-        /*
-         * Arrange
-         */
+        return loginRequest;
+    }
 
-        var loginRequest =
-                new com.example.dormitory.dto.request.LoginRequest();
-
-        loginRequest.setEmail(
-                "lucaenen01@gmail.com"
-        );
-
-        loginRequest.setPassword(
-                "lucazaza"
-        );
-
+    /**
+     * เตรียม Authentication สำหรับผู้ใช้ Reporter
+     */
+    private Authentication configureReporterAuthentication() {
         Authentication authentication =
                 new UsernamePasswordAuthenticationToken(
                         userId.toString(),
                         null,
                         List.of(
                                 new SimpleGrantedAuthority(
-                                        "ROLE_REPORTER"
-                                )
-                        )
-                );
+                                        "ROLE_REPORTER")));
 
-        when(
-                springSecurityService
-                        .createAuthentication(userId)
-        ).thenReturn(authentication);
+        when(springSecurityService.createAuthentication(userId))
+                .thenReturn(authentication);
 
-        when(
-                userRepository.findById(userId)
-        ).thenReturn(Optional.empty());
+        when(userRepository.findById(userId))
+                .thenReturn(Optional.of(user));
 
-        Model model =
-                new ExtendedModelMap();
+        when(user.getFirstName()).thenReturn("Test");
+        when(user.getLastName()).thenReturn("Reporter");
 
-        /*
-         * Act
-         */
-
-        String result =
-                authController.processLogin(
-                        loginRequest,
-                        request,
-                        response,
-                        model
-                );
-
-        /*
-         * Assert
-         */
-
-        assertEquals(
-                "redirect:/reporter/requests",
-                result
-        );
-
-        verify(
-                springSecurityService
-        ).createAuthentication(userId);
-
-        verify(session)
-                .setAttribute(
-                        "accessToken",
-                        "test-access-token"
-                );
-
-        verify(session)
-                .setAttribute(
-                        "refreshToken",
-                        "test-refresh-token"
-                );
-
-        verify(session)
-                .setAttribute(
-                        "userId",
-                        userId.toString()
-                );
-
-        verify(session)
-                .setAttribute(
-                        "role",
-                        "REPORTER"
-                );
+        return authentication;
     }
 
-    /*
-     * =============================================================
-     * TC-IT-02-02
-     *
-     * Email / Password ไม่ถูกต้อง
-     * =============================================================
+    /**
+     * TC-IT-02-01:
+     * เข้าสู่ระบบด้วยข้อมูลที่ถูกต้องและรับ Token จาก Supabase
      */
-
     @Test
-    void TC_IT_02_02_loginWithWrongPassword_shouldReturnLoginPage()
+    void TC_IT_02_01_loginWithValidData_shouldAuthenticateWithSupabase()
             throws Exception {
 
-        /*
-         * เปลี่ยน Mock Supabase ให้ตอบ 401
-         */
+        SupabaseAuthResponse authResponse =
+                authService.login(createValidLoginRequest());
 
-        mockSupabaseServer.removeContext(
-                "/auth/v1/token"
-        );
+        assertNotNull(authResponse);
+
+        assertEquals(
+                "test-access-token",
+                authResponse.getAccess_token());
+
+        assertEquals(
+                "test-refresh-token",
+                authResponse.getRefresh_token());
+
+        assertEquals(
+                userId.toString(),
+                authResponse.getUser().getId());
+    }
+
+    /**
+     * TC-IT-02-02:
+     * เข้าสู่ระบบด้วย Password ที่ไม่ถูกต้อง
+     */
+    @Test
+    void TC_IT_02_02_loginWithWrongPassword_shouldFail() {
+
+        // เปลี่ยน Mock Supabase ให้ตอบกลับ Unauthorized
+        mockSupabaseServer.removeContext("/auth/v1/token");
 
         mockSupabaseServer.createContext(
                 "/auth/v1/token",
-                exchange -> {
-
-                    String body =
-                            """
-                            {
-                                "error": "invalid_grant",
-                                "error_description":
+                exchange -> writeResponse(
+                        exchange,
+                        401,
+                        """
+                        {
+                            "error": "invalid_grant",
+                            "error_description":
                                 "Invalid login credentials"
-                            }
-                            """;
+                        }
+                        """));
 
-                    exchange.getResponseHeaders()
-                            .set(
-                                    "Content-Type",
-                                    "application/json"
-                            );
+        LoginRequest loginRequest = createValidLoginRequest();
+        loginRequest.setPassword("wrong-password");
 
-                    exchange.sendResponseHeaders(
-                            401,
-                            body.getBytes().length
-                    );
-
-                    try (OutputStream output =
-                                 exchange.getResponseBody()) {
-
-                        output.write(
-                                body.getBytes()
-                        );
-                    }
-                }
-        );
-
-        var loginRequest =
-                new com.example.dormitory.dto.request.LoginRequest();
-
-        loginRequest.setEmail(
-                "lucaenen01@gmail.com"
-        );
-
-        loginRequest.setPassword(
-                "wrong123"
-        );
-
-        Model model =
-                new ExtendedModelMap();
-
-        /*
-         * Act
-         */
-
-        String result =
-                authController.processLogin(
-                        loginRequest,
-                        request,
-                        response,
-                        model
-                );
-
-        /*
-         * Assert
-         */
-
-        assertEquals(
-                "login",
-                result
-        );
-
-        assertEquals(
-                "Invalid email or password",
-                model.getAttribute("error")
-        );
-
-        verify(
-                springSecurityService,
-                never()
-        ).createAuthentication(any());
-
-        verify(
-                session,
-                never()
-        ).setAttribute(
-                eq("accessToken"),
-                any()
-        );
+        assertThrows(
+                Exception.class,
+                () -> authService.login(loginRequest));
     }
 
-    /*
-     * =============================================================
-     * TC-IT-02-03
-     *
-     * ไม่กรอก Password
-     * =============================================================
+    /**
+     * TC-IT-02-03:
+     * เข้าสู่ระบบโดยไม่ระบุ Password
      */
-
     @Test
-    void TC_IT_02_03_loginWithoutPassword_shouldReturnLoginPage() {
+    void TC_IT_02_03_loginWithoutPassword_shouldFail() {
 
-        var loginRequest =
-                new com.example.dormitory.dto.request.LoginRequest();
-
-        loginRequest.setEmail(
-                "lucaenen01@gmail.com"
-        );
-
+        LoginRequest loginRequest = createValidLoginRequest();
         loginRequest.setPassword("");
 
-        Model model =
-                new ExtendedModelMap();
-
-        /*
-         * Act
-         */
-
-        String result =
-                authController.processLogin(
-                        loginRequest,
-                        request,
-                        response,
-                        model
-                );
-
-        /*
-         * Assert
-         */
-
-        assertEquals(
-                "login",
-                result
-        );
-
-        assertEquals(
-                "Invalid email or password",
-                model.getAttribute("error")
-        );
-
-        verify(
-                springSecurityService,
-                never()
-        ).createAuthentication(any());
-
-        verify(
-                session,
-                never()
-        ).setAttribute(
-                eq("accessToken"),
-                any()
-        );
+        assertThrows(
+                Exception.class,
+                () -> authService.login(loginRequest));
     }
 
-    /*
-     * =============================================================
-     * TC-IT-02-04
-     *
-     * ไม่กรอก Email
-     * =============================================================
+    /**
+     * TC-IT-02-04:
+     * เข้าสู่ระบบโดยไม่ระบุ Email
      */
-
     @Test
-    void TC_IT_02_04_loginWithoutEmail_shouldReturnLoginPage() {
+    void TC_IT_02_04_loginWithoutEmail_shouldFail() {
 
-        var loginRequest =
-                new com.example.dormitory.dto.request.LoginRequest();
-
+        LoginRequest loginRequest = createValidLoginRequest();
         loginRequest.setEmail("");
 
-        loginRequest.setPassword(
-                "lucazaza"
-        );
-
-        Model model =
-                new ExtendedModelMap();
-
-        /*
-         * Act
-         */
-
-        String result =
-                authController.processLogin(
-                        loginRequest,
-                        request,
-                        response,
-                        model
-                );
-
-        /*
-         * Assert
-         */
-
-        assertEquals(
-                "login",
-                result
-        );
-
-        assertEquals(
-                "Invalid email or password",
-                model.getAttribute("error")
-        );
-
-        verify(
-                springSecurityService,
-                never()
-        ).createAuthentication(any());
-
-        verify(
-                session,
-                never()
-        ).setAttribute(
-                eq("accessToken"),
-                any()
-        );
+        assertThrows(
+                Exception.class,
+                () -> authService.login(loginRequest));
     }
 
-    /*
-     * =============================================================
-     * TC-IT-02-05
-     *
-     * ตรวจสอบการสร้าง Authentication
-     * =============================================================
+    /**
+     * TC-IT-02-05:
+     * ตรวจสอบว่าระบบสร้าง Authentication หลัง Login สำเร็จ
      */
-
     @Test
     void TC_IT_02_05_loginSuccessfully_shouldCreateAuthentication()
             throws Exception {
 
-        var loginRequest =
-                new com.example.dormitory.dto.request.LoginRequest();
+        // Arrange
+        configureReporterAuthentication();
 
-        loginRequest.setEmail(
-                "lucaenen01@gmail.com"
-        );
+        SupabaseAuthResponse authResponse =
+                authService.login(createValidLoginRequest());
 
-        loginRequest.setPassword(
-                "lucazaza"
-        );
+        // Act
+        String destination = loginSessionService.establishSession(
+                authResponse,
+                request,
+                response);
 
-        Authentication authentication =
-                new UsernamePasswordAuthenticationToken(
-                        userId.toString(),
-                        null,
-                        List.of(
-                                new SimpleGrantedAuthority(
-                                        "ROLE_REPORTER"
-                                )
-                        )
-                );
+        // Assert
+        assertEquals("/reporter/requests", destination);
 
-        when(
-                springSecurityService
-                        .createAuthentication(userId)
-        ).thenReturn(authentication);
-
-        when(
-                userRepository.findById(userId)
-        ).thenReturn(Optional.empty());
-
-        Model model =
-                new ExtendedModelMap();
-
-        /*
-         * Act
-         */
-
-        String result =
-                authController.processLogin(
-                        loginRequest,
-                        request,
-                        response,
-                        model
-                );
-
-        /*
-         * Assert
-         */
-
-        assertEquals(
-                "redirect:/reporter/requests",
-                result
-        );
-
-        verify(
-                springSecurityService,
-                times(1)
-        ).createAuthentication(userId);
-
-        assertNotNull(authentication);
-
-        assertTrue(
-                authentication.isAuthenticated()
-        );
-
-        assertEquals(
-                "ROLE_REPORTER",
-                authentication
-                        .getAuthorities()
-                        .iterator()
-                        .next()
-                        .getAuthority()
-        );
+        verify(springSecurityService)
+                .createAuthentication(userId);
     }
 
-    /*
-     * =============================================================
-     * TC-IT-02-06
-     *
-     * ตรวจสอบการจัดเก็บข้อมูล Login ลง Session
-     * =============================================================
+    /**
+     * TC-IT-02-06:
+     * ตรวจสอบการบันทึกข้อมูล Login ลง Session
      */
-
     @Test
     void TC_IT_02_06_loginSuccessfully_shouldStoreLoginDataInSession()
             throws Exception {
 
-        var loginRequest =
-                new com.example.dormitory.dto.request.LoginRequest();
+        // Arrange
+        configureReporterAuthentication();
 
-        loginRequest.setEmail(
-                "lucaenen01@gmail.com"
-        );
+        SupabaseAuthResponse authResponse =
+                authService.login(createValidLoginRequest());
 
-        loginRequest.setPassword(
-                "lucazaza"
-        );
-
-        Authentication authentication =
-                new UsernamePasswordAuthenticationToken(
-                        userId.toString(),
-                        null,
-                        List.of(
-                                new SimpleGrantedAuthority(
-                                        "ROLE_REPORTER"
-                                )
-                        )
-                );
-
-        when(
-                springSecurityService
-                        .createAuthentication(userId)
-        ).thenReturn(authentication);
-
-        when(
-                userRepository.findById(userId)
-        ).thenReturn(Optional.empty());
-
-        Model model =
-                new ExtendedModelMap();
-
-        /*
-         * Act
-         */
-
-        authController.processLogin(
-                loginRequest,
+        // Act
+        String destination = loginSessionService.establishSession(
+                authResponse,
                 request,
-                response,
-                model
-        );
+                response);
 
-        /*
-         * Assert
-         */
+        // Assert
+        assertEquals("/reporter/requests", destination);
 
-        verify(session)
-                .setAttribute(
-                        "accessToken",
-                        "test-access-token"
-                );
+        verify(session).setAttribute(
+                "accessToken",
+                "test-access-token");
 
-        verify(session)
-                .setAttribute(
-                        "refreshToken",
-                        "test-refresh-token"
-                );
+        verify(session).setAttribute(
+                "refreshToken",
+                "test-refresh-token");
 
-        verify(session)
-                .setAttribute(
-                        "userId",
-                        userId.toString()
-                );
+        verify(session).setAttribute(
+                "userId",
+                userId.toString());
 
-        verify(session)
-                .setAttribute(
-                        "role",
-                        "REPORTER"
-                );
+        verify(session).setAttribute(
+                "userFullName",
+                "Test Reporter");
+
+        verify(session).setAttribute(
+                "role",
+                "REPORTER");
     }
 }

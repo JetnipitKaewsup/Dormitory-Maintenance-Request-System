@@ -7,6 +7,7 @@ import com.example.dormitory.domain.entity.RepairAssignment;
 import com.example.dormitory.domain.entity.RepairRequest;
 import com.example.dormitory.domain.entity.Technician;
 import com.example.dormitory.domain.enums.RepairRequestStatus;
+import com.example.dormitory.exception.BusinessException;
 import com.example.dormitory.service.RepairAssignmentService;
 import com.example.dormitory.service.RepairRequestService;
 import jakarta.servlet.http.HttpSession;
@@ -15,6 +16,10 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+
+
+import com.example.dormitory.domain.command.impl.RejectCompletionCommand;
+
 
 import java.util.List;
 import java.util.UUID;
@@ -41,8 +46,8 @@ public class AdminRepairRequestController {
         long approvedCount = requests.stream().filter(r -> r.getStatus() == RepairRequestStatus.APPROVED).count();
         long inProgressCount = requests.stream().filter(r -> r.getStatus() == RepairRequestStatus.IN_PROGRESS).count();
         long completedCount = requests.stream().filter(r -> r.getStatus() == RepairRequestStatus.COMPLETED).count();
-        long rejectedCount = requests.stream().filter(r ->
-                r.getStatus() == RepairRequestStatus.REJECTED).count();
+        long rejectedCount = requests.stream().filter(r -> r.getStatus() == RepairRequestStatus.REJECTED).count();
+        long incompletedCount = requests.stream().filter(r -> r.getStatus() == RepairRequestStatus.IN_COMPLETED).count();
 
         model.addAttribute("requests", requests);
         model.addAttribute("pendingCount", pendingCount);
@@ -50,6 +55,7 @@ public class AdminRepairRequestController {
         model.addAttribute("inProgressCount", inProgressCount);
         model.addAttribute("completedCount", completedCount);
         model.addAttribute("rejectedCount", rejectedCount);
+        model.addAttribute("incompletedCount", incompletedCount);
 
         return "admin/requests-list";
     }
@@ -82,6 +88,7 @@ public String handleNotLoggedIn(IllegalStateException ex, RedirectAttributes red
         repairRequestService.reject(id, adminId, reason);
         return "redirect:/admin/requests/" + id;
     }
+
 
     // ===================== มอบหมายงานให้ช่าง =====================
 
@@ -133,6 +140,25 @@ public String handleNotLoggedIn(IllegalStateException ex, RedirectAttributes red
 
         return "redirect:/admin/requests/" + id;
     }
+        @PostMapping("/{id}/incomplete")
+        public String markIncomplete(@PathVariable UUID id,
+                                    @RequestParam(required = false) String note,
+                                    HttpSession session,
+                                    RedirectAttributes ra) {
+            UUID adminId = getCurrentAdminId(session);
+
+            try {
+                RepairCommand command = new RejectCompletionCommand(
+                        repairRequestService, id, adminId, note);
+                command.execute();
+            } catch (BusinessException e) {
+                ra.addFlashAttribute("error", e.getMessage());
+                return "redirect:/admin/requests/" + id + "/inspect";
+            }
+
+            return "redirect:/admin/requests/" + id;
+        }
+    
 
     private UUID getCurrentAdminId(HttpSession session) {
         Object adminId = session.getAttribute("adminId");
