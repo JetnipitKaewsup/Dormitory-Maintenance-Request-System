@@ -140,3 +140,48 @@
 }
 .alert-error { background: #fbe6e6; color: var(--color-danger); border: 1px solid #f3c7c7; }
 .alert-success { background: #e4f5e8; color: var(--color-primary); border: 1px solid #c6e6cd; }
+
+.badge {
+    display: inline-block;
+    padding: 4px 12px;
+    border-radius: 999px;
+    font-size: 12px;
+    font-weight: 600;
+    white-space: nowrap;
+}
+
+/* รอดำเนินการ - ส้ม */
+.badge.pending {
+    background: #fff1de;
+    color: #b45309;
+}
+
+/* อนุมัติ - น้ำเงิน */
+.badge.approved {
+    background: #e8efff;
+    color: #1d4ed8;
+}
+
+/* ไม่อนุมัติ - แดงอ่อน */
+.badge.rejected {
+    background: #fde8e6;
+    color: #b42318;
+}
+
+/* กำลังดำเนินการ - เทา */
+.badge.progress {
+    background: #ecebe7;
+    color: #4b5563;
+}
+
+/* เสร็จสิ้น - เขียว */
+.badge.complete {
+    background: #e8f4ec;
+    color: #1e6b3a;
+}
+
+/* ไม่สำเร็จ - แดงเข้ม */
+.badge.in_complete {
+    background: #ffe0e0;
+    color: #9b1c1c;
+}
